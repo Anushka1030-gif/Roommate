@@ -1,7 +1,7 @@
 # RoomieMatch Implementation Progress
 
 - [x] **Step 1: Environment & Setup** — Clean workspace directory structure, client Vite+React+Tailwind app, server Express+ESM app with health checks, config with Zod, Docker compose MySQL environment, ESLint/Prettier tooling, documentation rules, and git repository.
-- [ ] **Step 2: Database** — Knex migrations, table schemas (users, profiles, requirements, matches, chats, messages, reports, blocks, admins), seeders, and DB connection module.
+- [x] **Step 2: Database** — Knex migrations, table schemas (`users`, `email_otps`, `profiles`, `requirements`, `match_results`, `conversations`, `messages`, `blocks`, `reports`, `rate_limit_events`), idempotent admin seeder, DB connection module, `db:reset` helper, and automated integration test with test database (`roomiematch_test`).
 - [ ] **Step 3: Auth backend** — Registration with college email domain validation, OTP verification via nodemailer, login, JWT cookie authentication, password reset, and rate limiting.
 - [ ] **Step 4: Frontend foundation** — Global routing, navigation bar, auth context/provider, protected route wrappers, toast notification system, and Axios client with interceptors.
 - [ ] **Step 5: Profile** — User profile creation/editing API & UI, personal bio, habits, sleeping schedules, study habits, lifestyle preferences, and profile completion indicator.
