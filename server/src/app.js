@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import config from './config/index.js';
+import authRoutes from './routes/auth.routes.js';
+import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
@@ -25,6 +27,9 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
+// Authentication routes
+app.use('/api/auth', authRoutes);
+
 // Central 404 handler
 app.use((req, res, next) => {
   res.status(404).json({
@@ -36,21 +41,6 @@ app.use((req, res, next) => {
 });
 
 // Central error handling middleware
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || err.status || 500;
-  const errorCode = err.code || 'INTERNAL_SERVER_ERROR';
-  const message = err.message || 'An unexpected error occurred';
-
-  if (config.nodeEnv !== 'test') {
-    console.error(`[Error] ${errorCode}: ${message}`, err);
-  }
-
-  res.status(statusCode).json({
-    error: {
-      code: errorCode,
-      message,
-    },
-  });
-});
+app.use(errorHandler);
 
 export default app;

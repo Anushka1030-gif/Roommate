@@ -8,8 +8,8 @@ export async function up(knex) {
     table.string('email', 255).notNullable();
     table.string('otp_code', 255).notNullable();
     table.enu('type', ['registration', 'password_reset', 'login']).notNullable().defaultTo('registration');
-    table.timestamp('expires_at').notNullable();
-    table.timestamp('consumed_at').nullable().defaultTo(null);
+    table.datetime('expires_at').notNullable();
+    table.datetime('consumed_at').nullable().defaultTo(null);
     table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
 
     table.index(['email', 'type']);
