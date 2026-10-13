@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';
+import api from '../services/api.js';
 import { getErrorMessage, getErrorCode } from '../utils/error.js';
 import Button from '../components/ui/Button.jsx';
 import Input from '../components/ui/Input.jsx';
@@ -72,15 +73,29 @@ export default function LoginPage() {
       const response = await login({ email, password: formData.password });
       const loggedInUser = response.user;
 
-      // Redirect rules: unverified -> /verify-email; verified -> /onboarding/profile (or previous destination)
+      // Redirect rules: unverified -> /verify-email; verified -> check profile completeness
       if (!loggedInUser.email_verified) {
         navigate('/verify-email', {
           state: { email, message: 'Please verify your student email to continue.' },
           replace: true,
         });
       } else {
-        const destination = location.state?.from?.pathname || '/onboarding/profile';
-        navigate(destination, { replace: true });
+        let isProfileComplete = Boolean(loggedInUser.profile_completed);
+        try {
+          const profileRes = await api.get('/profile/me');
+          if (profileRes.data?.profile_complete !== undefined) {
+            isProfileComplete = Boolean(profileRes.data.profile_complete);
+          }
+        } catch {
+          // Fall back to loggedInUser.profile_completed
+        }
+
+        if (!isProfileComplete) {
+          navigate('/onboarding/profile', { replace: true });
+        } else {
+          const destination = location.state?.from?.pathname || '/requirement';
+          navigate(destination, { replace: true });
+        }
       }
     } catch (err) {
       const code = getErrorCode(err);

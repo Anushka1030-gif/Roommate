@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import config from './config/index.js';
 import authRoutes from './routes/auth.routes.js';
+import profileRoutes from './routes/profile.routes.js';
+import accountRoutes from './routes/account.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
@@ -29,6 +31,10 @@ app.get('/api/health', (req, res) => {
 
 // Authentication routes
 app.use('/api/auth', authRoutes);
+
+// Profile and Account routes
+app.use('/api/profile', profileRoutes);
+app.use('/api/account', accountRoutes);
 
 // Central 404 handler
 app.use((req, res, next) => {

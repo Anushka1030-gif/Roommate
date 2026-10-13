@@ -78,6 +78,9 @@ export default function AppLayout() {
           <nav className="hidden md:flex items-center gap-1" aria-label="Main Navigation">
             {isAuthenticated && isVerified && (
               <>
+                <NavLink to="/onboarding/profile" className={navLinkClass}>
+                  Profile
+                </NavLink>
                 <NavLink to="/matches" className={navLinkClass}>
                   Matches
                 </NavLink>
@@ -207,6 +210,13 @@ export default function AppLayout() {
             <div className="space-y-1">
               {isAuthenticated && isVerified && (
                 <>
+                  <NavLink
+                    to="/onboarding/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={mobileNavLinkClass}
+                  >
+                    Profile
+                  </NavLink>
                   <NavLink
                     to="/matches"
                     onClick={() => setMobileMenuOpen(false)}

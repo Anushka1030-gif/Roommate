@@ -21,6 +21,7 @@ export function sanitizeUser(user) {
     email_verified: Boolean(user.email_verified),
     role: user.role,
     status: user.status,
+    profile_completed: Boolean(user.profile_completed),
   };
 }
 
@@ -34,7 +35,8 @@ export async function getUserWithProfileById(userId) {
       'users.role',
       'users.email_verified',
       'users.status',
-      'profiles.full_name'
+      'profiles.full_name',
+      'profiles.profile_completed'
     )
     .first();
 }
@@ -49,7 +51,8 @@ export async function getUserWithProfileByEmail(email) {
       'users.role',
       'users.email_verified',
       'users.status',
-      'profiles.full_name'
+      'profiles.full_name',
+      'profiles.profile_completed'
     )
     .first();
 }
