@@ -6,6 +6,7 @@ import config from './config/index.js';
 import authRoutes from './routes/auth.routes.js';
 import profileRoutes from './routes/profile.routes.js';
 import accountRoutes from './routes/account.routes.js';
+import requirementRoutes from './routes/requirement.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
@@ -35,6 +36,9 @@ app.use('/api/auth', authRoutes);
 // Profile and Account routes
 app.use('/api/profile', profileRoutes);
 app.use('/api/account', accountRoutes);
+
+// Requirement routes
+app.use('/api/requirements', requirementRoutes);
 
 // Central 404 handler
 app.use((req, res, next) => {

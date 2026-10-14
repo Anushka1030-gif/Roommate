@@ -17,6 +17,7 @@ import NotFoundPage from './pages/NotFoundPage.jsx';
 
 import ProtectedRoute from './components/guards/ProtectedRoute.jsx';
 import VerifiedRoute from './components/guards/VerifiedRoute.jsx';
+import CompleteProfileRoute from './components/guards/CompleteProfileRoute.jsx';
 import AdminRoute from './components/guards/AdminRoute.jsx';
 import GuestRoute from './components/guards/GuestRoute.jsx';
 
@@ -61,9 +62,9 @@ export default function App() {
             <Route
               path="/requirement"
               element={
-                <VerifiedRoute>
+                <CompleteProfileRoute>
                   <RequirementPage />
-                </VerifiedRoute>
+                </CompleteProfileRoute>
               }
             />
             <Route
