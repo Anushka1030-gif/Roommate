@@ -4,6 +4,7 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import AuthContext from '../context/authContext.js';
 import ProtectedRoute from '../components/guards/ProtectedRoute.jsx';
 import VerifiedRoute from '../components/guards/VerifiedRoute.jsx';
+import CompleteProfileRoute from '../components/guards/CompleteProfileRoute.jsx';
 import AdminRoute from '../components/guards/AdminRoute.jsx';
 
 describe('Route Guards', () => {
@@ -22,6 +23,7 @@ describe('Route Guards', () => {
           <Routes>
             <Route path="/login" element={<div>Login Page Target</div>} />
             <Route path="/verify-email" element={<div>Verify Email Target</div>} />
+            <Route path="/onboarding/profile" element={<div>Profile Onboarding Target</div>} />
             <Route path="/matches" element={<div>Matches Fallback Target</div>} />
 
             <Route
@@ -39,6 +41,15 @@ describe('Route Guards', () => {
                 <VerifiedRoute>
                   <div>Verified Only Content</div>
                 </VerifiedRoute>
+              }
+            />
+
+            <Route
+              path="/complete-profile-only"
+              element={
+                <CompleteProfileRoute>
+                  <div>Complete Profile Content</div>
+                </CompleteProfileRoute>
               }
             />
 
@@ -87,5 +98,32 @@ describe('Route Guards', () => {
   it('AdminRoute allows admin users', () => {
     renderWithAuth({ id: 1, email: 'admin@edu.in', role: 'admin' }, '/admin-only');
     expect(screen.getByText('Admin Panel Content')).toBeInTheDocument();
+  });
+
+  it('CompleteProfileRoute redirects unauthenticated visitors to /login', () => {
+    renderWithAuth(null, '/complete-profile-only');
+    expect(screen.getByText('Login Page Target')).toBeInTheDocument();
+  });
+
+  it('CompleteProfileRoute redirects unverified users to /verify-email', () => {
+    renderWithAuth({ id: 1, email: 'user@edu.in', email_verified: false }, '/complete-profile-only');
+    expect(screen.getByText('Verify Email Target')).toBeInTheDocument();
+  });
+
+  it('CompleteProfileRoute redirects users with incomplete profile to /onboarding/profile', () => {
+    renderWithAuth(
+      { id: 1, email: 'user@edu.in', email_verified: true, profile_completed: false },
+      '/complete-profile-only'
+    );
+    expect(screen.getByText('Profile Onboarding Target')).toBeInTheDocument();
+    expect(screen.queryByText('Complete Profile Content')).not.toBeInTheDocument();
+  });
+
+  it('CompleteProfileRoute allows users with a complete profile', () => {
+    renderWithAuth(
+      { id: 1, email: 'user@edu.in', email_verified: true, profile_completed: true },
+      '/complete-profile-only'
+    );
+    expect(screen.getByText('Complete Profile Content')).toBeInTheDocument();
   });
 });
