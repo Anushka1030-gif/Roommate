@@ -45,7 +45,8 @@ export async function authenticate(req, res, next) {
         'users.role',
         'users.email_verified',
         'users.status',
-        'profiles.full_name'
+        'profiles.full_name',
+        'profiles.profile_completed'
       )
       .first();
 
@@ -80,6 +81,7 @@ export async function authenticate(req, res, next) {
     req.user = {
       ...user,
       email_verified: Boolean(user.email_verified),
+      profile_completed: Boolean(user.profile_completed),
     };
 
     next();
@@ -100,6 +102,37 @@ export function requireVerified(req, res, next) {
   next();
 }
 
+export async function requireCompleteProfile(req, res, next) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error: {
+          code: 'UNAUTHORIZED',
+          message: 'Authentication required. Please log in.',
+        },
+      });
+    }
+
+    const profile = await db('profiles').where({ user_id: req.user.id }).first();
+    const { computeProfileCompleteness } = await import('../services/profile.service.js');
+    const { profile_complete } = computeProfileCompleteness(profile);
+
+    if (!profile || !profile_complete) {
+      return res.status(403).json({
+        error: {
+          code: 'PROFILE_INCOMPLETE',
+          message: 'A complete profile is required before submitting or accessing requirements.',
+        },
+      });
+    }
+
+    req.profile = profile;
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
 export function requireAdmin(req, res, next) {
   if (!req.user || req.user.role !== 'admin') {
     return res.status(403).json({
@@ -115,5 +148,6 @@ export function requireAdmin(req, res, next) {
 export default {
   authenticate,
   requireVerified,
+  requireCompleteProfile,
   requireAdmin,
 };
