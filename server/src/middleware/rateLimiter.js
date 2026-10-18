@@ -43,3 +43,12 @@ export const resendOtpLimiter = createLimiter({
   max: 5,
   message: 'Too many OTP resend requests. Please try again in 15 minutes.',
 });
+
+export const matchesRefreshLimiter = createLimiter({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  max: 5,
+  code: 'MATCH_REFRESH_LIMIT_EXCEEDED',
+  message: 'Daily match refresh limit reached (maximum 5 refreshes per day). Please try again tomorrow.',
+  keyGenerator: (req) => (req.user ? String(req.user.id) : req.ip),
+});
+

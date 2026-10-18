@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.routes.js';
 import profileRoutes from './routes/profile.routes.js';
 import accountRoutes from './routes/account.routes.js';
 import requirementRoutes from './routes/requirement.routes.js';
+import matchRoutes from './routes/match.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
@@ -39,6 +40,10 @@ app.use('/api/account', accountRoutes);
 
 // Requirement routes
 app.use('/api/requirements', requirementRoutes);
+
+// Match routes
+app.use('/api/matches', matchRoutes);
+
 
 // Central 404 handler
 app.use((req, res, next) => {

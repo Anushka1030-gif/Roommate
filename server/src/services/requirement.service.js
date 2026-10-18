@@ -58,18 +58,20 @@ export function formatRequirement(req) {
 }
 
 /**
- * Hook placeholder for Step 7: Matching Engine
+ * Trigger Matching Engine algorithm upon requirement creation or update.
  * @param {number} userId
  * @param {number} requirementId
  */
 export async function triggerMatchingHook(userId, requirementId) {
-  // TODO (Step 7): Trigger matching engine algorithm:
-  // 1. Run hard filters across active profiles in the same city with overlapping budget
-  // 2. Compute deterministic compatibility pre-scores using importance_weights
-  // 3. Invoke LLM ranking service for top candidate explanations
-  // 4. Cache results into match_results table
-  return { triggered: true, requirementId, userId };
+  try {
+    const { generateMatches } = await import('./matching.service.js');
+    return await generateMatches(userId);
+  } catch (err) {
+    console.error('Error generating matches during requirement update:', err);
+    return { triggered: true, requirementId, userId, error: err.message };
+  }
 }
+
 
 /**
  * Get active requirement for a user.
