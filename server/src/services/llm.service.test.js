@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 import {
   LLMService,
   BaseLLMProvider,
@@ -13,6 +13,16 @@ import db from '../db/index.js';
 
 describe('LLM Service & Matching Layer Tests', () => {
   const originalEnv = process.env;
+
+  beforeAll(async () => {
+    await db.migrate.latest();
+  });
+
+  afterAll(async () => {
+    if (db) {
+      await db.destroy();
+    }
+  });
 
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -553,18 +563,98 @@ describe('LLM Service & Matching Layer Tests', () => {
   });
 
   describe('Integration with runMatching and match_results table', () => {
+    async function createFixtureUser({
+      email,
+      gender = 'male',
+      city = 'Bhopal',
+      cleanliness = 4,
+      sleep = 'early_bird',
+      study = 'silent',
+      noise = 'quiet',
+      smoking = 'no',
+      drinking = 'no',
+      food = 'vegetarian',
+      budget_min = 7000,
+      budget_max = 12000,
+      gender_pref = 'same_gender_only',
+      clean_min = 3,
+      smoking_ok = false,
+      drinking_ok = false,
+      sleep_pref = 'early_bird',
+      food_pref = 'same_as_me',
+    }) {
+      const [userId] = await db('users').insert({
+        email,
+        password_hash: 'hashed_password_placeholder',
+        email_verified: 1,
+        role: 'student',
+        status: 'active',
+      });
+
+      await db('profiles').insert({
+        user_id: userId,
+        full_name: 'Fixture Student',
+        age: 21,
+        gender,
+        college_name: 'MANIT Bhopal',
+        major: 'Computer Science',
+        graduation_year: 2026,
+        city,
+        sleep_schedule: sleep,
+        cleanliness_level: cleanliness,
+        study_habits: study,
+        noise_level: noise,
+        smoking_preference: smoking,
+        drinking_preference: drinking,
+        food_preference: food,
+        pet_preference: 'no_pets',
+        guest_policy: 'rarely',
+        bio: 'Looking for a peaceful roommate.',
+        profile_completed: 1,
+      });
+
+      await db('requirements').insert({
+        user_id: userId,
+        city,
+        budget_min,
+        budget_max,
+        gender_preference: gender_pref,
+        preferred_sleep_schedule: sleep_pref,
+        preferred_cleanliness_min: clean_min,
+        smoking_ok: smoking_ok ? 1 : 0,
+        drinking_ok: drinking_ok ? 1 : 0,
+        food_preference: food_pref,
+        guests_ok: 'sometimes',
+        noise_tolerance: 'quiet',
+        deal_breakers: null,
+        importance_weights: JSON.stringify({ cleanliness: 2, sleep: 2 }),
+        is_active: 1,
+      });
+
+      return userId;
+    }
+
+    beforeEach(async () => {
+      await db('match_results').del();
+      await db('blocks').del();
+      await db('requirements').del();
+      await db('profiles').del();
+      await db('users').del();
+    });
+
     it('stores source="fallback" in match_results when LLM is disabled', async () => {
       process.env.LLM_ENABLED = 'false';
 
-      // Pick user 1 from seeded demo students
-      const user = await db('users').where({ email: 'aarav.sharma@manit.ac.in' }).first();
-      expect(user).toBeDefined();
+      const requesterId = await createFixtureUser({ email: 'seeker@manit.ac.in' });
+      await createFixtureUser({ email: 'c1@manit.ac.in' });
+      await createFixtureUser({ email: 'c2@manit.ac.in' });
+      await createFixtureUser({ email: 'c3@manit.ac.in' });
 
-      const result = await runMatching(user.id);
+      const result = await runMatching(requesterId);
       expect(result.matches.length).toBeGreaterThanOrEqual(1);
 
       // Verify that match_results in DB has source='fallback'
-      const rows = await db('match_results').where({ user_id: user.id });
+      const rows = await db('match_results').where({ user_id: requesterId });
       expect(rows.length).toBeGreaterThan(0);
       for (const row of rows) {
         expect(row.source).toBe('fallback');
@@ -575,34 +665,38 @@ describe('LLM Service & Matching Layer Tests', () => {
       process.env.LLM_ENABLED = 'true';
       process.env.LLM_API_KEY = 'mock_key';
 
-      const user = await db('users').where({ email: 'aarav.sharma@manit.ac.in' }).first();
-      expect(user).toBeDefined();
+      const requesterId = await createFixtureUser({ email: 'seeker2@manit.ac.in' });
+      await createFixtureUser({ email: 'c1_2@manit.ac.in' });
+      await createFixtureUser({ email: 'c2_2@manit.ac.in' });
+      await createFixtureUser({ email: 'c3_2@manit.ac.in' });
 
       // Spy on LLMService.rankMatches
-      const rankSpy = vi.spyOn(LLMService, 'rankMatches').mockImplementation(async ({ shortlist }) => {
-        const topCandidates = shortlist.slice(0, 3);
-        return {
-          status: 'success',
-          source: 'llm',
-          matches: topCandidates.map((c, i) => ({
-            ...c,
-            score: 95 - i * 2,
-            compatibility_score: 95 - i * 2,
-            explanation: `LLM-generated explanation for candidate ${c.candidate_id}`,
-            highlights: ['AI Highlight 1', 'AI Highlight 2'],
-            watch_out: i === 0 ? 'Potential morning routine clash' : '',
+      const rankSpy = vi
+        .spyOn(LLMService, 'rankMatches')
+        .mockImplementation(async ({ shortlist }) => {
+          const topCandidates = shortlist.slice(0, 3);
+          return {
+            status: 'success',
             source: 'llm',
-          })),
-        };
-      });
+            matches: topCandidates.map((c, i) => ({
+              ...c,
+              score: 95 - i * 2,
+              compatibility_score: 95 - i * 2,
+              explanation: `LLM-generated explanation for candidate ${c.candidate_id}`,
+              highlights: ['AI Highlight 1', 'AI Highlight 2'],
+              watch_out: i === 0 ? 'Potential morning routine clash' : '',
+              source: 'llm',
+            })),
+          };
+        });
 
-      const result = await runMatching(user.id);
+      const result = await runMatching(requesterId);
       expect(rankSpy).toHaveBeenCalled();
       expect(result.matches[0].source).toBe('llm');
       expect(result.matches[0].explanation).toContain('LLM-generated explanation');
 
       // Verify DB storage has source = 'llm'
-      const rows = await db('match_results').where({ user_id: user.id });
+      const rows = await db('match_results').where({ user_id: requesterId });
       expect(rows.length).toBeGreaterThan(0);
       for (const row of rows) {
         expect(row.source).toBe('llm');
@@ -611,3 +705,4 @@ describe('LLM Service & Matching Layer Tests', () => {
     });
   });
 });
+

@@ -22,7 +22,7 @@ export function loadMatchingSystemPrompt() {
 export function safeLogError(prefix, error) {
   let message = error?.message || String(error);
   // Redact potential API keys matching sk-ant-... or similar patterns
-  message = message.replace(/sk-ant-[a-zA-Z0-9_\-]+/g, '[REDACTED_API_KEY]');
+  message = message.replace(/sk-ant-[a-zA-Z0-9_-]+/g, '[REDACTED_API_KEY]');
   if (config.llm?.apiKey) {
     message = message.replaceAll(config.llm.apiKey, '[REDACTED_API_KEY]');
   }
