@@ -1,5 +1,6 @@
 import db from '../db/index.js';
 import { DEFAULT_IMPORTANCE_WEIGHTS } from './requirement.service.js';
+import LLMService from './llm.service.js';
 
 /**
  * Dimension labels and highlights helpers
@@ -556,12 +557,13 @@ export function rankCandidates(requester, eligibleCandidates) {
 }
 
 /**
- * Generate matches for a user and cache them into the match_results table.
+ * Run matching for a user: runs filters and pre-score, calls the LLM when available,
+ * otherwise uses the fallback, and stores the final top 3 in match_results.
  *
  * @param {number} userId
  * @returns {Promise<object>} { matches, count, shortlist_count, has_enough_matches, message }
  */
-export async function generateMatches(userId) {
+export async function runMatching(userId) {
   // 1. Fetch requester's profile and active requirement
   const profile = await db('profiles').where({ user_id: userId }).first();
   const rawRequirement = await db('requirements')
@@ -611,36 +613,66 @@ export async function generateMatches(userId) {
   // 3. Pre-score and rank candidates
   const { shortlist, topMatches } = rankCandidates(requester, eligibleCandidates);
 
-  // 4. Cache top matches in match_results table within a transaction
+  let finalMatches = topMatches.map((m) => ({ ...m, source: 'fallback' }));
+  let matchSource = 'fallback';
+
+  // 4. Call LLM ranking if candidates exist
+  if (shortlist.length > 0) {
+    try {
+      const llmResult = await LLMService.rankMatches({
+        seeker: requester.profile,
+        requirement: requester.requirement,
+        shortlist,
+      });
+
+      if (
+        llmResult &&
+        llmResult.status === 'success' &&
+        Array.isArray(llmResult.matches) &&
+        llmResult.matches.length > 0
+      ) {
+        finalMatches = llmResult.matches;
+        matchSource = llmResult.source || 'llm';
+      }
+    } catch (llmErr) {
+      console.error(
+        'LLM matching failed, falling back to rule-based ranking:',
+        llmErr?.message || llmErr
+      );
+    }
+  }
+
+  // 5. Cache top matches in match_results table within a transaction
   await db.transaction(async (trx) => {
     // Clear previous suggested matches for this user
     await trx('match_results')
       .where({ user_id: userId, status: 'suggested' })
       .del();
 
-    for (const match of topMatches) {
+    for (const match of finalMatches) {
       await trx('match_results').insert({
         user_id: userId,
         matched_user_id: match.candidate_id,
-        compatibility_score: match.compatibility_score,
-        score_breakdown: JSON.stringify(match.score_breakdown),
+        compatibility_score: match.score ?? match.compatibility_score,
+        score_breakdown: JSON.stringify(match.score_breakdown || {}),
         ai_summary: match.explanation,
-        ai_pros: JSON.stringify(match.highlights),
+        ai_pros: JSON.stringify(match.highlights || []),
         ai_cons: JSON.stringify(match.watch_out ? [match.watch_out] : []),
-        ai_icebreakers: JSON.stringify(match.icebreakers),
+        ai_icebreakers: JSON.stringify(match.icebreakers || []),
         status: 'suggested',
+        source: match.source || matchSource || 'fallback',
       });
     }
   });
 
-  const hasEnoughMatches = topMatches.length >= 3;
+  const hasEnoughMatches = finalMatches.length >= 3;
   const message = hasEnoughMatches
     ? null
     : 'Not enough matches yet in your city. Check back soon as more students join!';
 
   return {
-    matches: topMatches,
-    count: topMatches.length,
+    matches: finalMatches,
+    count: finalMatches.length,
     shortlist_count: shortlist.length,
     has_enough_matches: hasEnoughMatches,
     message,
@@ -648,8 +680,18 @@ export async function generateMatches(userId) {
 }
 
 /**
+ * Generate matches for a user (alias to runMatching for backward compatibility).
+ *
+ * @param {number} userId
+ * @returns {Promise<object>}
+ */
+export async function generateMatches(userId) {
+  return await runMatching(userId);
+}
+
+/**
  * Fetch cached matches for a user from match_results.
- * If no cached matches exist, generates matches on the fly.
+ * If no cached matches exist, runs matching on the fly.
  *
  * @param {number} userId
  * @returns {Promise<object>}
@@ -671,6 +713,7 @@ export async function getCachedMatches(userId) {
       'match_results.ai_cons',
       'match_results.ai_icebreakers',
       'match_results.status',
+      'match_results.source',
       'profiles.full_name',
       'profiles.age',
       'profiles.gender',
@@ -763,6 +806,7 @@ export async function getCachedMatches(userId) {
         score_breakdown: breakdown || {},
         icebreakers: Array.isArray(icebreakers) ? icebreakers : [],
         status: row.status,
+        source: row.source || 'fallback',
       };
     });
 
@@ -780,8 +824,8 @@ export async function getCachedMatches(userId) {
     };
   }
 
-  // If no cached matches, run generateMatches
-  return await generateMatches(userId);
+  // If no cached matches, run runMatching
+  return await runMatching(userId);
 }
 
 /**
@@ -791,14 +835,16 @@ export async function getCachedMatches(userId) {
  * @returns {Promise<object>}
  */
 export async function refreshMatches(userId) {
-  return await generateMatches(userId);
+  return await runMatching(userId);
 }
 
 export default {
   calculateCompatibility,
   findEligibleCandidates,
   rankCandidates,
+  runMatching,
   generateMatches,
   getCachedMatches,
   refreshMatches,
 };
+

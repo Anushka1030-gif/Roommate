@@ -200,7 +200,8 @@ export function getLLMConfig() {
   const configEnabled = config.llm?.enabled;
   const isEnabled = envEnabled !== undefined ? envEnabled === 'true' : Boolean(configEnabled);
 
-  const apiKey = (process.env.LLM_API_KEY || config.llm?.apiKey || '').trim();
+  const envApiKey = process.env.LLM_API_KEY;
+  const apiKey = (envApiKey !== undefined ? envApiKey : config.llm?.apiKey || '').trim();
   const model = process.env.LLM_MODEL || config.llm?.model || 'claude-3-5-sonnet-20241022';
   const provider = process.env.LLM_PROVIDER || config.llm?.provider || 'anthropic';
 
