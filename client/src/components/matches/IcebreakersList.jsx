@@ -51,7 +51,7 @@ export default function IcebreakersList({ icebreakers = [], onSelect, className 
             >
               <div className="flex items-start gap-2 min-w-0">
                 <span className="text-teal-600 shrink-0 mt-0.5">💬</span>
-                <span className="truncate italic">"{prompt}"</span>
+                <span className="truncate italic">&ldquo;{prompt}&rdquo;</span>
               </div>
               <span
                 className={`shrink-0 px-2 py-0.5 rounded-md text-[10px] font-medium transition-colors ${

@@ -70,9 +70,9 @@ export default function App() {
             <Route
               path="/matches"
               element={
-                <VerifiedRoute>
+                <CompleteProfileRoute>
                   <MatchesPage />
-                </VerifiedRoute>
+                </CompleteProfileRoute>
               }
             />
             <Route

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../ui/Button.jsx';
-import Badge from '../ui/Badge.jsx';
 
 export default function ConnectModal({ match, isOpen, onClose }) {
   const navigate = useNavigate();
@@ -87,7 +86,7 @@ export default function ConnectModal({ match, isOpen, onClose }) {
                   key={i}
                   className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs flex items-center justify-between gap-3 text-slate-700"
                 >
-                  <span className="italic truncate">"{prompt}"</span>
+                  <span className="italic truncate">&ldquo;{prompt}&rdquo;</span>
                   <button
                     type="button"
                     onClick={() => handleCopy(prompt)}

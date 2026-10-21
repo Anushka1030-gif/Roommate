@@ -25,13 +25,6 @@ export default function MatchCard({
   const score = match.score ?? match.compatibility_score ?? 85;
   const isTopRanked = rank === 1;
 
-  // Rank label styling
-  const rankLabels = {
-    1: 'Top Match (#1)',
-    2: 'Strong Match (#2)',
-    3: 'Great Fit (#3)',
-  };
-
   const candidateName = candidate.full_name || 'Roommate Candidate';
   const candidateInitial = candidateName.charAt(0).toUpperCase();
 
@@ -120,7 +113,7 @@ export default function MatchCard({
                   </>
                 )}
                 {candidate.graduation_year && (
-                  <span className="text-slate-400">('{String(candidate.graduation_year).slice(-2)})</span>
+                  <span className="text-slate-400">(&apos;{String(candidate.graduation_year).slice(-2)})</span>
                 )}
                 {candidate.city && (
                   <>
@@ -139,7 +132,7 @@ export default function MatchCard({
               {/* Bio snippet if available */}
               {candidate.bio && (
                 <p className="text-xs text-slate-500 italic mt-1 line-clamp-2">
-                  "{candidate.bio}"
+                  &ldquo;{candidate.bio}&rdquo;
                 </p>
               )}
             </div>
