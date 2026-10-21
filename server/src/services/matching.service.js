@@ -748,98 +748,93 @@ export async function getCachedMatches(userId, statusFilter = null) {
       'profiles.guest_policy'
     );
 
-  if (cachedRows.length > 0) {
-    const formattedMatches = cachedRows.map((row) => {
-      let breakdown = row.score_breakdown;
-      if (typeof breakdown === 'string') {
-        try {
-          breakdown = JSON.parse(breakdown);
-        } catch {
-          breakdown = {};
-        }
+  const formattedMatches = cachedRows.map((row) => {
+    let breakdown = row.score_breakdown;
+    if (typeof breakdown === 'string') {
+      try {
+        breakdown = JSON.parse(breakdown);
+      } catch {
+        breakdown = {};
       }
+    }
 
-      let pros = row.ai_pros;
-      if (typeof pros === 'string') {
-        try {
-          pros = JSON.parse(pros);
-        } catch {
-          pros = [];
-        }
+    let pros = row.ai_pros;
+    if (typeof pros === 'string') {
+      try {
+        pros = JSON.parse(pros);
+      } catch {
+        pros = [];
       }
+    }
 
-      let cons = row.ai_cons;
-      if (typeof cons === 'string') {
-        try {
-          cons = JSON.parse(cons);
-        } catch {
-          cons = [];
-        }
+    let cons = row.ai_cons;
+    if (typeof cons === 'string') {
+      try {
+        cons = JSON.parse(cons);
+      } catch {
+        cons = [];
       }
+    }
 
-      let icebreakers = row.ai_icebreakers;
-      if (typeof icebreakers === 'string') {
-        try {
-          icebreakers = JSON.parse(icebreakers);
-        } catch {
-          icebreakers = [];
-        }
+    let icebreakers = row.ai_icebreakers;
+    if (typeof icebreakers === 'string') {
+      try {
+        icebreakers = JSON.parse(icebreakers);
+      } catch {
+        icebreakers = [];
       }
+    }
 
-      const score = Math.round(Number(row.compatibility_score));
-
-      return {
-        id: row.match_id,
-        candidate_id: row.matched_user_id,
-        score,
-        compatibility_score: score,
-        user: {
-          id: row.matched_user_id,
-          full_name: row.full_name,
-          age: row.age,
-          gender: row.gender,
-          college_name: row.college_name,
-          major: row.major,
-          graduation_year: row.graduation_year,
-          city: row.city,
-          bio: row.bio,
-          avatar_url: row.avatar_url,
-          sleep_schedule: row.sleep_schedule,
-          cleanliness_level: row.cleanliness_level,
-          study_habits: row.study_habits,
-          noise_level: row.noise_level,
-          smoking_preference: row.smoking_preference,
-          drinking_preference: row.drinking_preference,
-          food_preference: row.food_preference,
-          pet_preference: row.pet_preference,
-          guest_policy: row.guest_policy,
-        },
-        explanation: row.ai_summary || '',
-        highlights: Array.isArray(pros) ? pros : [],
-        watch_out: Array.isArray(cons) && cons.length > 0 ? cons[0] : '',
-        score_breakdown: breakdown || {},
-        icebreakers: Array.isArray(icebreakers) ? icebreakers : [],
-        status: row.status,
-        source: row.source || 'fallback',
-      };
-    });
-
-    const hasEnoughMatches = formattedMatches.length >= 3;
-    const message = hasEnoughMatches
-      ? null
-      : 'Not enough matches yet in your city. Check back soon as more students join!';
+    const score = Math.round(Number(row.compatibility_score));
 
     return {
-      matches: formattedMatches,
-      count: formattedMatches.length,
-      shortlist_count: formattedMatches.length,
-      has_enough_matches: hasEnoughMatches,
-      message,
+      id: row.match_id,
+      candidate_id: row.matched_user_id,
+      score,
+      compatibility_score: score,
+      user: {
+        id: row.matched_user_id,
+        full_name: row.full_name,
+        age: row.age,
+        gender: row.gender,
+        college_name: row.college_name,
+        major: row.major,
+        graduation_year: row.graduation_year,
+        city: row.city,
+        bio: row.bio,
+        avatar_url: row.avatar_url,
+        sleep_schedule: row.sleep_schedule,
+        cleanliness_level: row.cleanliness_level,
+        study_habits: row.study_habits,
+        noise_level: row.noise_level,
+        smoking_preference: row.smoking_preference,
+        drinking_preference: row.drinking_preference,
+        food_preference: row.food_preference,
+        pet_preference: row.pet_preference,
+        guest_policy: row.guest_policy,
+      },
+      explanation: row.ai_summary || '',
+      highlights: Array.isArray(pros) ? pros : [],
+      watch_out: Array.isArray(cons) && cons.length > 0 ? cons[0] : '',
+      score_breakdown: breakdown || {},
+      icebreakers: Array.isArray(icebreakers) ? icebreakers : [],
+      status: row.status,
+      source: row.source || 'fallback',
     };
-  }
+  });
 
-  // If no cached matches, run runMatching
-  return await runMatching(userId);
+  const hasEnoughMatches = formattedMatches.length >= 3;
+  const message = hasEnoughMatches
+    ? null
+    : 'Not enough matches yet in your city. Check back soon as more students join!';
+
+  return {
+    matches: formattedMatches,
+    count: formattedMatches.length,
+    shortlist_count: formattedMatches.length,
+    has_enough_matches: hasEnoughMatches,
+    message,
+  };
 }
 
 /**
