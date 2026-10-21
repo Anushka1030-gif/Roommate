@@ -5,6 +5,11 @@ import {
   requireCompleteProfile,
 } from '../middleware/auth.middleware.js';
 import { messageSendLimiter } from '../middleware/rateLimiter.js';
+import validate from '../middleware/validate.js';
+import {
+  createConversationSchema,
+  sendMessageSchema,
+} from '../validations/conversation.validation.js';
 import conversationController from '../controllers/conversation.controller.js';
 
 const router = express.Router();
@@ -17,7 +22,11 @@ router.use(authenticate, requireVerified, requireCompleteProfile);
  * @desc    Create a new 1-on-1 conversation or return existing conversation
  * @access  Private (Verified + Complete Profile)
  */
-router.post('/', conversationController.createConversation);
+router.post(
+  '/',
+  validate(createConversationSchema),
+  conversationController.createConversation
+);
 
 /**
  * @route   GET /api/conversations
@@ -38,7 +47,12 @@ router.get('/:id/messages', conversationController.getMessages);
  * @desc    Send a new message in a conversation (max 1000 chars)
  * @access  Private (Verified + Complete Profile)
  */
-router.post('/:id/messages', messageSendLimiter, conversationController.sendMessage);
+router.post(
+  '/:id/messages',
+  messageSendLimiter,
+  validate(sendMessageSchema),
+  conversationController.sendMessage
+);
 
 /**
  * @route   POST /api/conversations/:id/read
