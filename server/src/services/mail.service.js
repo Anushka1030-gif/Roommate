@@ -107,6 +107,50 @@ If you did not request this, please disregard this email.`;
     });
   }
 
+  async sendMessageNotificationEmail({ to, recipientName, senderName, conversationId, messageSnippet }) {
+    const oneHourMs = 60 * 60 * 1000;
+    if (!this.conversationEmailTimestamps) {
+      this.conversationEmailTimestamps = new Map();
+    }
+    const lastSent = this.conversationEmailTimestamps.get(conversationId);
+    const now = Date.now();
+
+    if (lastSent && now - lastSent < oneHourMs) {
+      return { skipped: true, reason: 'rate_limited_one_hour' };
+    }
+
+    this.conversationEmailTimestamps.set(conversationId, now);
+
+    const subject = `RoomieMatch — New message from ${senderName}`;
+    const text = `Hi ${recipientName},\n\nYou have received a new message from ${senderName} on RoomieMatch:\n\n"${messageSnippet.slice(0, 100)}${messageSnippet.length > 100 ? '...' : ''}"\n\nLog in to your RoomieMatch account to reply in real time:\n${config.clientUrl}/chats\n\nBest,\nThe RoomieMatch Team`;
+
+    const html = `
+      <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+        <h3 style="color: #0d9488; margin-top: 0;">New Message on RoomieMatch</h3>
+        <p>Hi ${recipientName},</p>
+        <p><strong>${senderName}</strong> sent you a message:</p>
+        <blockquote style="background-color: #f8fafc; border-left: 4px solid #0d9488; padding: 12px 16px; margin: 16px 0; color: #334155; font-style: italic;">
+          "${messageSnippet.slice(0, 100)}${messageSnippet.length > 100 ? '...' : ''}"
+        </blockquote>
+        <div style="margin: 24px 0;">
+          <a href="${config.clientUrl}/chats" style="background-color: #0d9488; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+            Open Chat & Reply
+          </a>
+        </div>
+        <p style="color: #64748b; font-size: 12px; margin-top: 24px;">
+          Note: Email notifications are limited to at most one per hour per conversation to keep your inbox tidy.
+        </p>
+      </div>
+    `;
+
+    return this.sendMail({
+      to,
+      subject,
+      text,
+      html,
+    });
+  }
+
   getLastSentMail() {
     return this.lastSentMail;
   }

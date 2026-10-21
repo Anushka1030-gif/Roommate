@@ -52,3 +52,12 @@ export const matchesRefreshLimiter = createLimiter({
   keyGenerator: (req) => (req.user ? String(req.user.id) : req.ip),
 });
 
+export const messageSendLimiter = createLimiter({
+  windowMs: 60 * 1000, // 1 minute
+  max: 60, // 60 messages per minute
+  code: 'MESSAGE_RATE_LIMIT_EXCEEDED',
+  message: 'You are sending messages too quickly. Please slow down.',
+  keyGenerator: (req) => (req.user ? String(req.user.id) : req.ip),
+});
+
+

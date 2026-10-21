@@ -8,6 +8,7 @@ import profileRoutes from './routes/profile.routes.js';
 import accountRoutes from './routes/account.routes.js';
 import requirementRoutes from './routes/requirement.routes.js';
 import matchRoutes from './routes/match.routes.js';
+import conversationRoutes from './routes/conversation.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
@@ -43,6 +44,9 @@ app.use('/api/requirements', requirementRoutes);
 
 // Match routes
 app.use('/api/matches', matchRoutes);
+
+// Conversation & Chat routes
+app.use('/api/conversations', conversationRoutes);
 
 
 // Central 404 handler

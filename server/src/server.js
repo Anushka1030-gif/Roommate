@@ -2,6 +2,7 @@ import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import app from './app.js';
 import config from './config/index.js';
+import registerChatSocket from './sockets/chat.socket.js';
 
 const server = http.createServer(app);
 
@@ -13,12 +14,8 @@ const io = new SocketIOServer(server, {
   },
 });
 
-io.on('connection', (socket) => {
-  console.log(`Socket connected: ${socket.id}`);
-  socket.on('disconnect', () => {
-    console.log(`Socket disconnected: ${socket.id}`);
-  });
-});
+// Attach chat Socket.IO handlers
+registerChatSocket(io);
 
 const PORT = config.port;
 

@@ -317,4 +317,88 @@ describe('Match Routes Integration Tests (/api/matches)', () => {
       expect(afterMatches).toHaveLength(3);
     });
   });
+
+  describe('PATCH /api/matches/:id/status and Status Filtering', () => {
+    it('updates status to liked and allows filtering by status', async () => {
+      const { cookie: reqCookie, userId: reqId } = await createTestStudent({
+        email: 'status_tester@manit.ac.in',
+      });
+      const { userId: candId } = await createTestStudent({
+        email: 'cand_status@manit.ac.in',
+        full_name: 'Status Candidate',
+      });
+
+      const [matchId] = await db('match_results').insert({
+        user_id: reqId,
+        matched_user_id: candId,
+        compatibility_score: 92.0,
+        score_breakdown: JSON.stringify({ cleanliness: 90 }),
+        ai_summary: 'Status test explanation',
+        ai_pros: JSON.stringify(['Good fit']),
+        ai_cons: JSON.stringify([]),
+        ai_icebreakers: JSON.stringify(['Say hello']),
+        status: 'suggested',
+      });
+
+      // Update status to liked
+      const patchRes = await request(app)
+        .patch(`/api/matches/${matchId}/status`)
+        .set('Cookie', [reqCookie])
+        .send({ status: 'liked' });
+
+      expect(patchRes.status).toBe(200);
+      expect(patchRes.body.success).toBe(true);
+      expect(patchRes.body.status).toBe('liked');
+
+      // Check database update
+      const dbRow = await db('match_results').where({ id: matchId }).first();
+      expect(dbRow.status).toBe('liked');
+
+      // Query with status filter
+      const getLikedRes = await request(app)
+        .get('/api/matches?status=liked')
+        .set('Cookie', [reqCookie]);
+
+      expect(getLikedRes.status).toBe(200);
+      expect(getLikedRes.body.matches).toHaveLength(1);
+      expect(getLikedRes.body.matches[0].status).toBe('liked');
+
+      // Query with status filter that should be empty
+      const getSkippedRes = await request(app)
+        .get('/api/matches?status=skipped')
+        .set('Cookie', [reqCookie]);
+
+      expect(getSkippedRes.status).toBe(200);
+      expect(getSkippedRes.body.matches).toHaveLength(0);
+    });
+
+    it('rejects invalid status value with 400', async () => {
+      const { cookie: reqCookie } = await createTestStudent({
+        email: 'invalid_status@manit.ac.in',
+      });
+
+      const res = await request(app)
+        .patch('/api/matches/9999/status')
+        .set('Cookie', [reqCookie])
+        .send({ status: 'invalid_status_enum' });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe('INVALID_STATUS');
+    });
+
+    it('returns 404 if match result does not exist for this user', async () => {
+      const { cookie: reqCookie } = await createTestStudent({
+        email: 'missing_match@manit.ac.in',
+      });
+
+      const res = await request(app)
+        .patch('/api/matches/99999/status')
+        .set('Cookie', [reqCookie])
+        .send({ status: 'liked' });
+
+      expect(res.status).toBe(404);
+      expect(res.body.error.code).toBe('MATCH_NOT_FOUND');
+    });
+  });
 });
+
