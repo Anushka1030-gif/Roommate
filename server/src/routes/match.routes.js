@@ -36,4 +36,18 @@ router.post(
   matchController.refreshMatches
 );
 
+/**
+ * @route   PATCH /api/matches/:id/status
+ * @desc    Update match status (suggested, liked, skipped, connected)
+ * @access  Private (Verified + Complete Profile)
+ */
+router.patch(
+  '/:id/status',
+  authenticate,
+  requireVerified,
+  requireCompleteProfile,
+  matchController.updateMatchStatus
+);
+
 export default router;
+

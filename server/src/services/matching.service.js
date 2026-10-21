@@ -696,12 +696,26 @@ export async function generateMatches(userId) {
  * @param {number} userId
  * @returns {Promise<object>}
  */
-export async function getCachedMatches(userId) {
-  // Check existing matches in database
-  const cachedRows = await db('match_results')
+export async function getCachedMatches(userId, statusFilter = null) {
+  // Check if any match results exist in database for this user
+  const existingMatches = await db('match_results')
+    .where('user_id', userId)
+    .first();
+
+  if (!existingMatches) {
+    // If no cached matches, run runMatching
+    return await runMatching(userId);
+  }
+
+  let query = db('match_results')
     .join('profiles', 'match_results.matched_user_id', 'profiles.user_id')
-    .where('match_results.user_id', userId)
-    .andWhere('match_results.status', 'suggested')
+    .where('match_results.user_id', userId);
+
+  if (statusFilter && statusFilter !== 'all') {
+    query = query.andWhere('match_results.status', statusFilter);
+  }
+
+  const cachedRows = await query
     .orderBy('match_results.compatibility_score', 'desc')
     .select(
       'match_results.id as match_id',
@@ -838,6 +852,47 @@ export async function refreshMatches(userId) {
   return await runMatching(userId);
 }
 
+/**
+ * Update status of a match result (suggested, liked, skipped, connected).
+ *
+ * @param {number} userId
+ * @param {number|string} matchIdOrCandidateId
+ * @param {string} status
+ * @returns {Promise<object|null>}
+ */
+export async function updateMatchStatus(userId, matchIdOrCandidateId, status) {
+  const validStatuses = ['suggested', 'liked', 'skipped', 'connected'];
+  if (!validStatuses.includes(status)) {
+    throw new Error(`Invalid status: ${status}. Must be one of: ${validStatuses.join(', ')}`);
+  }
+
+  const numericId = Number(matchIdOrCandidateId);
+
+  const updatedCount = await db('match_results')
+    .where({ user_id: userId })
+    .andWhere(function () {
+      if (!isNaN(numericId)) {
+        this.where({ id: numericId }).orWhere({ matched_user_id: numericId });
+      }
+    })
+    .update({
+      status,
+    });
+
+  if (updatedCount === 0) {
+    return null;
+  }
+
+  return await db('match_results')
+    .where({ user_id: userId })
+    .andWhere(function () {
+      if (!isNaN(numericId)) {
+        this.where({ id: numericId }).orWhere({ matched_user_id: numericId });
+      }
+    })
+    .first();
+}
+
 export default {
   calculateCompatibility,
   findEligibleCandidates,
@@ -846,5 +901,7 @@ export default {
   generateMatches,
   getCachedMatches,
   refreshMatches,
+  updateMatchStatus,
 };
+
 
