@@ -19,9 +19,9 @@ export default function ChatMessageList({
   // Auto-scroll to bottom on initial load and when a new message is appended at bottom
   useEffect(() => {
     if (messages.length > prevMessagesCountRef.current) {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+      bottomRef.current?.scrollIntoView?.({ behavior: 'smooth' });
     } else if (prevMessagesCountRef.current === 0 && messages.length > 0) {
-      bottomRef.current?.scrollIntoView({ behavior: 'auto' });
+      bottomRef.current?.scrollIntoView?.({ behavior: 'auto' });
     }
     prevMessagesCountRef.current = messages.length;
   }, [messages.length]);
@@ -29,7 +29,7 @@ export default function ChatMessageList({
   // Scroll to bottom when partner starts typing
   useEffect(() => {
     if (partnerTyping) {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+      bottomRef.current?.scrollIntoView?.({ behavior: 'smooth' });
     }
   }, [partnerTyping]);
 

@@ -23,7 +23,7 @@ export function useChat() {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
   const [sendingMessage, setSendingMessage] = useState(false);
-  const [socketConnected, setSocketConnected] = useState(false);
+  const [socketConnected, setSocketConnected] = useState(() => Boolean(getSocket()?.connected));
   const [error, setError] = useState(null);
 
   const activeConvRef = useRef(activeConversationId);
@@ -434,10 +434,6 @@ export function useChat() {
     socket.on('messages_read', handleMessagesRead);
     socket.on('user_typing', handleUserTyping);
 
-    if (socket.connected) {
-      setSocketConnected(true);
-    }
-
     return () => {
       socket.off('connect', handleConnect);
       socket.off('disconnect', handleDisconnect);
@@ -453,7 +449,7 @@ export function useChat() {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       if (selfTypingTimeoutRef.current) clearTimeout(selfTypingTimeoutRef.current);
     };
-  }, [currentUserId, fetchConversations]);
+  }, [currentUserId]);
 
   return {
     conversations,

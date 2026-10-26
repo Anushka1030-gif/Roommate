@@ -18,7 +18,17 @@
   - Socket.IO real-time server (`server/src/sockets/chat.socket.js`) with JWT cookie/handshake authentication middleware, personal user rooms (`user_${userId}`) for live inbox updates, conversation rooms (`conversation_${convId}`), real-time message broadcasting (`new_message`, `inbox_update`), read receipts (`mark_read`, `messages_read`), and typing status indicators (`typing`, `user_typing`).
   - Zod validation schemas (`server/src/validations/conversation.validation.js`) with standardized error envelope and custom error codes.
   - Comprehensive integration test suite (`src/routes/conversations.test.js`) with 18 passing tests covering route guards, authorization, messaging, read receipts, privacy, and Socket.IO handshake authentication (107 total server tests passing, 0 ESLint errors).
-- [ ] **Step 11: Chat UI** — Conversations sidebar list, active chat message stream, real-time message bubble updates, typing indicators, and icebreaker suggestions.
+- [x] **Step 11: Chat UI** — Conversations sidebar list, active chat message stream, real-time message bubble updates, typing indicators, and icebreaker suggestions. Features implemented:
+  - Responsive split-pane layout (`/chats`) with desktop two-column view and mobile single-pane view with smooth back navigation.
+  - Conversations sidebar (`ChatSidebar.jsx`) with real-time inbox list, candidate avatar badges, college & city snippets, last message previews (with "You: " prefix for sent messages), relative timestamps, dynamic search filtering, and unread count badges.
+  - Active chat stream (`ChatMessageList.jsx`) with calendar day dividers, automatic smooth scroll to bottom, paginated message history loading ("Load earlier messages"), and animated 3-dot partner typing indicator.
+  - Message bubble component (`ChatMessageBubble.jsx`) with sent vs received distinctions, branded teal gradients, double checkmark read receipts (`✓✓`), delivery status (`✓`), and formatted timestamps.
+  - Interactive AI icebreaker suggestions tray (`ChatIcebreakers.jsx`) providing student-focused conversation starters, tap-to-insert into composer, and instant one-click dispatch.
+  - Multi-line auto-resizing message composer (`ChatMessageComposer.jsx`) with 1000-character limit counter, color-coded proximity warnings, Enter-to-send / Shift+Enter for newlines, debounced socket typing status dispatch, and blocked conversation state banner.
+  - Partner details drawer modal (`ChatPartnerDrawer.jsx`) providing instant access to roommate education, location, and privacy status.
+  - Real-time `useChat` custom hook integrating Socket.IO lifecycle events (`join_conversation`, `leave_conversation`, `send_message`, `new_message`, `inbox_update`, `mark_read`, `messages_read`, `typing`, `user_typing`), optimistic local state updates, and REST fallback.
+  - Seamless URL query navigation (`?candidateId=...` and `?conversationId=...`) for direct transition from Matches page cards and Connect modal.
+  - Comprehensive Vitest test suite (`client/src/test/ChatsPage.test.jsx`) with 8 passing integration tests (52 total client tests passing, 0 ESLint errors across client and server).
 - [ ] **Step 12: Contact sharing and roommate confirmation** — Mutual roommate request & confirmation workflow, contact reveal upon mutual agreement, and status updates.
 - [ ] **Step 13: Block and report** — User blocking, content reporting mechanisms, audit triggers, and safety guardrails.
 - [ ] **Step 14: Admin** — Admin dashboard authentication, user moderation, report review, statistics, and platform config oversight.
