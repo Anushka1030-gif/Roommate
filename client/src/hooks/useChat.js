@@ -27,7 +27,10 @@ export function useChat() {
   const [error, setError] = useState(null);
 
   const activeConvRef = useRef(activeConversationId);
-  activeConvRef.current = activeConversationId;
+
+  useEffect(() => {
+    activeConvRef.current = activeConversationId;
+  }, [activeConversationId]);
 
   const typingTimeoutRef = useRef(null);
   const selfTypingTimeoutRef = useRef(null);
@@ -276,12 +279,37 @@ export function useChat() {
     [activeConversationId]
   );
 
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadInitialConversations() {
+      try {
+        const data = await chatService.getConversations();
+        if (isMounted) {
+          setConversations(data.conversations || []);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(getErrorMessage(err, 'Failed to load conversations'));
+        }
+      } finally {
+        if (isMounted) {
+          setLoadingConversations(false);
+        }
+      }
+    }
+
+    loadInitialConversations();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   /**
    * Initialize socket connection and lifecycle listeners.
    */
   useEffect(() => {
-    fetchConversations();
-
     const socket = connectSocket();
 
     const handleConnect = () => {
