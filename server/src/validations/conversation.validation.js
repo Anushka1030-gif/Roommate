@@ -66,7 +66,15 @@ export const sendMessageSchema = z
     content: String(data.content).trim(),
   }));
 
+export const shareContactSchema = z.object({
+  share: z.boolean({
+    required_error: 'share is required and must be a boolean',
+    invalid_type_error: 'share must be a boolean',
+  }),
+});
+
 export default {
   createConversationSchema,
   sendMessageSchema,
+  shareContactSchema,
 };

@@ -41,12 +41,23 @@ export function socketAuthMiddleware(socket, next) {
   }
 }
 
+let ioInstance = null;
+
+export function getIO() {
+  return ioInstance;
+}
+
+export function setIO(io) {
+  ioInstance = io;
+}
+
 /**
  * Register chat Socket.IO handlers.
  *
  * @param {import('socket.io').Server} io
  */
 export default function registerChatSocket(io) {
+  setIO(io);
   // Apply auth middleware to all incoming socket connections
   io.use(socketAuthMiddleware);
 

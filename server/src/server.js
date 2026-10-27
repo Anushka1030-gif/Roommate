@@ -14,6 +14,8 @@ const io = new SocketIOServer(server, {
   },
 });
 
+app.set('io', io);
+
 // Attach chat Socket.IO handlers
 registerChatSocket(io);
 

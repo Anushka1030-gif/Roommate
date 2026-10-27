@@ -9,6 +9,7 @@ import validate from '../middleware/validate.js';
 import {
   createConversationSchema,
   sendMessageSchema,
+  shareContactSchema,
 } from '../validations/conversation.validation.js';
 import conversationController from '../controllers/conversation.controller.js';
 
@@ -36,6 +37,13 @@ router.post(
 router.get('/', conversationController.getConversations);
 
 /**
+ * @route   GET /api/conversations/:id
+ * @desc    Get a single conversation by ID with contact and confirmation states
+ * @access  Private (Verified + Complete Profile)
+ */
+router.get('/:id', conversationController.getConversation);
+
+/**
  * @route   GET /api/conversations/:id/messages
  * @desc    Get paginated chat messages for a conversation
  * @access  Private (Verified + Complete Profile)
@@ -60,5 +68,30 @@ router.post(
  * @access  Private (Verified + Complete Profile)
  */
 router.post('/:id/read', conversationController.markAsRead);
+
+/**
+ * @route   POST /api/conversations/:id/share-contact
+ * @desc    Toggle contact sharing consent flag and emit contact_status_changed event
+ * @access  Private (Verified + Complete Profile)
+ */
+router.post(
+  '/:id/share-contact',
+  validate(shareContactSchema),
+  conversationController.shareContact
+);
+
+/**
+ * @route   GET /api/conversations/:id/contact
+ * @desc    Return the other user's contact details (email, phone) ONLY if both consented
+ * @access  Private (Verified + Complete Profile)
+ */
+router.get('/:id/contact', conversationController.getContact);
+
+/**
+ * @route   POST /api/conversations/:id/confirm-roommates
+ * @desc    Confirm roommate agreement; marks status confirmed when both confirm
+ * @access  Private (Verified + Complete Profile)
+ */
+router.post('/:id/confirm-roommates', conversationController.confirmRoommates);
 
 export default router;

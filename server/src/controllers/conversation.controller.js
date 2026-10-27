@@ -84,10 +84,63 @@ export async function markAsRead(req, res, next) {
   }
 }
 
+export async function getConversation(req, res, next) {
+  try {
+    const { id } = req.params;
+    const conversation = await chatService.getConversationById(req.user.id, id);
+
+    return res.status(200).json({
+      success: true,
+      conversation,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function shareContact(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { share } = req.body;
+
+    const result = await chatService.shareContact(req.user.id, id, share);
+
+    return res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getContact(req, res, next) {
+  try {
+    const { id } = req.params;
+    const result = await chatService.getContactDetails(req.user.id, id);
+
+    return res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function confirmRoommates(req, res, next) {
+  try {
+    const { id } = req.params;
+    const result = await chatService.confirmRoommates(req.user.id, id);
+
+    return res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export default {
   createConversation,
   getConversations,
+  getConversation,
   getMessages,
   sendMessage,
   markAsRead,
+  shareContact,
+  getContact,
+  confirmRoommates,
 };

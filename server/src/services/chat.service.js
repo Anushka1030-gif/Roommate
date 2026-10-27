@@ -1,5 +1,6 @@
 import db from '../db/index.js';
 import mailService from './mail.service.js';
+import { getIO } from '../sockets/chat.socket.js';
 
 /**
  * Format a conversation record with the other participant's profile and last message.
@@ -38,9 +39,22 @@ export async function formatConversation(userId, conv) {
 
   const unreadCount = Number(unreadRow?.unread_count || 0);
 
-  const contactRevealed = Boolean(
-    conv.contact_revealed_by_a && conv.contact_revealed_by_b
-  );
+  const isUserA = conv.user_a_id === userId;
+  const aShares = Boolean(conv.a_shares_contact ?? conv.contact_revealed_by_a);
+  const bShares = Boolean(conv.b_shares_contact ?? conv.contact_revealed_by_b);
+  const myShare = isUserA ? aShares : bShares;
+  const otherShared = isUserA ? bShares : aShares;
+  const bothShared = aShares && bShares;
+
+  const aConfirmed = Boolean(conv.a_confirmed_roommates || conv.roommate_status === 'confirmed');
+  const bConfirmed = Boolean(conv.b_confirmed_roommates || conv.roommate_status === 'confirmed');
+  const meConfirmed = isUserA ? aConfirmed : bConfirmed;
+  const otherConfirmed = isUserA ? bConfirmed : aConfirmed;
+  const bothConfirmed = aConfirmed && bConfirmed;
+
+  const roommateStatus = bothConfirmed
+    ? 'confirmed'
+    : (meConfirmed || otherConfirmed ? 'pending' : 'none');
 
   return {
     id: conv.id,
@@ -67,14 +81,21 @@ export async function formatConversation(userId, conv) {
       : null,
     unread_count: unreadCount,
     last_message_at: conv.last_message_at || conv.created_at,
-    roommate_status: conv.roommate_status || 'none',
-    contact_revealed: contactRevealed,
-    contact_revealed_by_me: Boolean(
-      conv.user_a_id === userId ? conv.contact_revealed_by_a : conv.contact_revealed_by_b
-    ),
-    contact_revealed_by_other: Boolean(
-      conv.user_a_id === userId ? conv.contact_revealed_by_b : conv.contact_revealed_by_a
-    ),
+    
+    // Step 12 Contact Sharing & Confirmation fields
+    my_share: myShare,
+    other_shared: otherShared,
+    both_shared: bothShared,
+    me_confirmed: meConfirmed,
+    other_confirmed: otherConfirmed,
+    both_confirmed: bothConfirmed,
+    roommate_status: roommateStatus,
+
+    // Backward-compatibility aliases
+    contact_revealed: bothShared,
+    contact_revealed_by_me: myShare,
+    contact_revealed_by_other: otherShared,
+
     is_blocked: Boolean(blockRecord),
     blocked_by_me: blockRecord ? blockRecord.blocker_id === userId : false,
     created_at: conv.created_at,
@@ -406,11 +427,330 @@ export async function createMessage(userId, conversationId, content) {
   };
 }
 
+/**
+ * Fetch a single conversation by ID with participant permission check.
+ *
+ * @param {number} userId
+ * @param {number|string} conversationId
+ * @returns {Promise<object>}
+ */
+export async function getConversationById(userId, conversationId) {
+  const currentUserId = Number(userId);
+  const convId = Number(conversationId);
+
+  const conv = await db('conversations').where({ id: convId }).first();
+  if (!conv) {
+    const error = new Error('Conversation not found');
+    error.statusCode = 404;
+    error.code = 'CONVERSATION_NOT_FOUND';
+    throw error;
+  }
+
+  if (conv.user_a_id !== currentUserId && conv.user_b_id !== currentUserId) {
+    const error = new Error('You do not have permission to access this conversation');
+    error.statusCode = 403;
+    error.code = 'FORBIDDEN';
+    throw error;
+  }
+
+  return await formatConversation(currentUserId, conv);
+}
+
+/**
+ * Update caller's contact sharing consent flag and emit contact_status_changed.
+ *
+ * @param {number} userId
+ * @param {number|string} conversationId
+ * @param {boolean} share
+ * @returns {Promise<object>}
+ */
+export async function shareContact(userId, conversationId, share) {
+  const currentUserId = Number(userId);
+  const convId = Number(conversationId);
+
+  const conv = await db('conversations').where({ id: convId }).first();
+  if (!conv) {
+    const error = new Error('Conversation not found');
+    error.statusCode = 404;
+    error.code = 'CONVERSATION_NOT_FOUND';
+    throw error;
+  }
+
+  if (conv.user_a_id !== currentUserId && conv.user_b_id !== currentUserId) {
+    const error = new Error('You do not have permission to access this conversation');
+    error.statusCode = 403;
+    error.code = 'FORBIDDEN';
+    throw error;
+  }
+
+  const otherUserId = conv.user_a_id === currentUserId ? conv.user_b_id : conv.user_a_id;
+
+  // Check bidirectional blocks
+  const isBlocked = await db('blocks')
+    .where((builder) => {
+      builder
+        .where({ blocker_id: currentUserId, blocked_id: otherUserId })
+        .orWhere({ blocker_id: otherUserId, blocked_id: currentUserId });
+    })
+    .first();
+
+  if (isBlocked) {
+    const error = new Error('Cannot share contact in a blocked conversation');
+    error.statusCode = 403;
+    error.code = 'CONVERSATION_BLOCKED';
+    throw error;
+  }
+
+  const isUserA = conv.user_a_id === currentUserId;
+  const shareBool = Boolean(share);
+  const updateData = isUserA
+    ? {
+        a_shares_contact: shareBool ? 1 : 0,
+        contact_revealed_by_a: shareBool ? 1 : 0,
+        updated_at: db.fn.now(),
+      }
+    : {
+        b_shares_contact: shareBool ? 1 : 0,
+        contact_revealed_by_b: shareBool ? 1 : 0,
+        updated_at: db.fn.now(),
+      };
+
+  await db('conversations').where({ id: convId }).update(updateData);
+
+  const updatedConv = await db('conversations').where({ id: convId }).first();
+  const aShares = Boolean(updatedConv.a_shares_contact ?? updatedConv.contact_revealed_by_a);
+  const bShares = Boolean(updatedConv.b_shares_contact ?? updatedConv.contact_revealed_by_b);
+  const bothShared = aShares && bShares;
+  const myShare = isUserA ? aShares : bShares;
+  const otherShared = isUserA ? bShares : aShares;
+
+  // Emit contact_status_changed socket event with ONLY the booleans (never contact itself)
+  const io = getIO();
+  if (io) {
+    io.to(`conversation_${convId}`).emit('contact_status_changed', {
+      conversation_id: convId,
+      a_shares_contact: aShares,
+      b_shares_contact: bShares,
+      both_shared: bothShared,
+    });
+    io.to(`user_${conv.user_a_id}`).emit('contact_status_changed', {
+      conversation_id: convId,
+      my_share: aShares,
+      other_shared: bShares,
+      both_shared: bothShared,
+      a_shares_contact: aShares,
+      b_shares_contact: bShares,
+    });
+    io.to(`user_${conv.user_b_id}`).emit('contact_status_changed', {
+      conversation_id: convId,
+      my_share: bShares,
+      other_shared: aShares,
+      both_shared: bothShared,
+      a_shares_contact: aShares,
+      b_shares_contact: bShares,
+    });
+  }
+
+  return {
+    success: true,
+    conversation_id: convId,
+    my_share: myShare,
+    other_shared: otherShared,
+    both_shared: bothShared,
+    a_shares_contact: aShares,
+    b_shares_contact: bShares,
+  };
+}
+
+/**
+ * Return the OTHER user's contact (email, phone) ONLY if both share flags are true
+ * and neither user has blocked the other. Otherwise throws CONTACT_NOT_SHARED.
+ *
+ * @param {number} userId
+ * @param {number|string} conversationId
+ * @returns {Promise<object>}
+ */
+export async function getContactDetails(userId, conversationId) {
+  const currentUserId = Number(userId);
+  const convId = Number(conversationId);
+
+  const conv = await db('conversations').where({ id: convId }).first();
+  if (!conv) {
+    const error = new Error('Conversation not found');
+    error.statusCode = 404;
+    error.code = 'CONVERSATION_NOT_FOUND';
+    throw error;
+  }
+
+  if (conv.user_a_id !== currentUserId && conv.user_b_id !== currentUserId) {
+    const error = new Error('You do not have permission to access this conversation');
+    error.statusCode = 403;
+    error.code = 'FORBIDDEN';
+    throw error;
+  }
+
+  const otherUserId = conv.user_a_id === currentUserId ? conv.user_b_id : conv.user_a_id;
+
+  // Check bidirectional blocks
+  const isBlocked = await db('blocks')
+    .where((builder) => {
+      builder
+        .where({ blocker_id: currentUserId, blocked_id: otherUserId })
+        .orWhere({ blocker_id: otherUserId, blocked_id: currentUserId });
+    })
+    .first();
+
+  if (isBlocked) {
+    const error = new Error('Contact sharing requires mutual consent and unblocked status');
+    error.statusCode = 403;
+    error.code = 'CONTACT_NOT_SHARED';
+    throw error;
+  }
+
+  const aShares = Boolean(conv.a_shares_contact ?? conv.contact_revealed_by_a);
+  const bShares = Boolean(conv.b_shares_contact ?? conv.contact_revealed_by_b);
+
+  if (!aShares || !bShares) {
+    const error = new Error('Contact details are private until both users consent to share.');
+    error.statusCode = 403;
+    error.code = 'CONTACT_NOT_SHARED';
+    throw error;
+  }
+
+  // Fetch the other user's contact information ONLY
+  const otherUser = await db('users').where({ id: otherUserId }).first();
+  const otherProfile = await db('profiles').where({ user_id: otherUserId }).first();
+
+  const phone = otherUser?.phone || otherProfile?.phone || null;
+
+  return {
+    success: true,
+    contact: {
+      email: otherUser?.email || null,
+      phone,
+    },
+    email: otherUser?.email || null,
+    phone,
+  };
+}
+
+/**
+ * Confirm roommate partnership. When both confirm, mark roommate_status as confirmed,
+ * clean up match results, and emit socket event.
+ *
+ * @param {number} userId
+ * @param {number|string} conversationId
+ * @returns {Promise<object>}
+ */
+export async function confirmRoommates(userId, conversationId) {
+  const currentUserId = Number(userId);
+  const convId = Number(conversationId);
+
+  const conv = await db('conversations').where({ id: convId }).first();
+  if (!conv) {
+    const error = new Error('Conversation not found');
+    error.statusCode = 404;
+    error.code = 'CONVERSATION_NOT_FOUND';
+    throw error;
+  }
+
+  if (conv.user_a_id !== currentUserId && conv.user_b_id !== currentUserId) {
+    const error = new Error('You do not have permission to access this conversation');
+    error.statusCode = 403;
+    error.code = 'FORBIDDEN';
+    throw error;
+  }
+
+  const otherUserId = conv.user_a_id === currentUserId ? conv.user_b_id : conv.user_a_id;
+
+  // Check bidirectional blocks
+  const isBlocked = await db('blocks')
+    .where((builder) => {
+      builder
+        .where({ blocker_id: currentUserId, blocked_id: otherUserId })
+        .orWhere({ blocker_id: otherUserId, blocked_id: currentUserId });
+    })
+    .first();
+
+  if (isBlocked) {
+    const error = new Error('Cannot confirm roommates in a blocked conversation');
+    error.statusCode = 403;
+    error.code = 'CONVERSATION_BLOCKED';
+    throw error;
+  }
+
+  const isUserA = conv.user_a_id === currentUserId;
+  const updatedAConfirmed = isUserA ? true : Boolean(conv.a_confirmed_roommates);
+  const updatedBConfirmed = isUserA ? Boolean(conv.b_confirmed_roommates) : true;
+  const bothConfirmed = Boolean(updatedAConfirmed && updatedBConfirmed);
+
+  const updateData = {
+    a_confirmed_roommates: updatedAConfirmed ? 1 : 0,
+    b_confirmed_roommates: updatedBConfirmed ? 1 : 0,
+    roommate_status: bothConfirmed ? 'confirmed' : (isUserA ? 'pending_a' : 'pending_b'),
+    updated_at: db.fn.now(),
+  };
+
+  await db('conversations').where({ id: convId }).update(updateData);
+
+  // When both confirm, remove each other from match_results cache
+  if (bothConfirmed) {
+    await db('match_results')
+      .where(function () {
+        this.where({ user_id: conv.user_a_id, matched_user_id: conv.user_b_id })
+          .orWhere({ user_id: conv.user_b_id, matched_user_id: conv.user_a_id });
+      })
+      .del();
+  }
+
+  const meConfirmed = isUserA ? updatedAConfirmed : updatedBConfirmed;
+  const otherConfirmed = isUserA ? updatedBConfirmed : updatedAConfirmed;
+
+  // Emit socket event so both UIs update
+  const io = getIO();
+  if (io) {
+    io.to(`conversation_${convId}`).emit('roommate_status_changed', {
+      conversation_id: convId,
+      a_confirmed_roommates: updatedAConfirmed,
+      b_confirmed_roommates: updatedBConfirmed,
+      both_confirmed: bothConfirmed,
+      roommate_status: bothConfirmed ? 'confirmed' : 'pending',
+    });
+    io.to(`user_${conv.user_a_id}`).emit('roommate_status_changed', {
+      conversation_id: convId,
+      me_confirmed: updatedAConfirmed,
+      other_confirmed: updatedBConfirmed,
+      both_confirmed: bothConfirmed,
+      roommate_status: bothConfirmed ? 'confirmed' : 'pending',
+    });
+    io.to(`user_${conv.user_b_id}`).emit('roommate_status_changed', {
+      conversation_id: convId,
+      me_confirmed: updatedBConfirmed,
+      other_confirmed: updatedAConfirmed,
+      both_confirmed: bothConfirmed,
+      roommate_status: bothConfirmed ? 'confirmed' : 'pending',
+    });
+  }
+
+  return {
+    success: true,
+    conversation_id: convId,
+    me_confirmed: meConfirmed,
+    other_confirmed: otherConfirmed,
+    both_confirmed: bothConfirmed,
+    roommate_status: bothConfirmed ? 'confirmed' : 'pending',
+  };
+}
+
 export default {
   formatConversation,
   getOrCreateConversation,
   getUserConversations,
+  getConversationById,
   getConversationMessages,
   markMessagesAsRead,
   createMessage,
+  shareContact,
+  getContactDetails,
+  confirmRoommates,
 };
