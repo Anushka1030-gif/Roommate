@@ -64,10 +64,75 @@ export async function markAsRead(conversationId) {
   return response.data;
 }
 
+/**
+ * Fetch a single conversation by ID.
+ *
+ * @param {number|string} conversationId
+ * @returns {Promise<object>} { success, conversation }
+ */
+export async function getConversation(conversationId) {
+  const response = await api.get(`/conversations/${conversationId}`);
+  return response.data;
+}
+
+/**
+ * Toggle contact sharing consent for this conversation.
+ *
+ * @param {number|string} conversationId
+ * @param {boolean} share
+ * @returns {Promise<object>}
+ */
+export async function shareContact(conversationId, share) {
+  const response = await api.post(`/conversations/${conversationId}/share-contact`, {
+    share: Boolean(share),
+  });
+  return response.data;
+}
+
+/**
+ * Fetch the other participant's contact details (email, phone) if both consented.
+ *
+ * @param {number|string} conversationId
+ * @returns {Promise<object>} { success, contact: { email, phone } }
+ */
+export async function getContact(conversationId) {
+  const response = await api.get(`/conversations/${conversationId}/contact`);
+  return response.data;
+}
+
+/**
+ * Confirm roommate partnership.
+ *
+ * @param {number|string} conversationId
+ * @returns {Promise<object>}
+ */
+export async function confirmRoommates(conversationId) {
+  const response = await api.post(`/conversations/${conversationId}/confirm-roommates`);
+  return response.data;
+}
+
+/**
+ * Update the user's account contact phone number.
+ *
+ * @param {string|null} phone
+ * @returns {Promise<object>}
+ */
+export async function updatePhone(phone) {
+  const response = await api.put('/account/phone', {
+    phone: phone ? phone.trim() : null,
+  });
+  return response.data;
+}
+
 export default {
   getOrCreateConversation,
   getConversations,
+  getConversation,
   getMessages,
   sendMessage,
   markAsRead,
+  shareContact,
+  getContact,
+  confirmRoommates,
+  updatePhone,
 };

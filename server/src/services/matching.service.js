@@ -388,6 +388,22 @@ export async function findEligibleCandidates(requesterUserId, requesterReq, requ
           });
         });
     })
+    // Confirmed roommates filter: exclude users who have confirmed becoming roommates
+    .whereNotExists(function () {
+      this.select('*')
+        .from('conversations')
+        .where(function () {
+          this.where('roommate_status', 'confirmed').orWhere(function () {
+            this.where({ a_confirmed_roommates: 1, b_confirmed_roommates: 1 });
+          });
+        })
+        .andWhere(function () {
+          this.where({ user_a_id: requesterUserId, user_b_id: db.ref('users.id') }).orWhere({
+            user_b_id: requesterUserId,
+            user_a_id: db.ref('users.id'),
+          });
+        });
+    })
     .select(
       'users.id as candidate_user_id',
       'profiles.full_name',
@@ -714,6 +730,21 @@ export async function getCachedMatches(userId, statusFilter = null) {
   if (statusFilter && statusFilter !== 'all') {
     query = query.andWhere('match_results.status', statusFilter);
   }
+
+  // Exclude any confirmed roommates from cached matches
+  query = query.whereNotExists(function () {
+    this.select('*')
+      .from('conversations')
+      .where(function () {
+        this.where('roommate_status', 'confirmed').orWhere(function () {
+          this.where({ a_confirmed_roommates: 1, b_confirmed_roommates: 1 });
+        });
+      })
+      .andWhere(function () {
+        this.where({ user_a_id: userId, user_b_id: db.ref('match_results.matched_user_id') })
+          .orWhere({ user_b_id: userId, user_a_id: db.ref('match_results.matched_user_id') });
+      });
+  });
 
   const cachedRows = await query
     .orderBy('match_results.compatibility_score', 'desc')

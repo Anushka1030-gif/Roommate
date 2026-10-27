@@ -5,6 +5,7 @@ import { useChat } from '../hooks/useChat.js';
 
 import ChatSidebar from '../components/chat/ChatSidebar.jsx';
 import ChatHeader from '../components/chat/ChatHeader.jsx';
+import ChatContactSharingBar from '../components/chat/ChatContactSharingBar.jsx';
 import ChatMessageList from '../components/chat/ChatMessageList.jsx';
 import ChatIcebreakers from '../components/chat/ChatIcebreakers.jsx';
 import ChatMessageComposer from '../components/chat/ChatMessageComposer.jsx';
@@ -37,6 +38,13 @@ export default function ChatsPage() {
     loadOlderMessages,
     emitTyping,
     clearError,
+    // Step 12 Contact sharing and roommate confirmation
+    contactDetails,
+    loadingContact,
+    togglingShare,
+    confirmingRoommates,
+    toggleShareContact,
+    confirmRoommates,
   } = useChat();
 
   const candidateIdParam = searchParams.get('candidateId');
@@ -110,6 +118,18 @@ export default function ChatsPage() {
               partnerTyping={partnerTyping}
               onBack={() => selectConversation(null)}
               onOpenDetails={() => setPartnerDrawerOpen(true)}
+            />
+
+            {/* Step 12: Mutual Contact Sharing & Roommate Confirmation Bar */}
+            <ChatContactSharingBar
+              conversation={activeConversation}
+              partner={partner}
+              contactDetails={contactDetails}
+              loadingContact={loadingContact}
+              togglingShare={togglingShare}
+              confirmingRoommates={confirmingRoommates}
+              onToggleShare={toggleShareContact}
+              onConfirmRoommates={confirmRoommates}
             />
 
             {/* Messages Scroll Stream */}

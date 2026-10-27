@@ -29,8 +29,18 @@
   - Real-time `useChat` custom hook integrating Socket.IO lifecycle events (`join_conversation`, `leave_conversation`, `send_message`, `new_message`, `inbox_update`, `mark_read`, `messages_read`, `typing`, `user_typing`), optimistic local state updates, and REST fallback.
   - Seamless URL query navigation (`?candidateId=...` and `?conversationId=...`) for direct transition from Matches page cards and Connect modal.
   - Comprehensive Vitest test suite (`client/src/test/ChatsPage.test.jsx`) with 8 passing integration tests (52 total client tests passing, 0 ESLint errors across client and server).
-- [ ] **Step 12: Contact sharing and roommate confirmation** — Mutual roommate request & confirmation workflow, contact reveal upon mutual agreement, and status updates.
+- [x] **Step 12: Contact sharing and roommate confirmation** — Mutual roommate request & confirmation workflow, contact reveal upon mutual agreement, and status updates. Features implemented:
+  - Knex migration `20261016000001_add_contact_sharing_and_roommate_confirmation.js` adding `a_shares_contact`, `b_shares_contact`, `a_confirmed_roommates`, and `b_confirmed_roommates` columns to `conversations`.
+  - Mutual contact sharing toggle endpoint `POST /api/conversations/:id/share-contact` with Zod validation, participant permission checks, bidirectional block guards, and `contact_status_changed` Socket.IO event emission with boolean flags only.
+  - Strict privacy contact retrieval endpoint `GET /api/conversations/:id/contact` returning other user's email and phone ONLY when both users consent and neither has blocked the other; otherwise returns 403 `CONTACT_NOT_SHARED`.
+  - Conversation payloads (`GET /api/conversations`, `GET /api/conversations/:id`, and `GET /api/conversations/:id/messages`) including `my_share`, `other_shared`, `me_confirmed`, `other_confirmed`, `both_confirmed`, and `roommate_status` without leaking any contact details.
+  - Roommate confirmation endpoint `POST /api/conversations/:id/confirm-roommates` marking the pair as `confirmed` when both confirm, updating Socket.IO real-time clients via `roommate_status_changed`, and excluding confirmed roommates from matching engine queries (`findEligibleCandidates` and `getCachedMatches`).
+  - Frontend conversation header integration (`ChatContactSharingBar.jsx`) with "Share my contact" toggle, plain-language explanation ("Your contact is revealed only when both of you agree"), partner status badges ("Waiting for them to agree" / "They agreed"), and revealed contact details card with one-click copy buttons for email and phone.
+  - Interactive "We became roommates" workflow with confirmation modal dialog, waiting state, and celebratory congratulations banner when both confirm.
+  - Optional phone number addition/modification modal and Settings page integration (`PUT /api/account/phone`).
+  - Comprehensive test coverage: 25 integration tests in `conversations.test.js`, 9 unit/integration tests in `ChatContactSharing.test.jsx`, 114 total server tests passing, 61 total client tests passing, 0 ESLint errors across the workspace.
 - [ ] **Step 13: Block and report** — User blocking, content reporting mechanisms, audit triggers, and safety guardrails.
 - [ ] **Step 14: Admin** — Admin dashboard authentication, user moderation, report review, statistics, and platform config oversight.
 - [ ] **Step 15: Landing/settings/polish** — Landing page hero & features, user account settings, theme polish, responsive styling, and micro-animations.
 - [ ] **Step 16: Tests/hardening/final review** — End-to-end integration tests, security audit, edge case handling, performance verification, and final documentation review.
+

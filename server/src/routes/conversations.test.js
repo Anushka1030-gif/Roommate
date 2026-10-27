@@ -6,6 +6,7 @@ import app from '../app.js';
 import db from '../db/index.js';
 import config from '../config/index.js';
 import { socketAuthMiddleware } from '../sockets/chat.socket.js';
+import matchingService from '../services/matching.service.js';
 
 describe('Conversations and Chat Backend Integration Tests (/api/conversations)', () => {
   beforeAll(async () => {
@@ -505,6 +506,402 @@ describe('Conversations and Chat Backend Integration Tests (/api/conversations)'
 
       expect(errorResult).toBeInstanceOf(Error);
       expect(errorResult.message).toContain('No token provided');
+    });
+  });
+
+  describe('Step 12: Mutual-Consent Contact Sharing & Roommate Confirmation', () => {
+    it('sets caller share flag and keeps contact hidden until both consent', async () => {
+      const student1 = await createTestStudent({
+        email: 'alice@manit.ac.in',
+        full_name: 'Alice Sharma',
+      });
+      // Add phone for student 2
+      const student2 = await createTestStudent({
+        email: 'bob@manit.ac.in',
+        full_name: 'Bob Verma',
+      });
+      await db('users').where({ id: student2.userId }).update({ phone: '+919876543210' });
+
+      // Create conversation
+      const convRes = await request(app)
+        .post('/api/conversations')
+        .set('Cookie', [student1.cookie])
+        .send({ candidate_user_id: student2.userId });
+      const convId = convRes.body.conversation.id;
+
+      // 1. Initially neither has shared contact: fetching contact gives 403 CONTACT_NOT_SHARED
+      const contactInitial = await request(app)
+        .get(`/api/conversations/${convId}/contact`)
+        .set('Cookie', [student1.cookie]);
+      expect(contactInitial.status).toBe(403);
+      expect(contactInitial.body.error.code).toBe('CONTACT_NOT_SHARED');
+
+      // 2. Student 1 turns on sharing
+      const share1Res = await request(app)
+        .post(`/api/conversations/${convId}/share-contact`)
+        .set('Cookie', [student1.cookie])
+        .send({ share: true });
+      expect(share1Res.status).toBe(200);
+      expect(share1Res.body.my_share).toBe(true);
+      expect(share1Res.body.other_shared).toBe(false);
+      expect(share1Res.body.both_shared).toBe(false);
+
+      // Still hidden from student 1
+      const contactStillHidden1 = await request(app)
+        .get(`/api/conversations/${convId}/contact`)
+        .set('Cookie', [student1.cookie]);
+      expect(contactStillHidden1.status).toBe(403);
+      expect(contactStillHidden1.body.error.code).toBe('CONTACT_NOT_SHARED');
+
+      // Still hidden from student 2
+      const contactStillHidden2 = await request(app)
+        .get(`/api/conversations/${convId}/contact`)
+        .set('Cookie', [student2.cookie]);
+      expect(contactStillHidden2.status).toBe(403);
+      expect(contactStillHidden2.body.error.code).toBe('CONTACT_NOT_SHARED');
+
+      // 3. Student 2 also turns on sharing -> BOTH have consented
+      const share2Res = await request(app)
+        .post(`/api/conversations/${convId}/share-contact`)
+        .set('Cookie', [student2.cookie])
+        .send({ share: true });
+      expect(share2Res.status).toBe(200);
+      expect(share2Res.body.my_share).toBe(true);
+      expect(share2Res.body.other_shared).toBe(true);
+      expect(share2Res.body.both_shared).toBe(true);
+
+      // Now Student 1 can view Student 2's contact (email + phone)
+      const contactRevealedTo1 = await request(app)
+        .get(`/api/conversations/${convId}/contact`)
+        .set('Cookie', [student1.cookie]);
+      expect(contactRevealedTo1.status).toBe(200);
+      expect(contactRevealedTo1.body.contact.email).toBe('bob@manit.ac.in');
+      expect(contactRevealedTo1.body.contact.phone).toBe('+919876543210');
+
+      // And Student 2 can view Student 1's contact (email, null phone)
+      const contactRevealedTo2 = await request(app)
+        .get(`/api/conversations/${convId}/contact`)
+        .set('Cookie', [student2.cookie]);
+      expect(contactRevealedTo2.status).toBe(200);
+      expect(contactRevealedTo2.body.contact.email).toBe('alice@manit.ac.in');
+      expect(contactRevealedTo2.body.contact.phone).toBeNull();
+    });
+
+    it('turning sharing off hides contact again immediately', async () => {
+      const student1 = await createTestStudent({ email: 's1@manit.ac.in' });
+      const student2 = await createTestStudent({ email: 's2@manit.ac.in' });
+
+      const convRes = await request(app)
+        .post('/api/conversations')
+        .set('Cookie', [student1.cookie])
+        .send({ candidate_user_id: student2.userId });
+      const convId = convRes.body.conversation.id;
+
+      // Both share
+      await request(app)
+        .post(`/api/conversations/${convId}/share-contact`)
+        .set('Cookie', [student1.cookie])
+        .send({ share: true });
+      await request(app)
+        .post(`/api/conversations/${convId}/share-contact`)
+        .set('Cookie', [student2.cookie])
+        .send({ share: true });
+
+      // Revealed
+      const revealed = await request(app)
+        .get(`/api/conversations/${convId}/contact`)
+        .set('Cookie', [student1.cookie]);
+      expect(revealed.status).toBe(200);
+
+      // Student 1 turns off sharing
+      const unshareRes = await request(app)
+        .post(`/api/conversations/${convId}/share-contact`)
+        .set('Cookie', [student1.cookie])
+        .send({ share: false });
+      expect(unshareRes.status).toBe(200);
+      expect(unshareRes.body.my_share).toBe(false);
+      expect(unshareRes.body.both_shared).toBe(false);
+
+      // Now contact is hidden again for both
+      const hidden1 = await request(app)
+        .get(`/api/conversations/${convId}/contact`)
+        .set('Cookie', [student1.cookie]);
+      expect(hidden1.status).toBe(403);
+      expect(hidden1.body.error.code).toBe('CONTACT_NOT_SHARED');
+
+      const hidden2 = await request(app)
+        .get(`/api/conversations/${convId}/contact`)
+        .set('Cookie', [student2.cookie]);
+      expect(hidden2.status).toBe(403);
+      expect(hidden2.body.error.code).toBe('CONTACT_NOT_SHARED');
+    });
+
+    it('blocked users cannot fetch contact even if both had consented', async () => {
+      const student1 = await createTestStudent({ email: 'block1@manit.ac.in' });
+      const student2 = await createTestStudent({ email: 'block2@manit.ac.in' });
+
+      const convRes = await request(app)
+        .post('/api/conversations')
+        .set('Cookie', [student1.cookie])
+        .send({ candidate_user_id: student2.userId });
+      const convId = convRes.body.conversation.id;
+
+      // Both share
+      await request(app)
+        .post(`/api/conversations/${convId}/share-contact`)
+        .set('Cookie', [student1.cookie])
+        .send({ share: true });
+      await request(app)
+        .post(`/api/conversations/${convId}/share-contact`)
+        .set('Cookie', [student2.cookie])
+        .send({ share: true });
+
+      // Student 1 blocks Student 2
+      await db('blocks').insert({
+        blocker_id: student1.userId,
+        blocked_id: student2.userId,
+        created_at: db.fn.now(),
+      });
+
+      // Fetching contact fails with 403 CONTACT_NOT_SHARED
+      const res1 = await request(app)
+        .get(`/api/conversations/${convId}/contact`)
+        .set('Cookie', [student1.cookie]);
+      expect(res1.status).toBe(403);
+      expect(res1.body.error.code).toBe('CONTACT_NOT_SHARED');
+
+      const res2 = await request(app)
+        .get(`/api/conversations/${convId}/contact`)
+        .set('Cookie', [student2.cookie]);
+      expect(res2.status).toBe(403);
+      expect(res2.body.error.code).toBe('CONTACT_NOT_SHARED');
+    });
+
+    it('a non-participant gets 403 FORBIDDEN on share, get contact, and confirm roommates', async () => {
+      const student1 = await createTestStudent({ email: 'p1@manit.ac.in' });
+      const student2 = await createTestStudent({ email: 'p2@manit.ac.in' });
+      const outsider = await createTestStudent({ email: 'outsider@manit.ac.in' });
+
+      const convRes = await request(app)
+        .post('/api/conversations')
+        .set('Cookie', [student1.cookie])
+        .send({ candidate_user_id: student2.userId });
+      const convId = convRes.body.conversation.id;
+
+      // Outsider attempts to get conversation
+      const getRes = await request(app)
+        .get(`/api/conversations/${convId}`)
+        .set('Cookie', [outsider.cookie]);
+      expect(getRes.status).toBe(403);
+      expect(getRes.body.error.code).toBe('FORBIDDEN');
+
+      // Outsider attempts to share contact
+      const shareRes = await request(app)
+        .post(`/api/conversations/${convId}/share-contact`)
+        .set('Cookie', [outsider.cookie])
+        .send({ share: true });
+      expect(shareRes.status).toBe(403);
+      expect(shareRes.body.error.code).toBe('FORBIDDEN');
+
+      // Outsider attempts to fetch contact
+      const contactRes = await request(app)
+        .get(`/api/conversations/${convId}/contact`)
+        .set('Cookie', [outsider.cookie]);
+      expect(contactRes.status).toBe(403);
+      expect(contactRes.body.error.code).toBe('FORBIDDEN');
+
+      // Outsider attempts to confirm roommates
+      const confirmRes = await request(app)
+        .post(`/api/conversations/${convId}/confirm-roommates`)
+        .set('Cookie', [outsider.cookie]);
+      expect(confirmRes.status).toBe(403);
+      expect(confirmRes.body.error.code).toBe('FORBIDDEN');
+    });
+
+    it('roommate confirmation requires both users and updates conversation states', async () => {
+      const student1 = await createTestStudent({ email: 'roomie1@manit.ac.in' });
+      const student2 = await createTestStudent({ email: 'roomie2@manit.ac.in' });
+
+      const convRes = await request(app)
+        .post('/api/conversations')
+        .set('Cookie', [student1.cookie])
+        .send({ candidate_user_id: student2.userId });
+      const convId = convRes.body.conversation.id;
+
+      // 1. Initial state: neither confirmed
+      const initialConv = await request(app)
+        .get(`/api/conversations/${convId}`)
+        .set('Cookie', [student1.cookie]);
+      expect(initialConv.body.conversation.me_confirmed).toBe(false);
+      expect(initialConv.body.conversation.other_confirmed).toBe(false);
+      expect(initialConv.body.conversation.both_confirmed).toBe(false);
+      expect(initialConv.body.conversation.roommate_status).toBe('none');
+
+      // 2. Student 1 confirms
+      const confirm1 = await request(app)
+        .post(`/api/conversations/${convId}/confirm-roommates`)
+        .set('Cookie', [student1.cookie]);
+      expect(confirm1.status).toBe(200);
+      expect(confirm1.body.me_confirmed).toBe(true);
+      expect(confirm1.body.other_confirmed).toBe(false);
+      expect(confirm1.body.both_confirmed).toBe(false);
+      expect(confirm1.body.roommate_status).toBe('pending');
+
+      // Check Student 2 perspective on conversation
+      const convFor2 = await request(app)
+        .get(`/api/conversations/${convId}`)
+        .set('Cookie', [student2.cookie]);
+      expect(convFor2.body.conversation.me_confirmed).toBe(false);
+      expect(convFor2.body.conversation.other_confirmed).toBe(true);
+      expect(convFor2.body.conversation.both_confirmed).toBe(false);
+
+      // 3. Student 2 confirms -> BOTH confirmed
+      const confirm2 = await request(app)
+        .post(`/api/conversations/${convId}/confirm-roommates`)
+        .set('Cookie', [student2.cookie]);
+      expect(confirm2.status).toBe(200);
+      expect(confirm2.body.me_confirmed).toBe(true);
+      expect(confirm2.body.other_confirmed).toBe(true);
+      expect(confirm2.body.both_confirmed).toBe(true);
+      expect(confirm2.body.roommate_status).toBe('confirmed');
+
+      // Verify conversation state for Student 1
+      const convFinal1 = await request(app)
+        .get(`/api/conversations/${convId}`)
+        .set('Cookie', [student1.cookie]);
+      expect(convFinal1.body.conversation.me_confirmed).toBe(true);
+      expect(convFinal1.body.conversation.other_confirmed).toBe(true);
+      expect(convFinal1.body.conversation.both_confirmed).toBe(true);
+      expect(convFinal1.body.conversation.roommate_status).toBe('confirmed');
+    });
+
+    it('STRICT PRIVACY: proves NO other endpoint leaks email or phone', async () => {
+      const student1 = await createTestStudent({
+        email: 'secret_seeker@manit.ac.in',
+        full_name: 'Seeker Student',
+      });
+      const student2 = await createTestStudent({
+        email: 'secret_candidate@manit.ac.in',
+        full_name: 'Secret Candidate',
+      });
+      await db('users').where({ id: student2.userId }).update({ phone: '+919988776655' });
+
+      // Add active requirements
+      await db('requirements').insert({
+        user_id: student1.userId,
+        city: 'Bhopal',
+        budget_min: 5000,
+        budget_max: 10000,
+        gender_preference: 'any',
+        smoking_ok: 1,
+        drinking_ok: 1,
+        guests_ok: 'sometimes',
+        is_active: 1,
+      });
+
+      const convRes = await request(app)
+        .post('/api/conversations')
+        .set('Cookie', [student1.cookie])
+        .send({ candidate_user_id: student2.userId });
+      const convId = convRes.body.conversation.id;
+
+      // Send a message
+      await request(app)
+        .post(`/api/conversations/${convId}/messages`)
+        .set('Cookie', [student1.cookie])
+        .send({ content: 'Hi secret candidate' });
+
+      // 1. GET /api/conversations (Inbox)
+      const inboxRes = await request(app)
+        .get('/api/conversations')
+        .set('Cookie', [student1.cookie]);
+      const inboxJson = JSON.stringify(inboxRes.body);
+      expect(inboxJson).not.toContain('secret_candidate@manit.ac.in');
+      expect(inboxJson).not.toContain('+919988776655');
+
+      // 2. GET /api/conversations/:id
+      const convDetailRes = await request(app)
+        .get(`/api/conversations/${convId}`)
+        .set('Cookie', [student1.cookie]);
+      const detailJson = JSON.stringify(convDetailRes.body);
+      expect(detailJson).not.toContain('secret_candidate@manit.ac.in');
+      expect(detailJson).not.toContain('+919988776655');
+
+      // 3. GET /api/conversations/:id/messages
+      const msgRes = await request(app)
+        .get(`/api/conversations/${convId}/messages`)
+        .set('Cookie', [student1.cookie]);
+      const msgJson = JSON.stringify(msgRes.body);
+      expect(msgJson).not.toContain('secret_candidate@manit.ac.in');
+      expect(msgJson).not.toContain('+919988776655');
+    });
+
+    it('after both confirm, the matching engine excludes these two users from each other matches', async () => {
+      const student1 = await createTestStudent({ email: 'match_ex1@manit.ac.in', full_name: 'Student One' });
+      const student2 = await createTestStudent({ email: 'match_ex2@manit.ac.in', full_name: 'Student Two' });
+
+      // Both have active requirements in Bhopal
+      const [req1Id] = await db('requirements').insert({
+        user_id: student1.userId,
+        city: 'Bhopal',
+        budget_min: 5000,
+        budget_max: 10000,
+        gender_preference: 'any',
+        smoking_ok: 1,
+        drinking_ok: 1,
+        guests_ok: 'sometimes',
+        is_active: 1,
+      });
+
+      await db('requirements').insert({
+        user_id: student2.userId,
+        city: 'Bhopal',
+        budget_min: 5000,
+        budget_max: 10000,
+        gender_preference: 'any',
+        smoking_ok: 1,
+        drinking_ok: 1,
+        guests_ok: 'sometimes',
+        is_active: 1,
+      });
+
+      const convRes = await request(app)
+        .post('/api/conversations')
+        .set('Cookie', [student1.cookie])
+        .send({ candidate_user_id: student2.userId });
+      const convId = convRes.body.conversation.id;
+
+      // Seed match result for student 1 with student 2
+      await db('match_results').insert({
+        user_id: student1.userId,
+        matched_user_id: student2.userId,
+        compatibility_score: 95,
+        ai_summary: 'Great match',
+        source: 'fallback',
+        status: 'suggested',
+      });
+
+      // Verify candidate is eligible before confirmation
+      const req1 = await db('requirements').where({ id: req1Id }).first();
+      const prof1 = await db('profiles').where({ user_id: student1.userId }).first();
+      const initialCandidates = await matchingService.findEligibleCandidates(student1.userId, req1, prof1);
+      expect(initialCandidates.some((c) => c.candidate_user_id === student2.userId)).toBe(true);
+
+      // Both confirm roommates
+      await request(app)
+        .post(`/api/conversations/${convId}/confirm-roommates`)
+        .set('Cookie', [student1.cookie]);
+      await request(app)
+        .post(`/api/conversations/${convId}/confirm-roommates`)
+        .set('Cookie', [student2.cookie]);
+
+      // Verify candidate is excluded from findEligibleCandidates
+      const afterCandidates = await matchingService.findEligibleCandidates(student1.userId, req1, prof1);
+      expect(afterCandidates.some((c) => c.candidate_user_id === student2.userId)).toBe(false);
+
+      // Verify cached matches excludes them
+      const cachedMatches = await matchingService.getCachedMatches(student1.userId);
+      expect(cachedMatches.matches.some((m) => m.candidate_id === student2.userId)).toBe(false);
     });
   });
 });

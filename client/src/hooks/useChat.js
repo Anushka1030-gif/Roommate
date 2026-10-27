@@ -26,6 +26,12 @@ export function useChat() {
   const [socketConnected, setSocketConnected] = useState(() => Boolean(getSocket()?.connected));
   const [error, setError] = useState(null);
 
+  // Step 12 Contact sharing and roommate confirmation state
+  const [contactDetails, setContactDetails] = useState(null);
+  const [loadingContact, setLoadingContact] = useState(false);
+  const [togglingShare, setTogglingShare] = useState(false);
+  const [confirmingRoommates, setConfirmingRoommates] = useState(false);
+
   const activeConvRef = useRef(activeConversationId);
 
   useEffect(() => {
@@ -38,6 +44,26 @@ export function useChat() {
 
   // Active conversation object
   const activeConversation = conversations.find((c) => c.id === activeConversationId) || null;
+
+  // Auto-fetch contact details if active conversation has mutual consent
+  useEffect(() => {
+    let isMounted = true;
+    if (activeConversationId && activeConversation?.both_shared) {
+      chatService
+        .getContact(activeConversationId)
+        .then((res) => {
+          if (isMounted) {
+            setContactDetails(res.contact || { email: res.email, phone: res.phone });
+          }
+        })
+        .catch(() => {
+          if (isMounted) setContactDetails(null);
+        });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [activeConversationId, activeConversation?.both_shared]);
 
   /**
    * Fetch all conversations for user inbox.
@@ -121,6 +147,7 @@ export function useChat() {
 
       setActiveConversationId(parsedId);
       setPartnerTyping(false);
+      setContactDetails(null);
 
       if (parsedId) {
         loadConversationMessages(parsedId);
@@ -427,12 +454,131 @@ export function useChat() {
       }
     };
 
+    const handleContactStatusChanged = (data) => {
+      if (!data) return;
+      const convId = Number(data.conversation_id);
+
+      setConversations((prev) =>
+        prev.map((c) => {
+          if (c.id === convId) {
+            const isUserA = c.user_a_id === currentUserId;
+            const aShares =
+              data.a_shares_contact !== undefined
+                ? Boolean(data.a_shares_contact)
+                : Boolean(c.a_shares_contact);
+            const bShares =
+              data.b_shares_contact !== undefined
+                ? Boolean(data.b_shares_contact)
+                : Boolean(c.b_shares_contact);
+            const myShare =
+              data.my_share !== undefined
+                ? Boolean(data.my_share)
+                : isUserA
+                ? aShares
+                : bShares;
+            const otherShared =
+              data.other_shared !== undefined
+                ? Boolean(data.other_shared)
+                : isUserA
+                ? bShares
+                : aShares;
+            const bothShared =
+              data.both_shared !== undefined
+                ? Boolean(data.both_shared)
+                : aShares && bShares;
+
+            return {
+              ...c,
+              my_share: myShare,
+              other_shared: otherShared,
+              both_shared: bothShared,
+              contact_revealed: bothShared,
+              contact_revealed_by_me: myShare,
+              contact_revealed_by_other: otherShared,
+            };
+          }
+          return c;
+        })
+      );
+
+      // If this conversation is currently open
+      if (activeConvRef.current === convId) {
+        if (data.both_shared) {
+          setLoadingContact(true);
+          chatService
+            .getContact(convId)
+            .then((res) => {
+              setContactDetails(res.contact || { email: res.email, phone: res.phone });
+            })
+            .catch(() => {
+              setContactDetails(null);
+            })
+            .finally(() => {
+              setLoadingContact(false);
+            });
+        } else {
+          // Immediately hide contact details if either user disabled sharing
+          setContactDetails(null);
+        }
+      }
+    };
+
+    const handleRoommateStatusChanged = (data) => {
+      if (!data) return;
+      const convId = Number(data.conversation_id);
+
+      setConversations((prev) =>
+        prev.map((c) => {
+          if (c.id === convId) {
+            const isUserA = c.user_a_id === currentUserId;
+            const aConf =
+              data.a_confirmed_roommates !== undefined
+                ? Boolean(data.a_confirmed_roommates)
+                : Boolean(c.a_confirmed_roommates);
+            const bConf =
+              data.b_confirmed_roommates !== undefined
+                ? Boolean(data.b_confirmed_roommates)
+                : Boolean(c.b_confirmed_roommates);
+            const meConf =
+              data.me_confirmed !== undefined
+                ? Boolean(data.me_confirmed)
+                : isUserA
+                ? aConf
+                : bConf;
+            const otherConf =
+              data.other_confirmed !== undefined
+                ? Boolean(data.other_confirmed)
+                : isUserA
+                ? bConf
+                : aConf;
+            const bothConf =
+              data.both_confirmed !== undefined
+                ? Boolean(data.both_confirmed)
+                : aConf && bConf;
+            const status =
+              data.roommate_status || (bothConf ? 'confirmed' : meConf || otherConf ? 'pending' : 'none');
+
+            return {
+              ...c,
+              me_confirmed: meConf,
+              other_confirmed: otherConf,
+              both_confirmed: bothConf,
+              roommate_status: status,
+            };
+          }
+          return c;
+        })
+      );
+    };
+
     socket.on('connect', handleConnect);
     socket.on('disconnect', handleDisconnect);
     socket.on('new_message', handleNewMessage);
     socket.on('inbox_update', handleInboxUpdate);
     socket.on('messages_read', handleMessagesRead);
     socket.on('user_typing', handleUserTyping);
+    socket.on('contact_status_changed', handleContactStatusChanged);
+    socket.on('roommate_status_changed', handleRoommateStatusChanged);
 
     return () => {
       socket.off('connect', handleConnect);
@@ -441,6 +587,8 @@ export function useChat() {
       socket.off('inbox_update', handleInboxUpdate);
       socket.off('messages_read', handleMessagesRead);
       socket.off('user_typing', handleUserTyping);
+      socket.off('contact_status_changed', handleContactStatusChanged);
+      socket.off('roommate_status_changed', handleRoommateStatusChanged);
 
       if (activeConvRef.current && socket.connected) {
         socket.emit('leave_conversation', { conversation_id: activeConvRef.current });
@@ -450,6 +598,89 @@ export function useChat() {
       if (selfTypingTimeoutRef.current) clearTimeout(selfTypingTimeoutRef.current);
     };
   }, [currentUserId]);
+
+  /**
+   * Toggle contact sharing consent for the active conversation.
+   */
+  const toggleShareContact = useCallback(
+    async (share) => {
+      if (!activeConversationId) return;
+      try {
+        setTogglingShare(true);
+        setError(null);
+        const res = await chatService.shareContact(activeConversationId, share);
+
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === activeConversationId
+              ? {
+                  ...c,
+                  my_share: res.my_share,
+                  other_shared: res.other_shared,
+                  both_shared: res.both_shared,
+                  contact_revealed: res.both_shared,
+                }
+              : c
+          )
+        );
+
+        if (res.both_shared) {
+          try {
+            setLoadingContact(true);
+            const contactRes = await chatService.getContact(activeConversationId);
+            setContactDetails(contactRes.contact || { email: contactRes.email, phone: contactRes.phone });
+          } catch {
+            setContactDetails(null);
+          } finally {
+            setLoadingContact(false);
+          }
+        } else {
+          setContactDetails(null);
+        }
+
+        return res;
+      } catch (err) {
+        setError(getErrorMessage(err, 'Failed to update contact sharing'));
+        throw err;
+      } finally {
+        setTogglingShare(false);
+      }
+    },
+    [activeConversationId]
+  );
+
+  /**
+   * Confirm roommate partnership for the active conversation.
+   */
+  const confirmRoommatesAction = useCallback(async () => {
+    if (!activeConversationId) return;
+    try {
+      setConfirmingRoommates(true);
+      setError(null);
+      const res = await chatService.confirmRoommates(activeConversationId);
+
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === activeConversationId
+            ? {
+                ...c,
+                me_confirmed: res.me_confirmed,
+                other_confirmed: res.other_confirmed,
+                both_confirmed: res.both_confirmed,
+                roommate_status: res.roommate_status,
+              }
+            : c
+        )
+      );
+
+      return res;
+    } catch (err) {
+      setError(getErrorMessage(err, 'Failed to confirm roommate partnership'));
+      throw err;
+    } finally {
+      setConfirmingRoommates(false);
+    }
+  }, [activeConversationId]);
 
   return {
     conversations,
@@ -472,6 +703,14 @@ export function useChat() {
     emitTyping,
     fetchConversations,
     clearError: () => setError(null),
+
+    // Step 12 Contact & Roommate confirmation state and actions
+    contactDetails,
+    loadingContact,
+    togglingShare,
+    confirmingRoommates,
+    toggleShareContact,
+    confirmRoommates: confirmRoommatesAction,
   };
 }
 
