@@ -19,3 +19,4 @@ export async function down(knex) {
     MODIFY COLUMN status ENUM('active', 'suspended', 'banned') NOT NULL DEFAULT 'active';
   `);
 }
+

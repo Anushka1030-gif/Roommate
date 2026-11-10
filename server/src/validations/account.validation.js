@@ -8,3 +8,4 @@ export const changePasswordSchema = z.object({
 export const deleteAccountSchema = z.object({
   password: z.string().min(1, 'Password confirmation is required to delete your account'),
 });
+

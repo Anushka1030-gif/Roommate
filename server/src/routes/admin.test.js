@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import { io as ClientIO } from 'socket.io-client';
+import bcrypt from 'bcrypt';
 import app from '../app.js';
 import db from '../db/index.js';
 import config from '../config/index.js';
@@ -13,6 +14,7 @@ describe('Admin Backend API Integration Tests (Step 14)', () => {
   let server;
   let socketServer;
   let serverPort;
+  let hashedStudentPassword;
 
   const getAuthCookie = (user) => {
     const token = jwt.sign(
@@ -45,6 +47,7 @@ describe('Admin Backend API Integration Tests (Step 14)', () => {
 
   beforeAll(async () => {
     await db.migrate.latest();
+    hashedStudentPassword = await bcrypt.hash('Password123!', 10);
 
     server = http.createServer(app);
     socketServer = new SocketIOServer(server, { cors: { origin: '*' } });
@@ -106,7 +109,7 @@ describe('Admin Backend API Integration Tests (Step 14)', () => {
   const createStudentUser = async ({ email, fullName, status = 'active' }) => {
     const [userId] = await db('users').insert({
       email,
-      password_hash: 'hashed_student_password',
+      password_hash: hashedStudentPassword,
       role: 'student',
       status,
       email_verified: 1,
@@ -380,7 +383,7 @@ describe('Admin Backend API Integration Tests (Step 14)', () => {
         .post('/api/auth/login')
         .send({
           email: 'offender@manit.ac.in',
-          password: 'hashed_student_password',
+          password: 'Password123!',
         });
       expect(loginRes.status).toBe(403);
       expect(loginRes.body.error.code).toBe('USER_SUSPENDED');

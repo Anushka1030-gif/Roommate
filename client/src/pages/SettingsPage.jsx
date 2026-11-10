@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';
 import { useToast } from '../hooks/useToast.js';
 import api from '../services/api.js';
@@ -11,10 +11,12 @@ import Input from '../components/ui/Input.jsx';
 import FormField from '../components/ui/FormField.jsx';
 import Alert from '../components/ui/Alert.jsx';
 import Spinner from '../components/ui/Spinner.jsx';
+import DeleteAccountModal from '../components/settings/DeleteAccountModal.jsx';
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { showToast } = useToast();
+  const navigate = useNavigate();
 
   const [profileData, setProfileData] = useState(null);
   const [profileComplete, setProfileComplete] = useState(false);
@@ -31,6 +33,18 @@ export default function SettingsPage() {
   const [blockedUsers, setBlockedUsers] = useState([]);
   const [loadingBlocks, setLoadingBlocks] = useState(false);
   const [unblockingId, setUnblockingId] = useState(null);
+
+  // Password change state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState(null);
+  const [passwordSuccess, setPasswordSuccess] = useState(null);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  // Delete account modal state
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -136,19 +150,95 @@ export default function SettingsPage() {
     }
   };
 
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordError(null);
+    setPasswordSuccess(null);
+
+    if (!currentPassword) {
+      setPasswordError('Current password is required.');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setPasswordError('New password must be at least 8 characters long.');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New password and confirmation password do not match.');
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      setPasswordError('New password must be different from current password.');
+      return;
+    }
+
+    try {
+      setIsChangingPassword(true);
+      const res = await api.post('/api/account/change-password', {
+        current_password: currentPassword,
+        new_password: newPassword,
+      });
+
+      setPasswordSuccess(res.data?.message || 'Password changed successfully.');
+      showToast({
+        type: 'success',
+        title: 'Password Changed',
+        message: 'Your password has been updated successfully.',
+      });
+
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      const msg = getErrorMessage(err, 'Failed to change password. Please verify current password.');
+      setPasswordError(msg);
+      showToast({
+        type: 'error',
+        title: 'Password Change Failed',
+        message: msg,
+      });
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  const handleDeleteAccountConfirm = async (password) => {
+    try {
+      setIsDeletingAccount(true);
+      await api.delete('/api/account', {
+        data: { password },
+      });
+
+      showToast({
+        type: 'success',
+        title: 'Account Deleted',
+        message: 'Your account and data have been permanently removed.',
+      });
+
+      setIsDeleteModalOpen(false);
+      await logout();
+      navigate('/');
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
   return (
-    <div className="max-w-3xl mx-auto py-6 sm:py-10 px-4 sm:px-0 space-y-6">
+    <div className="max-w-3xl mx-auto py-6 sm:py-10 px-4 sm:px-0 space-y-6 sm:space-y-8">
       {/* Page Title */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
           Account & Profile Settings
         </h1>
         <p className="text-slate-600 text-sm mt-1">
-          Manage your student profile preferences, privacy settings, and account details.
+          Manage your student profile preferences, housing criteria, and account security.
         </p>
       </div>
 
-      {/* Profile Overview Card (Entry Point to Profile Edit) */}
+      {/* 1. Profile Overview Section (Edit Profile Link) */}
       <Card className="shadow-md border-slate-200">
         <Card.Header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
@@ -215,17 +305,43 @@ export default function SettingsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             <span>
-              <strong>Privacy Notice:</strong> Only verified students you match with can see your profile.
+              <strong>Privacy Notice:</strong> Only verified students you match with can view your profile.
             </span>
           </div>
         </Card.Body>
       </Card>
 
-      {/* Account Contact Phone Card */}
+      {/* 2. Housing Requirements Section (Edit Requirement Link) */}
+      <Card className="shadow-md border-slate-200">
+        <Card.Header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <Card.Title as="h2" className="text-xl font-bold text-slate-900">
+              Housing & Roommate Criteria
+            </Card.Title>
+            <Card.Description>
+              Your city, budget range, preferred room types, and custom lifestyle importance weights.
+            </Card.Description>
+          </div>
+
+          <Link to="/requirement">
+            <Button variant="outline" size="sm">
+              <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              Edit Criteria
+            </Button>
+          </Link>
+        </Card.Header>
+        <Card.Body className="pt-2 text-xs text-slate-500">
+          Updating your criteria automatically re-evaluates candidate compatibility and updates your match recommendations.
+        </Card.Body>
+      </Card>
+
+      {/* 3. Account Contact Phone Card */}
       <Card className="shadow-md border-slate-200">
         <Card.Header>
           <Card.Title as="h2" className="text-xl font-bold text-slate-900">
-            Account Phone Number
+            Contact Phone Number
           </Card.Title>
           <Card.Description>
             Optional phone number. Kept private and only revealed upon mutual roommate confirmation.
@@ -240,7 +356,7 @@ export default function SettingsPage() {
           )}
 
           {phoneError && (
-            <Alert variant="error" onClose={() => setPhoneError(null)} className="mb-4">
+            <Alert variant="danger" onClose={() => setPhoneError(null)} className="mb-4">
               {phoneError}
             </Alert>
           )}
@@ -249,7 +365,7 @@ export default function SettingsPage() {
             <FormField
               id="settings-phone"
               label="Contact Phone"
-              hint="Format: +91 98765 43210 or 10-14 digits"
+              helperText="Format: +91 98765 43210 or 10-14 digits"
               error={phoneError}
             >
               <Input
@@ -276,7 +392,99 @@ export default function SettingsPage() {
         </Card.Body>
       </Card>
 
-      {/* Blocked Users Section */}
+      {/* 4. Change Password Section */}
+      <Card className="shadow-md border-slate-200">
+        <Card.Header>
+          <Card.Title as="h2" className="text-xl font-bold text-slate-900">
+            Change Password
+          </Card.Title>
+          <Card.Description>
+            Ensure your account remains secure with a strong, unique password (minimum 8 characters).
+          </Card.Description>
+        </Card.Header>
+
+        <Card.Body className="pt-2">
+          {passwordSuccess && (
+            <Alert variant="success" onClose={() => setPasswordSuccess(null)} className="mb-4">
+              {passwordSuccess}
+            </Alert>
+          )}
+
+          {passwordError && (
+            <Alert variant="danger" onClose={() => setPasswordError(null)} className="mb-4">
+              {passwordError}
+            </Alert>
+          )}
+
+          <form onSubmit={handleChangePassword} className="space-y-4">
+            <FormField
+              id="current-password"
+              label="Current Password"
+            >
+              <Input
+                type="password"
+                name="currentPassword"
+                placeholder="Enter your current password"
+                value={currentPassword}
+                onChange={(e) => {
+                  setCurrentPassword(e.target.value);
+                  if (passwordError) setPasswordError(null);
+                }}
+                autoComplete="current-password"
+              />
+            </FormField>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                id="new-password"
+                label="New Password"
+                helperText="Minimum 8 characters"
+              >
+                <Input
+                  type="password"
+                  name="newPassword"
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    if (passwordError) setPasswordError(null);
+                  }}
+                  autoComplete="new-password"
+                />
+              </FormField>
+
+              <FormField
+                id="confirm-password"
+                label="Confirm New Password"
+              >
+                <Input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm new password"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    if (passwordError) setPasswordError(null);
+                  }}
+                  autoComplete="new-password"
+                />
+              </FormField>
+            </div>
+
+            <Button
+              type="submit"
+              variant="outline"
+              size="md"
+              isLoading={isChangingPassword}
+              disabled={!currentPassword || !newPassword || !confirmPassword}
+            >
+              Update Password
+            </Button>
+          </form>
+        </Card.Body>
+      </Card>
+
+      {/* 5. Blocked Users Section */}
       <Card className="shadow-md border-slate-200">
         <Card.Header>
           <div className="flex items-center gap-2">
@@ -341,20 +549,59 @@ export default function SettingsPage() {
         </Card.Body>
       </Card>
 
-      {/* Account Info Card */}
+      {/* 6. Account Info & Security Summary */}
       <Card className="shadow-md border-slate-200">
         <Card.Header>
           <Card.Title as="h2" className="text-xl font-bold text-slate-900">
-            Account Security & Credentials
+            Account Status & Details
           </Card.Title>
         </Card.Header>
         <Card.Body className="pt-2 text-sm text-slate-600 space-y-2">
           <div><span className="font-semibold text-slate-800">Email:</span> {user?.email}</div>
           <div><span className="font-semibold text-slate-800">Role:</span> {user?.role}</div>
-          <div><span className="font-semibold text-slate-800">Status:</span> {user?.status}</div>
-          <div><span className="font-semibold text-slate-800">Verified Student:</span> {user?.email_verified ? 'Yes' : 'No'}</div>
+          <div><span className="font-semibold text-slate-800">Account Status:</span> {user?.status}</div>
+          <div><span className="font-semibold text-slate-800">Verified Campus Email:</span> {user?.email_verified ? 'Yes' : 'No'}</div>
         </Card.Body>
       </Card>
+
+      {/* 7. Danger Zone: Delete Account */}
+      <div className="rounded-2xl border border-rose-300 bg-rose-50/40 p-6 space-y-4">
+        <div>
+          <h2 className="text-lg font-bold text-rose-900">Danger Zone</h2>
+          <p className="text-xs text-rose-700 mt-0.5">
+            Permanently delete your account and personal data.
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white rounded-xl border border-rose-200 shadow-xs">
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900">
+              Deactivate and Delete Account
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5 max-w-md">
+              Permanently removes your profile, requirements, and match results. Messages you sent will be replaced with &quot;[deleted]&quot;.
+            </p>
+          </div>
+
+          <Button
+            type="button"
+            variant="danger"
+            size="sm"
+            onClick={() => setIsDeleteModalOpen(true)}
+            className="shrink-0"
+          >
+            Delete Account
+          </Button>
+        </div>
+      </div>
+
+      {/* Delete Account Modal */}
+      <DeleteAccountModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteAccountConfirm}
+        loading={isDeletingAccount}
+      />
     </div>
   );
 }
