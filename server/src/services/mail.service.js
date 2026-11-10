@@ -151,6 +151,38 @@ If you did not request this, please disregard this email.`;
     });
   }
 
+  /**
+   * Send a warning notice email to a reported user.
+   */
+  async sendWarningEmail({ to, recipientName = 'Roommate', note }) {
+    const subject = 'RoomieMatch — Account Notice & Community Guidelines';
+    const text = `Hi ${recipientName},\n\nOur safety moderation team reviewed a report regarding your activity on RoomieMatch.\n\nNotice from moderator:\n"${note || 'Please adhere to our community guidelines.'}"\n\nPlease ensure your interactions and profile remain respectful, truthful, and supportive of the student community.\n\nBest,\nThe RoomieMatch Safety Team`;
+
+    const html = `
+      <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #fecaca; border-radius: 8px; background-color: #fffaf0;">
+        <h3 style="color: #b45309; margin-top: 0;">Community Guidelines Notice</h3>
+        <p>Hi ${recipientName},</p>
+        <p>Our safety moderation team reviewed a report regarding your activity on RoomieMatch.</p>
+        <blockquote style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 16px 0; color: #92400e;">
+          "${note || 'Please adhere to our student community standards and guidelines.'}"
+        </blockquote>
+        <p style="color: #475569; font-size: 13px;">
+          Please ensure your interactions, roommate preferences, and chat messages remain respectful, safe, and transparent.
+        </p>
+        <p style="color: #64748b; font-size: 12px; margin-top: 24px;">
+          If you have questions regarding this notice, reply to support@roomiematch.edu.
+        </p>
+      </div>
+    `;
+
+    return this.sendMail({
+      to,
+      subject,
+      text,
+      html,
+    });
+  }
+
   getLastSentMail() {
     return this.lastSentMail;
   }

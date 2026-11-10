@@ -571,6 +571,27 @@ export function useChat() {
       );
     };
 
+    const handleConversationBlocked = (data) => {
+      const convId = Number(data?.conversation_id);
+      if (activeConvRef.current === convId) {
+        setIsBlocked(true);
+      }
+      setConversations((prev) =>
+        prev.map((c) => (c.id === convId ? { ...c, is_blocked: true } : c))
+      );
+    };
+
+    const handleConversationUnblocked = (data) => {
+      const convId = Number(data?.conversation_id);
+      const stillBlocked = Boolean(data?.is_blocked);
+      if (activeConvRef.current === convId) {
+        setIsBlocked(stillBlocked);
+      }
+      setConversations((prev) =>
+        prev.map((c) => (c.id === convId ? { ...c, is_blocked: stillBlocked } : c))
+      );
+    };
+
     socket.on('connect', handleConnect);
     socket.on('disconnect', handleDisconnect);
     socket.on('new_message', handleNewMessage);
@@ -579,6 +600,8 @@ export function useChat() {
     socket.on('user_typing', handleUserTyping);
     socket.on('contact_status_changed', handleContactStatusChanged);
     socket.on('roommate_status_changed', handleRoommateStatusChanged);
+    socket.on('conversation_blocked', handleConversationBlocked);
+    socket.on('conversation_unblocked', handleConversationUnblocked);
 
     return () => {
       socket.off('connect', handleConnect);
@@ -589,6 +612,8 @@ export function useChat() {
       socket.off('user_typing', handleUserTyping);
       socket.off('contact_status_changed', handleContactStatusChanged);
       socket.off('roommate_status_changed', handleRoommateStatusChanged);
+      socket.off('conversation_blocked', handleConversationBlocked);
+      socket.off('conversation_unblocked', handleConversationUnblocked);
 
       if (activeConvRef.current && socket.connected) {
         socket.emit('leave_conversation', { conversation_id: activeConvRef.current });
@@ -689,6 +714,7 @@ export function useChat() {
     messages,
     hasMoreMessages,
     isBlocked,
+    setIsBlocked,
     partnerTyping,
     loadingConversations,
     loadingMessages,

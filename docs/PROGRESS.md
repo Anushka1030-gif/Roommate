@@ -39,8 +39,45 @@
   - Interactive "We became roommates" workflow with confirmation modal dialog, waiting state, and celebratory congratulations banner when both confirm.
   - Optional phone number addition/modification modal and Settings page integration (`PUT /api/account/phone`).
   - Comprehensive test coverage: 25 integration tests in `conversations.test.js`, 9 unit/integration tests in `ChatContactSharing.test.jsx`, 114 total server tests passing, 61 total client tests passing, 0 ESLint errors across the workspace.
-- [ ] **Step 13: Block and report** — User blocking, content reporting mechanisms, audit triggers, and safety guardrails.
-- [ ] **Step 14: Admin** — Admin dashboard authentication, user moderation, report review, statistics, and platform config oversight.
+- [x] **Step 13: Block and report** — User blocking, content reporting mechanisms, audit triggers, and safety guardrails. Features implemented:
+  - Safety Endpoints: `POST /api/blocks` (`blocked_user_id`), `DELETE /api/blocks/:userId`, `GET /api/blocks` (list blocked users showing display names and avatars only; strictly zero email, phone, or password hash exposure), and `POST /api/reports` (`reported_user_id`, PRD reason enum: `harassment`, `fake_profile`, `inappropriate_content`, `spam`, `other`, optional details up to 500 characters).
+  - Safety Guardrails & Validation: Self-blocking prevention (`400 CANNOT_BLOCK_SELF`), self-reporting prevention (`400 CANNOT_REPORT_SELF`), target user existence checks (`404 USER_NOT_FOUND`), daily rate limiting of 10 reports per day per user enforced at database level (`429 REPORT_LIMIT_EXCEEDED`), and Zod validation middleware for bodies and URL parameters.
+  - Comprehensive Blocking Effects:
+    - Match Results: Bidirectional exclusion at read-time in `GET /api/matches` (`whereNotExists('blocks')`), plus immediate deletion of cached `match_results` rows between both users.
+    - Conversation Lock: Conversations become read-only for both participants—messages cannot be sent (`403 CONVERSATION_BLOCKED`), contact details cannot be retrieved (`403 CONTACT_NOT_SHARED`), contact sharing is rejected (`403 CONVERSATION_BLOCKED`), and roommate confirmation is forbidden (`403 CONVERSATION_BLOCKED`), while past message history remains readable with `is_blocked: true`.
+    - Real-Time Socket Layer: Socket layer refuses message delivery with `CONVERSATION_BLOCKED` acknowledgment and suppresses typing indicators; broadcasts real-time `conversation_blocked` and `conversation_unblocked` events across active rooms and personal user channels.
+    - Unblocking Behavior: Unblocking restores conversation messaging access without prematurely re-adding the user to match results until the matching engine is re-evaluated.
+  - Frontend Safety UI:
+    - Reusable `SafetyActionMenu` ("..." dropdown) on both match cards and the active conversation header with "Block User" and "Report User" actions.
+    - `BlockConfirmModal` with informative consequences warning ("Both will disappear from matches, chat disabled, contact hidden") and one-click confirmation.
+    - `ReportModal` with PRD reason dropdown, 500-character details textarea with live character counter, and confidentiality notice.
+    - Active conversation blocked banner (`role="alert"`) clearly informing the student of the read-only state, with disabled message composer.
+    - Account Settings (`/settings`) "Blocked Users" management section with avatar badges, display names, block timestamps, and unblock buttons.
+  - Comprehensive Test Coverage: 17 backend integration tests in `safety.test.js`, 7 client integration tests in `SafetyBlockReport.test.jsx`, 131 total server tests passing, 68 total client tests passing, 0 ESLint errors across client and server.
+- [x] **Step 14: Admin** — Admin dashboard authentication, user moderation, report review, statistics, and platform config oversight.
+  - Backend Admin Architecture:
+    - Route protection with `authenticate` + `requireAdmin` middleware returning 401 for unauthenticated and 403 `FORBIDDEN` for non-admin students across all `/api/admin/*` endpoints.
+    - Database migration `20261109000001_add_admin_note_to_reports.js` adding `admin_note TEXT` column to the `reports` table.
+    - `GET /api/admin/reports?status=...`: supports filtering by `open` (pending/reviewed), `pending`, `reviewed`, `resolved`, `dismissed`, and `all`. Deliberately reveals reporter & reported user names and verified emails for administrative investigation, along with total reports count per reported user.
+    - `PATCH /api/admin/reports/:id`: handles moderation actions (`dismiss`, `warn`, `suspend`) with mandatory/optional admin notes.
+      - `dismiss`: marks report `dismissed` with note.
+      - `warn`: marks report `reviewed` and triggers warning email to reported student via `mailService.sendWarningEmail`.
+      - `suspend`: immediately sets user `status='suspended'`, records report as `resolved`, and immediately terminates all active WebSocket sessions via `io.in('user_' + userId).disconnectSockets(true)`. Blocked from subsequent logins and all authenticated API requests with 403 `USER_SUSPENDED`.
+    - `GET /api/admin/stats`: aggregate counts for `total_users`, `verified_users`, `completed_profiles`, `active_requirements`, `conversations`, `contact_share_agreements`, and `confirmed_roommate_pairs` (the north-star metric).
+  - Frontend Admin UI (`/admin`, protected by `AdminRoute`):
+    - Visual North-Star Metric Card: Prominently highlights **Confirmed Roommate Pairs** with custom gradient styling, badge, and descriptive goal callout.
+    - Platform Metrics Grid: 6 stat cards covering registered students, verified emails, completed profiles, active requirements, conversations, and mutual contact share agreements.
+    - Status Filter Tabs: Clean toggle between `Open Reports`, `Pending`, `Reviewed`, `Resolved`, `Dismissed`, and `All Reports`.
+    - Incident Reports Table & Cards: Displays full reporter and reported details, student emails, incident description quotes, total reports badge (highlighting repeat offenders), and moderation status badges.
+    - Action Modal (`AdminActionModal`): Action-specific workflows for Dismiss, Warn, and Suspend. Account suspension requires explicit confirmation checkbox warning that access and active sockets will be severed immediately.
+    - Loading states, empty states ("No open reports"), error alerts, and manual dashboard refresh.
+  - Test Suite & Quality Verification:
+    - 7 backend integration tests in `admin.test.js` covering 401/403 authorization guards, report querying with emails & total counts, dismissal, warning email dispatch, suspension with immediate socket disconnection and login/API rejection, and stats accuracy.
+    - 7 frontend integration tests in `AdminPage.test.jsx` verifying stats cards, north-star card, reports list, dismiss/warn/suspend actions, suspension confirmation checkbox guard, and empty states.
+    - 138/138 server tests passing across 11 test suites.
+    - 75/75 client tests passing across 14 test suites.
+    - 0 ESLint errors across both server and client.
+- [ ] **Step 15: Landing/settings/polish** — Landing page hero & features, user account settings, theme polish, responsive styling, and micro-animations.
 - [ ] **Step 15: Landing/settings/polish** — Landing page hero & features, user account settings, theme polish, responsive styling, and micro-animations.
 - [ ] **Step 16: Tests/hardening/final review** — End-to-end integration tests, security audit, edge case handling, performance verification, and final documentation review.
 

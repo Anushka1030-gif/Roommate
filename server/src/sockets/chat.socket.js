@@ -182,17 +182,36 @@ export default function registerChatSocket(io) {
 
     /**
      * Typing indicators.
+     * Delivery suppressed if conversation is blocked.
      */
-    socket.on('typing', (data) => {
-      const conversationId = Number(data?.conversation_id);
-      const isTyping = Boolean(data?.is_typing);
+    socket.on('typing', async (data) => {
+      try {
+        const conversationId = Number(data?.conversation_id);
+        const isTyping = Boolean(data?.is_typing);
 
-      if (conversationId) {
-        socket.to(`conversation_${conversationId}`).emit('user_typing', {
-          conversation_id: conversationId,
-          user_id: userId,
-          is_typing: isTyping,
-        });
+        if (conversationId) {
+          const conv = await db('conversations').where({ id: conversationId }).first();
+          if (conv) {
+            const otherUserId = conv.user_a_id === userId ? conv.user_b_id : conv.user_a_id;
+            const isBlocked = await db('blocks')
+              .where((builder) => {
+                builder
+                  .where({ blocker_id: userId, blocked_id: otherUserId })
+                  .orWhere({ blocker_id: otherUserId, blocked_id: userId });
+              })
+              .first();
+
+            if (!isBlocked) {
+              socket.to(`conversation_${conversationId}`).emit('user_typing', {
+                conversation_id: conversationId,
+                user_id: userId,
+                is_typing: isTyping,
+              });
+            }
+          }
+        }
+      } catch {
+        // Silently ignore typing error
       }
     });
   });

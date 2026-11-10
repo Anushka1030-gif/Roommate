@@ -27,6 +27,11 @@ export default function SettingsPage() {
   const [isSavingPhone, setIsSavingPhone] = useState(false);
   const [phoneSuccess, setPhoneSuccess] = useState(null);
 
+  // Blocked users state
+  const [blockedUsers, setBlockedUsers] = useState([]);
+  const [loadingBlocks, setLoadingBlocks] = useState(false);
+  const [unblockingId, setUnblockingId] = useState(null);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -52,12 +57,48 @@ export default function SettingsPage() {
       }
     }
 
+    async function fetchBlockedUsers() {
+      try {
+        setLoadingBlocks(true);
+        const res = await api.get('/api/blocks');
+        if (isMounted) {
+          setBlockedUsers(res.data?.blocks || []);
+        }
+      } catch {
+        // Non-critical background fetch failure
+      } finally {
+        if (isMounted) setLoadingBlocks(false);
+      }
+    }
+
     fetchProfile();
+    fetchBlockedUsers();
 
     return () => {
       isMounted = false;
     };
   }, [showToast]);
+
+  const handleUnblock = async (blockedUserId, displayName) => {
+    try {
+      setUnblockingId(blockedUserId);
+      await api.delete(`/api/blocks/${blockedUserId}`);
+      setBlockedUsers((prev) => prev.filter((b) => b.blocked_user_id !== blockedUserId));
+      showToast({
+        type: 'success',
+        title: 'User Unblocked',
+        message: `${displayName || 'Student'} has been unblocked.`,
+      });
+    } catch (err) {
+      showToast({
+        type: 'error',
+        title: 'Unblock Failed',
+        message: getErrorMessage(err, 'Failed to unblock user. Please try again.'),
+      });
+    } finally {
+      setUnblockingId(null);
+    }
+  };
 
   const handleUpdatePhone = async (e) => {
     e.preventDefault();
@@ -232,6 +273,71 @@ export default function SettingsPage() {
               Update Phone Number
             </Button>
           </form>
+        </Card.Body>
+      </Card>
+
+      {/* Blocked Users Section */}
+      <Card className="shadow-md border-slate-200">
+        <Card.Header>
+          <div className="flex items-center gap-2">
+            <Card.Title as="h2" className="text-xl font-bold text-slate-900">
+              Blocked Users
+            </Card.Title>
+            {blockedUsers.length > 0 && (
+              <Badge variant="neutral" size="sm">
+                {blockedUsers.length}
+              </Badge>
+            )}
+          </div>
+          <Card.Description>
+            Users you have blocked cannot message you, view your contact details, or appear in your matches.
+          </Card.Description>
+        </Card.Header>
+
+        <Card.Body className="pt-2">
+          {loadingBlocks ? (
+            <div className="py-6 text-center">
+              <Spinner size="sm" className="mx-auto text-teal-600" />
+            </div>
+          ) : blockedUsers.length === 0 ? (
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center text-xs text-slate-500">
+              You haven&apos;t blocked any users.
+            </div>
+          ) : (
+            <ul className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden">
+              {blockedUsers.map((item) => (
+                <li
+                  key={item.block_id || item.blocked_user_id}
+                  className="p-3.5 bg-white flex items-center justify-between gap-3 hover:bg-slate-50/60 transition-colors"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-600 text-sm shrink-0">
+                      {(item.display_name || 'S')[0]?.toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-slate-800 truncate">
+                        {item.display_name}
+                      </p>
+                      <p className="text-[11px] text-slate-400">
+                        Blocked on {new Date(item.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    isLoading={unblockingId === item.blocked_user_id}
+                    onClick={() => handleUnblock(item.blocked_user_id, item.display_name)}
+                    className="shrink-0"
+                  >
+                    Unblock
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
         </Card.Body>
       </Card>
 

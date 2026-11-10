@@ -746,6 +746,16 @@ export async function getCachedMatches(userId, statusFilter = null) {
       });
   });
 
+  // Step 13: Exclude any blocked users (bidirectional) from cached matches at read time
+  query = query.whereNotExists(function () {
+    this.select('*')
+      .from('blocks')
+      .where(function () {
+        this.where({ blocker_id: userId, blocked_id: db.ref('match_results.matched_user_id') })
+          .orWhere({ blocker_id: db.ref('match_results.matched_user_id'), blocked_id: userId });
+      });
+  });
+
   const cachedRows = await query
     .orderBy('match_results.compatibility_score', 'desc')
     .select(

@@ -11,6 +11,9 @@ import MatchCard from '../components/matches/MatchCard.jsx';
 import MatchFilters from '../components/matches/MatchFilters.jsx';
 import MatchSkeleton from '../components/matches/MatchSkeleton.jsx';
 import ConnectModal from '../components/matches/ConnectModal.jsx';
+import BlockConfirmModal from '../components/safety/BlockConfirmModal.jsx';
+import ReportModal from '../components/safety/ReportModal.jsx';
+import api from '../services/api.js';
 
 export default function MatchesPage() {
   const navigate = useNavigate();
@@ -33,6 +36,52 @@ export default function MatchesPage() {
 
   // Modal state
   const [selectedMatchForChat, setSelectedMatchForChat] = useState(null);
+
+  // Safety Modals state
+  const [matchForBlock, setMatchForBlock] = useState(null);
+  const [isBlocking, setIsBlocking] = useState(false);
+  const [matchForReport, setMatchForReport] = useState(null);
+  const [isReporting, setIsReporting] = useState(false);
+
+  const handleConfirmBlock = async () => {
+    if (!matchForBlock) return;
+    const targetUserId = matchForBlock.candidate_id || matchForBlock.user?.id;
+    const targetName = matchForBlock.user?.full_name || 'Roommate';
+
+    try {
+      setIsBlocking(true);
+      await api.post('/api/blocks', { blocked_user_id: targetUserId });
+      // Optimistically remove from matches feed
+      setMatches((prev) => prev.filter((m) => (m.candidate_id || m.user?.id) !== targetUserId));
+      toast.success(`${targetName} has been blocked.`);
+      setMatchForBlock(null);
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Failed to block user.'));
+    } finally {
+      setIsBlocking(false);
+    }
+  };
+
+  const handleConfirmReport = async ({ reason, details }) => {
+    if (!matchForReport) return;
+    const targetUserId = matchForReport.candidate_id || matchForReport.user?.id;
+
+    try {
+      setIsReporting(true);
+      await api.post('/api/reports', {
+        reported_user_id: targetUserId,
+        reason,
+        details,
+      });
+      toast.success('Report submitted successfully. Our safety team will review it.');
+      setMatchForReport(null);
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Failed to submit report.'));
+      throw err;
+    } finally {
+      setIsReporting(false);
+    }
+  };
 
   // Load matches and active requirement
   const loadData = useCallback(async () => {
@@ -464,6 +513,8 @@ export default function MatchesPage() {
               onLike={handleLike}
               onSkip={handleSkip}
               onConnect={handleConnect}
+              onBlock={setMatchForBlock}
+              onReport={setMatchForReport}
               onSelectIcebreaker={() => {
                 toast.success('Icebreaker prompt copied! Opening chat...');
                 handleConnect(match);
@@ -478,6 +529,24 @@ export default function MatchesPage() {
         match={selectedMatchForChat}
         isOpen={Boolean(selectedMatchForChat)}
         onClose={() => setSelectedMatchForChat(null)}
+      />
+
+      {/* Safety: Block Confirmation Modal */}
+      <BlockConfirmModal
+        isOpen={Boolean(matchForBlock)}
+        userName={matchForBlock?.user?.full_name || 'this student'}
+        loading={isBlocking}
+        onClose={() => setMatchForBlock(null)}
+        onConfirm={handleConfirmBlock}
+      />
+
+      {/* Safety: Report User Modal */}
+      <ReportModal
+        isOpen={Boolean(matchForReport)}
+        userName={matchForReport?.user?.full_name || 'this student'}
+        loading={isReporting}
+        onClose={() => setMatchForReport(null)}
+        onSubmit={handleConfirmReport}
       />
     </div>
   );

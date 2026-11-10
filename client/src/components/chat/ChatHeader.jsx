@@ -1,9 +1,13 @@
+import SafetyActionMenu from '../safety/SafetyActionMenu.jsx';
+
 export default function ChatHeader({
   partner,
   socketConnected = false,
   partnerTyping = false,
   onBack,
   onOpenDetails,
+  onBlock,
+  onReport,
 }) {
   if (!partner) return null;
 
@@ -65,7 +69,7 @@ export default function ChatHeader({
       </div>
 
       {/* Action buttons */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1.5 shrink-0">
         {onOpenDetails && (
           <button
             type="button"
@@ -78,6 +82,14 @@ export default function ChatHeader({
             </svg>
             <span className="hidden sm:inline">Profile</span>
           </button>
+        )}
+
+        {(onBlock || onReport) && (
+          <SafetyActionMenu
+            userName={partner?.full_name || 'Roommate'}
+            onBlock={onBlock}
+            onReport={onReport}
+          />
         )}
       </div>
     </header>

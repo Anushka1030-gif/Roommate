@@ -6,6 +6,7 @@ import MatchScoreBadge from './MatchScoreBadge.jsx';
 import MatchLifestyleSummary from './MatchLifestyleSummary.jsx';
 import ScoreBreakdownBars from './ScoreBreakdownBars.jsx';
 import IcebreakersList from './IcebreakersList.jsx';
+import SafetyActionMenu from '../safety/SafetyActionMenu.jsx';
 
 export default function MatchCard({
   match,
@@ -13,6 +14,8 @@ export default function MatchCard({
   onLike,
   onSkip,
   onConnect,
+  onBlock,
+  onReport,
   isLiked = false,
   isSkipped = false,
   isConnected = false,
@@ -138,9 +141,16 @@ export default function MatchCard({
             </div>
           </div>
 
-          {/* Compatibility Score Badge */}
-          <div className="shrink-0 sm:self-start">
+          {/* Compatibility Score Badge & Safety Action Menu */}
+          <div className="shrink-0 sm:self-start flex items-center gap-2">
             <MatchScoreBadge score={score} rank={rank} />
+            {(onBlock || onReport) && (
+              <SafetyActionMenu
+                userName={candidateName}
+                onBlock={() => onBlock && onBlock(match)}
+                onReport={() => onReport && onReport(match)}
+              />
+            )}
           </div>
         </div>
 

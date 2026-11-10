@@ -9,6 +9,9 @@ import accountRoutes from './routes/account.routes.js';
 import requirementRoutes from './routes/requirement.routes.js';
 import matchRoutes from './routes/match.routes.js';
 import conversationRoutes from './routes/conversation.routes.js';
+import blockRoutes from './routes/block.routes.js';
+import reportRoutes from './routes/report.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
@@ -47,6 +50,13 @@ app.use('/api/matches', matchRoutes);
 
 // Conversation & Chat routes
 app.use('/api/conversations', conversationRoutes);
+
+// Safety routes (Block & Report)
+app.use('/api/blocks', blockRoutes);
+app.use('/api/reports', reportRoutes);
+
+// Admin routes (Staff moderation & stats)
+app.use('/api/admin', adminRoutes);
 
 
 // Central 404 handler

@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';
 import { useChat } from '../hooks/useChat.js';
+import { useToast } from '../hooks/useToast.js';
+import api from '../services/api.js';
+import { getErrorMessage } from '../utils/error.js';
 
 import ChatSidebar from '../components/chat/ChatSidebar.jsx';
 import ChatHeader from '../components/chat/ChatHeader.jsx';
@@ -10,13 +13,20 @@ import ChatMessageList from '../components/chat/ChatMessageList.jsx';
 import ChatIcebreakers from '../components/chat/ChatIcebreakers.jsx';
 import ChatMessageComposer from '../components/chat/ChatMessageComposer.jsx';
 import ChatPartnerDrawer from '../components/chat/ChatPartnerDrawer.jsx';
+import BlockConfirmModal from '../components/safety/BlockConfirmModal.jsx';
+import ReportModal from '../components/safety/ReportModal.jsx';
 
 export default function ChatsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
+  const { toast } = useToast();
   const composerRef = useRef(null);
 
   const [partnerDrawerOpen, setPartnerDrawerOpen] = useState(false);
+  const [showBlockModal, setShowBlockModal] = useState(false);
+  const [isBlocking, setIsBlocking] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [isReporting, setIsReporting] = useState(false);
 
   const {
     conversations,
@@ -25,6 +35,7 @@ export default function ChatsPage() {
     messages,
     hasMoreMessages,
     isBlocked,
+    setIsBlocked,
     partnerTyping,
     loadingConversations,
     loadingMessages,
@@ -70,6 +81,40 @@ export default function ChatsPage() {
 
   const handleSendIcebreaker = (prompt) => {
     sendChatMessage(prompt);
+  };
+
+  const handleConfirmBlock = async () => {
+    if (!partner?.id) return;
+    try {
+      setIsBlocking(true);
+      await api.post('/api/blocks', { blocked_user_id: partner.id });
+      setIsBlocked(true);
+      toast.success(`${partner.full_name || 'User'} has been blocked.`);
+      setShowBlockModal(false);
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Failed to block user.'));
+    } finally {
+      setIsBlocking(false);
+    }
+  };
+
+  const handleConfirmReport = async ({ reason, details }) => {
+    if (!partner?.id) return;
+    try {
+      setIsReporting(true);
+      await api.post('/api/reports', {
+        reported_user_id: partner.id,
+        reason,
+        details,
+      });
+      toast.success('Report submitted successfully. Our safety team will review it.');
+      setShowReportModal(false);
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Failed to submit report.'));
+      throw err;
+    } finally {
+      setIsReporting(false);
+    }
   };
 
   return (
@@ -118,7 +163,22 @@ export default function ChatsPage() {
               partnerTyping={partnerTyping}
               onBack={() => selectConversation(null)}
               onOpenDetails={() => setPartnerDrawerOpen(true)}
+              onBlock={() => setShowBlockModal(true)}
+              onReport={() => setShowReportModal(true)}
             />
+
+            {/* Blocked Conversation Banner */}
+            {isBlocked && (
+              <div
+                role="alert"
+                className="bg-rose-50 border-b border-rose-200 px-4 py-3 flex items-center gap-3 text-xs sm:text-sm text-rose-800 font-medium shrink-0 shadow-2xs"
+              >
+                <svg className="w-5 h-5 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                <span>This conversation is read-only because one of the users has been blocked. Messages and contact details cannot be exchanged.</span>
+              </div>
+            )}
 
             {/* Step 12: Mutual Contact Sharing & Roommate Confirmation Bar */}
             <ChatContactSharingBar
@@ -182,6 +242,24 @@ export default function ChatsPage() {
             </p>
           </div>
         )}
+
+        {/* Safety: Block Confirmation Modal */}
+        <BlockConfirmModal
+          isOpen={showBlockModal}
+          userName={partner?.full_name || 'this student'}
+          loading={isBlocking}
+          onClose={() => setShowBlockModal(false)}
+          onConfirm={handleConfirmBlock}
+        />
+
+        {/* Safety: Report User Modal */}
+        <ReportModal
+          isOpen={showReportModal}
+          userName={partner?.full_name || 'this student'}
+          loading={isReporting}
+          onClose={() => setShowReportModal(false)}
+          onSubmit={handleConfirmReport}
+        />
       </main>
     </div>
   );
