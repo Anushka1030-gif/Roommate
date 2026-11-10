@@ -78,6 +78,15 @@ export async function authenticate(req, res, next) {
       });
     }
 
+    if (user.status === 'deactivated') {
+      return res.status(403).json({
+        error: {
+          code: 'USER_DEACTIVATED',
+          message: 'This account has been deactivated.',
+        },
+      });
+    }
+
     req.user = {
       ...user,
       email_verified: Boolean(user.email_verified),

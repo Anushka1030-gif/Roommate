@@ -60,4 +60,18 @@ export const messageSendLimiter = createLimiter({
   keyGenerator: (req) => (req.user ? String(req.user.id) : req.ip),
 });
 
+export const changePasswordLimiter = createLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: 'Too many password change attempts. Please try again in 15 minutes.',
+  keyGenerator: (req) => (req.user ? String(req.user.id) : req.ip),
+});
+
+export const deleteAccountLimiter = createLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: 'Too many account deletion attempts. Please try again in 15 minutes.',
+  keyGenerator: (req) => (req.user ? String(req.user.id) : req.ip),
+});
+
 

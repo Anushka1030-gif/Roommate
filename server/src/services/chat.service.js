@@ -5,10 +5,21 @@ import { getIO } from '../sockets/chat.socket.js';
 /**
  * Format a conversation record with the other participant's profile and last message.
  */
-export async function formatConversation(userId, conv) {
+export async function formatConversation(userId, conv, { allowDeactivated = false } = {}) {
   if (!conv) return null;
 
   const otherUserId = conv.user_a_id === userId ? conv.user_b_id : conv.user_a_id;
+
+  // Check if other user exists and whether they are deactivated
+  const otherUser = await db('users')
+    .where({ id: otherUserId })
+    .select('id', 'status')
+    .first();
+
+  if (!otherUser) return null;
+  if (otherUser.status === 'deactivated' && !allowDeactivated) {
+    return null;
+  }
 
   // Fetch other user's profile (Strict Privacy: no email, phone, or password_hash)
   const otherProfile = await db('profiles')
@@ -199,7 +210,7 @@ export async function getUserConversations(userId) {
     convRows.map((conv) => formatConversation(currentUserId, conv))
   );
 
-  return formattedList;
+  return formattedList.filter(Boolean);
 }
 
 /**
@@ -273,7 +284,12 @@ export async function getConversationMessages(userId, conversationId, { before, 
   // Auto mark unread incoming messages as read
   await markMessagesAsRead(currentUserId, convId);
 
-  const formattedConv = await formatConversation(currentUserId, conv);
+  const formattedConv = (await formatConversation(currentUserId, conv, { allowDeactivated: true })) || {
+    id: conv.id,
+    other_user: { id: otherUserId, full_name: 'Deactivated User', is_deactivated: true },
+    is_blocked: isBlocked,
+    is_deactivated: true,
+  };
 
   return {
     conversation: formattedConv,

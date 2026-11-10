@@ -278,6 +278,10 @@ export async function login({ email, password }) {
     throw new ForbiddenError('Your account has been banned.', 'USER_BANNED');
   }
 
+  if (user.status === 'deactivated') {
+    throw new ForbiddenError('Your account has been deactivated.', 'USER_DEACTIVATED');
+  }
+
   // Unverified users are allowed to log in, with email_verified=false in user payload
   const fullUser = await getUserWithProfileByEmail(normalizedEmail);
 
