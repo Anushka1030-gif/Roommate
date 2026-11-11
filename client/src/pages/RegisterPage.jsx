@@ -230,8 +230,13 @@ export default function RegisterPage() {
                 />
                 <span className="text-xs text-slate-600 leading-relaxed">
                   I certify that I am a college student and I agree to the{' '}
-                  <span className="text-teal-700 underline font-medium">Terms of Service</span> and{' '}
-                  <span className="text-teal-700 underline font-medium">Privacy Policy</span>.
+                  <Link to="/terms" target="_blank" className="text-teal-700 underline font-medium hover:text-teal-800">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link to="/privacy" target="_blank" className="text-teal-700 underline font-medium hover:text-teal-800">
+                    Privacy Policy
+                  </Link>.
                 </span>
               </label>
               {errors.consent && (

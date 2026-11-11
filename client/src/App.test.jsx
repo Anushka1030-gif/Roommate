@@ -8,7 +8,7 @@ describe('App Component', () => {
     const brandElement = screen.getByText(/RoomieMatch/i, { selector: 'span' });
     expect(brandElement).toBeInTheDocument();
 
-    const homeHeading = screen.getByRole('heading', { name: /find your ideal roommate/i });
+    const homeHeading = screen.getByRole('heading', { name: /find a roommate who/i });
     expect(homeHeading).toBeInTheDocument();
   });
 });

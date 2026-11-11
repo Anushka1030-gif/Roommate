@@ -81,6 +81,9 @@ export default function AppLayout() {
                 <NavLink to="/onboarding/profile" className={navLinkClass}>
                   Profile
                 </NavLink>
+                <NavLink to="/requirement" className={navLinkClass}>
+                  Criteria
+                </NavLink>
                 <NavLink to="/matches" className={navLinkClass}>
                   Matches
                 </NavLink>
@@ -218,6 +221,13 @@ export default function AppLayout() {
                     Profile
                   </NavLink>
                   <NavLink
+                    to="/requirement"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={mobileNavLinkClass}
+                  >
+                    Criteria
+                  </NavLink>
+                  <NavLink
                     to="/matches"
                     onClick={() => setMobileMenuOpen(false)}
                     className={mobileNavLinkClass}
@@ -303,14 +313,22 @@ export default function AppLayout() {
 
       {/* Footer */}
       <footer className="mt-auto border-t border-slate-200/80 bg-white py-8 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 space-y-2">
+        <div className="max-w-7xl mx-auto px-4 space-y-3">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium text-slate-600">
+            <Link to="/" className="hover:text-teal-700 transition-colors">Home</Link>
+            <Link to="/matches" className="hover:text-teal-700 transition-colors">Matches</Link>
+            <Link to="/chats" className="hover:text-teal-700 transition-colors">Chats</Link>
+            <Link to="/settings" className="hover:text-teal-700 transition-colors">Settings</Link>
+            <Link to="/terms" className="hover:text-teal-700 transition-colors">Terms of Service</Link>
+            <Link to="/privacy" className="hover:text-teal-700 transition-colors">Privacy Policy</Link>
+          </div>
           <p className="font-medium text-slate-600">
             RoomieMatch — Smart Student Roommate Matching Platform
           </p>
-          <p>
+          <p className="text-slate-400">
             Exclusively for university & college students. Campus verified. Bhopal community launch.
           </p>
-          <p className="text-slate-400 pt-2">
+          <p className="text-slate-400 text-[11px] pt-1">
             &copy; {new Date().getFullYear()} RoomieMatch. All rights reserved.
           </p>
         </div>

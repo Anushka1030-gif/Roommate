@@ -10,11 +10,14 @@ vi.mock('../services/api.js', () => ({
   default: {
     get: vi.fn(),
     put: vi.fn(),
+    post: vi.fn(),
+    delete: vi.fn(),
   },
 }));
 
 describe('SettingsPage Component', () => {
   const mockShowToast = vi.fn();
+  const mockLogout = vi.fn().mockResolvedValue();
 
   const defaultUser = {
     id: 1,
@@ -32,6 +35,7 @@ describe('SettingsPage Component', () => {
           user: defaultUser,
           isAuthenticated: true,
           isVerified: true,
+          logout: mockLogout,
         }}
       >
         <ToastContext.Provider value={{ showToast: mockShowToast }}>
@@ -47,7 +51,7 @@ describe('SettingsPage Component', () => {
     vi.clearAllMocks();
   });
 
-  it('renders student profile card with edit button and privacy note', async () => {
+  it('renders student profile card with edit button, privacy note, and criteria link', async () => {
     api.get.mockResolvedValueOnce({
       data: {
         profile: {
@@ -69,8 +73,12 @@ describe('SettingsPage Component', () => {
       'href',
       '/onboarding/profile'
     );
-    expect(screen.getByText(/only verified students you match with can see your profile/i)).toBeInTheDocument();
-    expect(screen.getByText('Complete')).toBeInTheDocument();
+    expect(await screen.findByText('Complete')).toBeInTheDocument();
+    expect(screen.getByText(/only verified students you match with can view your profile/i)).toBeInTheDocument();
+
+    // Verify Criteria Section
+    expect(screen.getByRole('heading', { name: /housing & roommate criteria/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /edit criteria/i })).toHaveAttribute('href', '/requirement');
   });
 
   it('updates account phone number with validation', async () => {
@@ -110,6 +118,92 @@ describe('SettingsPage Component', () => {
           title: 'Phone Updated',
         })
       );
+    });
+  });
+
+  it('changes password with client validation and API call', async () => {
+    api.get.mockResolvedValueOnce({
+      data: { profile: {}, profile_complete: true, completeness_percentage: 100 },
+    });
+
+    api.post.mockResolvedValueOnce({
+      data: { success: true, message: 'Password changed successfully.' },
+    });
+
+    renderComponent();
+
+    const currentPwdInput = await screen.findByLabelText(/current password/i);
+    const newPwdInput = screen.getByLabelText(/^new password/i);
+    const confirmPwdInput = screen.getByLabelText(/confirm new password/i);
+    const updatePwdBtn = screen.getByRole('button', { name: /update password/i });
+
+    // Fill form
+    fireEvent.change(currentPwdInput, { target: { value: 'OldPassword123!' } });
+    fireEvent.change(newPwdInput, { target: { value: 'NewSecurePassword456!' } });
+    fireEvent.change(confirmPwdInput, { target: { value: 'NewSecurePassword456!' } });
+
+    fireEvent.click(updatePwdBtn);
+
+    await waitFor(() => {
+      expect(api.post).toHaveBeenCalledWith('/api/account/change-password', {
+        current_password: 'OldPassword123!',
+        new_password: 'NewSecurePassword456!',
+      });
+      expect(mockShowToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'success',
+          title: 'Password Changed',
+        })
+      );
+    });
+  });
+
+  it('opens delete account modal, requires confirmation checkbox and password, and calls DELETE /api/account', async () => {
+    api.get.mockResolvedValueOnce({
+      data: { profile: {}, profile_complete: true, completeness_percentage: 100 },
+    });
+
+    api.delete.mockResolvedValueOnce({
+      data: { success: true, message: 'Your account has been permanently deactivated.' },
+    });
+
+    renderComponent();
+
+    // Click Danger Zone Delete Account button
+    const deleteBtn = await screen.findByRole('button', { name: /^delete account$/i });
+    fireEvent.click(deleteBtn);
+
+    // Modal opens
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /delete your account\?/i })).toBeInTheDocument();
+    });
+
+    const confirmModalBtn = screen.getByRole('button', { name: /permanently delete account/i });
+    expect(confirmModalBtn).toBeDisabled();
+
+    // Enter password
+    const pwdInput = screen.getByPlaceholderText(/enter your account password/i);
+    fireEvent.change(pwdInput, { target: { value: 'MyPassword123!' } });
+
+    // Check confirmation checkbox
+    const checkbox = screen.getByTestId('delete-confirm-checkbox');
+    fireEvent.click(checkbox);
+    expect(confirmModalBtn).not.toBeDisabled();
+
+    fireEvent.click(confirmModalBtn);
+
+    await waitFor(() => {
+      expect(api.delete).toHaveBeenCalledWith('/api/account', {
+        data: { password: 'MyPassword123!' },
+      });
+      expect(mockShowToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'success',
+          title: 'Account Deleted',
+        })
+      );
+      expect(mockLogout).toHaveBeenCalled();
     });
   });
 });

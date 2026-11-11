@@ -77,7 +77,49 @@
     - 138/138 server tests passing across 11 test suites.
     - 75/75 client tests passing across 14 test suites.
     - 0 ESLint errors across both server and client.
-- [ ] **Step 15: Landing/settings/polish** — Landing page hero & features, user account settings, theme polish, responsive styling, and micro-animations.
-- [ ] **Step 15: Landing/settings/polish** — Landing page hero & features, user account settings, theme polish, responsive styling, and micro-animations.
+- [x] **Step 15: Landing/settings/polish** — Landing page hero & features, user account settings, legal pages, security hardening, and polish.
+  - Landing Page (`/`):
+    - Branded calm blue/green palette, fully responsive across desktop, tablet, and mobile.
+    - Hero section with the core value proposition: *"Find a roommate who actually fits your lifestyle"*.
+    - Context-aware dynamic Call-to-Action for visitors and returning students:
+      - Unauthenticated: Directs to registration (`/register`) with secondary login link.
+      - Unverified: Directs to OTP verification (`/verify-email`).
+      - Incomplete profile: Directs to student onboarding (`/onboarding/profile`).
+      - Complete profile: Directs to match discovery feed (`/matches`).
+    - 3-step "How RoomieMatch Works" section: (1) Create your profile, (2) Tell us what you want, (3) Meet your top 3 matches.
+    - Trust & Safety section highlighting verified institutional (.ac.in/.edu) emails, mutual-consent contact privacy, and active campus moderation.
+    - Interactive 5-question FAQ accordion addressing student queries regarding matching, privacy, and costs.
+  - Account Settings (`/settings`):
+    - Student Profile overview card with completion percentage and direct link to edit profile (`/onboarding/profile`).
+    - Housing & Roommate Criteria section with direct link to edit criteria (`/requirement`).
+    - Contact Phone Number management with format validation (`PUT /api/account/phone`).
+    - Blocked Users section from Step 13 with one-click unblock actions (`DELETE /api/blocks/:userId`).
+    - Change Password section with current password verification, bcrypt hashing, and rate limiting (`POST /api/account/change-password`).
+    - Danger Zone Account Deletion (`DELETE /api/account`): Anonymize-and-deactivate workflow requiring password confirmation and explicit checkbox confirmation.
+  - Anonymize-and-Deactivate Architecture:
+    - Knex migration `20261110000001_add_deactivated_status_to_users.js` extending `users.status` ENUM with `'deactivated'`.
+    - Permanently deletes student profile (`profiles`), housing requirements (`requirements`), match results (`match_results`), and blocks (`blocks`).
+    - Anonymizes sent chat message content to `[deleted]`, while preserving conversation structure for the peer.
+    - Blanks user email to unique placeholder `deleted_<id>_<timestamp>@deleted.invalid`, removes phone, and scrambles password hash.
+    - Forcibly terminates active WebSocket connections (`user_<id>`) and clears auth cookies.
+    - Excludes deactivated accounts from candidate pools (`findEligibleCandidates`, `getCachedMatches`), and filters them out of peer inboxes (`getUserConversations`).
+    - Subsequent logins and authenticated API requests are rejected with 403 `USER_DEACTIVATED`.
+  - Legal & Trust Pages:
+    - `/terms` (`TermsPage.jsx`): Comprehensive terms of service clearly marked with a developmental **DRAFT** notice banner.
+    - `/privacy` (`PrivacyPage.jsx`): Detailed privacy policy explaining minimum data exposure, zero PII in AI payloads, mutual-consent contact sharing, and right to be forgotten.
+    - Linked from the registration consent checkbox and global application footer.
+  - Global Polish & Hardening:
+    - `ErrorBoundary.jsx`: Global React error boundary with friendly recovery fallback UI ("Something unexpected happened", "Reload Page", "Return Home").
+    - `NotFoundPage.jsx`: Polished global 404 page with return home and explore matches buttons.
+    - Navbar consistency: Navigation links for Profile, Criteria, Matches, Chats, Settings, and Admin Staff Portal with active highlighting and mobile dropdown menu.
+    - Global application footer with responsive quick-links to Home, Matches, Chats, Settings, Terms, and Privacy.
+    - Security audit confirmed: Helmet headers active, CORS locked to `CLIENT_URL` with credentials, IP and user rate limits on auth, OTP, refresh, messaging, password change, and deletion; Zod validation across every route; and strict privacy checks proving zero contact details or password hashes leak outside consented contact and admin reports endpoints.
+  - Verification & Test Coverage:
+    - 8 backend tests in `account.test.js` covering password change validation, bcrypt hashing, login verification, deletion password check, full anonymization, socket disconnection, and inbox exclusion.
+    - 4 frontend tests in `SettingsPage.test.jsx` covering profile, criteria, phone update, password change, and deletion modal confirmation.
+    - 7 frontend tests in `LandingLegalPolish.test.jsx` covering landing hero CTA, next-step logic, FAQ accordion, terms, privacy, error boundary, and 404.
+    - 146/146 server integration tests passing across 12 suites.
+    - 84/84 client integration tests passing across 15 suites.
+    - 0 ESLint errors across both server and client.
 - [ ] **Step 16: Tests/hardening/final review** — End-to-end integration tests, security audit, edge case handling, performance verification, and final documentation review.
 
