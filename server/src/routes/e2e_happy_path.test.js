@@ -132,7 +132,7 @@ describe('End-to-End Happy Path API Integration Test (Step 16)', () => {
         drinking_ok: false,
         food_preference: 'any',
         guests_ok: 'rarely',
-        noise_tolerance: 'low',
+        noise_tolerance: 'quiet',
       });
     expect(reqResA.status).toBe(201);
 
@@ -216,7 +216,7 @@ describe('End-to-End Happy Path API Integration Test (Step 16)', () => {
         drinking_ok: false,
         food_preference: 'any',
         guests_ok: 'rarely',
-        noise_tolerance: 'low',
+        noise_tolerance: 'quiet',
       });
     expect(reqResB.status).toBe(201);
 
@@ -307,19 +307,27 @@ describe('End-to-End Happy Path API Integration Test (Step 16)', () => {
       .post('/api/conversations')
       .set('Cookie', cookieA)
       .send({
-        recipient_id: userB.id,
-        initial_message: 'Hi Rohan! We matched on RoomieMatch and have similar study habits. Interested in teaming up?',
+        candidate_user_id: userB.id,
       });
     expect(startChatRes.status).toBe(201);
     const conversationId = startChatRes.body.conversation.id;
     expect(conversationId).toBeDefined();
+
+    // Student A sends a message
+    const msg1Res = await request(app)
+      .post(`/api/conversations/${conversationId}/messages`)
+      .set('Cookie', cookieA)
+      .send({
+        content: 'Hi Rohan! We matched on RoomieMatch and have similar study habits. Interested in teaming up?',
+      });
+    expect(msg1Res.status).toBe(201);
 
     // Student A sends a second message
     const msg2Res = await request(app)
       .post(`/api/conversations/${conversationId}/messages`)
       .set('Cookie', cookieA)
       .send({
-        message: 'I am checking out 2BHKs near Mata Mandir road.',
+        content: 'I am checking out 2BHKs near Mata Mandir road.',
       });
     expect(msg2Res.status).toBe(201);
 
@@ -341,7 +349,7 @@ describe('End-to-End Happy Path API Integration Test (Step 16)', () => {
       .post(`/api/conversations/${conversationId}/messages`)
       .set('Cookie', cookieB)
       .send({
-        message: 'Hi Aarav! That sounds great, I would love to connect and discuss budgets.',
+        content: 'Hi Aarav! That sounds great, I would love to connect and discuss budgets.',
       });
     expect(replyRes.status).toBe(201);
 
@@ -358,9 +366,10 @@ describe('End-to-End Happy Path API Integration Test (Step 16)', () => {
     // 2. Student A shares contact
     const shareResA = await request(app)
       .post(`/api/conversations/${conversationId}/share-contact`)
-      .set('Cookie', cookieA);
+      .set('Cookie', cookieA)
+      .send({ share: true });
     expect(shareResA.status).toBe(200);
-    expect(shareResA.body.shared_by_user).toBe(true);
+    expect(shareResA.body.my_share).toBe(true);
     expect(shareResA.body.both_shared).toBe(false);
 
     // 3. Still blocked until Student B also shares
@@ -373,7 +382,8 @@ describe('End-to-End Happy Path API Integration Test (Step 16)', () => {
     // 4. Student B shares contact
     const shareResB = await request(app)
       .post(`/api/conversations/${conversationId}/share-contact`)
-      .set('Cookie', cookieB);
+      .set('Cookie', cookieB)
+      .send({ share: true });
     expect(shareResB.status).toBe(200);
     expect(shareResB.body.both_shared).toBe(true);
 
@@ -400,7 +410,7 @@ describe('End-to-End Happy Path API Integration Test (Step 16)', () => {
       .post(`/api/conversations/${conversationId}/confirm-roommates`)
       .set('Cookie', cookieA);
     expect(confirmResA.status).toBe(200);
-    expect(confirmResA.body.confirmed_by_user).toBe(true);
+    expect(confirmResA.body.me_confirmed).toBe(true);
     expect(confirmResA.body.both_confirmed).toBe(false);
 
     // Student B confirms
@@ -408,7 +418,7 @@ describe('End-to-End Happy Path API Integration Test (Step 16)', () => {
       .post(`/api/conversations/${conversationId}/confirm-roommates`)
       .set('Cookie', cookieB);
     expect(confirmResB.status).toBe(200);
-    expect(confirmResB.body.confirmed_by_user).toBe(true);
+    expect(confirmResB.body.me_confirmed).toBe(true);
     expect(confirmResB.body.both_confirmed).toBe(true);
     expect(confirmResB.body.roommate_status).toBe('confirmed');
 
@@ -432,8 +442,8 @@ describe('End-to-End Happy Path API Integration Test (Step 16)', () => {
 
     // Verify north-star metric: Confirmed Roommate Pairs is at least 1
     expect(statsRes.body.stats.confirmed_roommate_pairs).toBe(1);
-    expect(statsRes.body.stats.contact_shares_agreed).toBe(1);
-    expect(statsRes.body.stats.total_conversations).toBeGreaterThanOrEqual(1);
+    expect(statsRes.body.stats.contact_share_agreements).toBe(1);
+    expect(statsRes.body.stats.conversations).toBeGreaterThanOrEqual(1);
     expect(statsRes.body.stats.total_users).toBeGreaterThanOrEqual(3);
     expect(statsRes.body.stats.verified_users).toBeGreaterThanOrEqual(3);
   });
