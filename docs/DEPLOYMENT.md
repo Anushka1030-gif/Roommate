@@ -184,3 +184,4 @@ When deploying new code changes:
 - [ ] Admin Login: Successfully log in at `/login` with `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
 - [ ] Real-time WebSocket: Confirm chat message exchanges connect via WSS (`wss://api.yourdomain.com/socket.io/`).
 - [ ] Email Service: Verify student email registration OTP delivery through production SMTP.
+

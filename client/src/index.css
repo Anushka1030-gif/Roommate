@@ -1,5 +1,31 @@
 @import "tailwindcss";
 
+@theme {
+  --color-background: #FBF5EC;
+  --color-page: #FBF5EC;
+  --color-surface: #FFFFFF;
+  --color-surface-border: #EADFCF;
+  --color-beige: #F3E9DA;
+  --color-beige-50: #FBF5EC;
+  --color-beige-100: #F7EFE4;
+  --color-beige-200: #F3E9DA;
+  --color-beige-300: #EADFCF;
+  --color-beige-400: #DECDBD;
+  --color-peach-soft: #FFE3D1;
+  --color-peach: #F4B393;
+  --color-peach-accent: #D9825B;
+  --color-peach-deep: #AC5429;
+  --color-peach-deeper: #8E3E19;
+  --color-text-primary: #3D2C24;
+  --color-text-secondary: #7A6458;
+  --color-success: #5E9C76;
+  --color-warning: #D9A441;
+  --color-error: #C75146;
+  --color-brand-success: #5E9C76;
+  --color-brand-warning: #D9A441;
+  --color-brand-error: #C75146;
+}
+
 :root {
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   line-height: 1.5;
@@ -11,8 +37,27 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f8fafc;
-  color: #1e293b;
+  background-color: #FBF5EC;
+  color: #3D2C24;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar in warm peach tones */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F3E9DA;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #EADFCF;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D9825B;
 }

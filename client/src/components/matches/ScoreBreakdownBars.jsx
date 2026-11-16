@@ -19,10 +19,10 @@ export default function ScoreBreakdownBars({ breakdown = {}, className = '' }) {
   }
 
   const getScoreColor = (val) => {
-    if (val >= 90) return 'bg-emerald-500';
-    if (val >= 75) return 'bg-teal-500';
-    if (val >= 60) return 'bg-sky-500';
-    return 'bg-amber-500';
+    if (val >= 90) return 'bg-peach-deep';
+    if (val >= 75) return 'bg-peach';
+    if (val >= 60) return 'bg-peach-soft';
+    return 'bg-beige-400';
   };
 
   return (
@@ -35,15 +35,15 @@ export default function ScoreBreakdownBars({ breakdown = {}, className = '' }) {
           return (
             <div key={key} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 flex items-center gap-1.5 font-medium truncate">
+                <span className="text-text-secondary flex items-center gap-1.5 font-medium truncate">
                   <span className="text-sm">{config.icon}</span>
                   <span className="truncate">{config.label}</span>
                 </span>
-                <span className="font-semibold text-slate-800 tabular-nums ml-2">
+                <span className="font-semibold text-text-primary tabular-nums ml-2">
                   {val}%
                 </span>
               </div>
-              <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+              <div className="w-full bg-beige rounded-full h-1.5 overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${getScoreColor(val)}`}
                   style={{ width: `${Math.min(100, Math.max(0, val))}%` }}

@@ -9,9 +9,9 @@ export default function Alert({
 }) {
   const variantStyles = {
     info: {
-      wrapper: 'bg-sky-50/80 border-sky-200 text-sky-900',
-      iconColor: 'text-sky-600',
-      titleColor: 'text-sky-950',
+      wrapper: 'bg-peach-soft/60 border-peach text-text-primary',
+      iconColor: 'text-peach-deep',
+      titleColor: 'text-text-primary',
       defaultIcon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
@@ -24,9 +24,9 @@ export default function Alert({
       ),
     },
     success: {
-      wrapper: 'bg-emerald-50/80 border-emerald-200 text-emerald-900',
-      iconColor: 'text-emerald-600',
-      titleColor: 'text-emerald-950',
+      wrapper: 'bg-[#5E9C76]/10 border-[#5E9C76]/30 text-[#2B4E38]',
+      iconColor: 'text-[#5E9C76]',
+      titleColor: 'text-[#2B4E38]',
       defaultIcon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
@@ -39,9 +39,9 @@ export default function Alert({
       ),
     },
     warning: {
-      wrapper: 'bg-amber-50/80 border-amber-200 text-amber-900',
-      iconColor: 'text-amber-600',
-      titleColor: 'text-amber-950',
+      wrapper: 'bg-[#D9A441]/10 border-[#D9A441]/30 text-[#6B4B10]',
+      iconColor: 'text-[#D9A441]',
+      titleColor: 'text-[#6B4B10]',
       defaultIcon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
@@ -54,9 +54,9 @@ export default function Alert({
       ),
     },
     error: {
-      wrapper: 'bg-rose-50/90 border-rose-200 text-rose-900',
-      iconColor: 'text-rose-600',
-      titleColor: 'text-rose-950',
+      wrapper: 'bg-[#C75146]/10 border-[#C75146]/30 text-[#6B241E]',
+      iconColor: 'text-[#C75146]',
+      titleColor: 'text-[#6B241E]',
       defaultIcon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
@@ -89,7 +89,7 @@ export default function Alert({
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 -mr-1 -mt-1 p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-black/5 transition cursor-pointer"
+          className="shrink-0 -mr-1 -mt-1 p-1 rounded-lg text-text-secondary hover:text-text-primary hover:bg-beige/50 transition cursor-pointer"
           aria-label="Dismiss alert"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

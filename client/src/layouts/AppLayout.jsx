@@ -27,28 +27,28 @@ export default function AppLayout() {
   const navLinkClass = ({ isActive }) =>
     `text-sm font-medium transition-colors duration-150 px-3 py-2 rounded-lg ${
       isActive
-        ? 'text-teal-700 bg-teal-50 font-semibold'
-        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+        ? 'text-peach-deep font-semibold border-b-2 border-peach-deep pb-1 bg-peach-soft/30'
+        : 'text-text-secondary hover:text-text-primary hover:bg-beige/40'
     }`;
 
   const mobileNavLinkClass = ({ isActive }) =>
     `block text-base font-medium px-3 py-2.5 rounded-xl transition ${
       isActive
-        ? 'text-teal-700 bg-teal-50 font-semibold'
-        : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100'
+        ? 'text-peach-deep bg-peach-soft/60 font-semibold border-l-4 border-l-peach-deep'
+        : 'text-text-secondary hover:text-text-primary hover:bg-beige/30'
     }`;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
+    <div className="min-h-screen flex flex-col bg-page text-text-primary">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+      <header className="sticky top-0 z-40 bg-surface/95 backdrop-blur-md border-b border-surface-border shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 group focus:outline-none focus:ring-2 focus:ring-teal-500 rounded-lg p-1"
+            className="flex items-center gap-2.5 group focus:outline-none focus:ring-2 focus:ring-peach-deep rounded-lg p-1"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-700 to-emerald-500 flex items-center justify-center text-white shadow-sm shadow-teal-500/20 group-hover:scale-105 transition-transform duration-200">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-peach-deep to-peach flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform duration-200">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -65,10 +65,10 @@ export default function AppLayout() {
               </svg>
             </div>
             <div>
-              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-teal-800 to-emerald-700 bg-clip-text text-transparent">
+              <span className="text-xl font-bold tracking-tight text-text-primary">
                 RoomieMatch
               </span>
-              <span className="hidden sm:inline-block ml-2 text-xs font-medium text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
+              <span className="hidden sm:inline-block ml-2 text-xs font-medium text-text-primary bg-peach-soft px-2 py-0.5 rounded-full border border-peach/50">
                 Student Housing
               </span>
             </div>
@@ -108,8 +108,8 @@ export default function AppLayout() {
 
             {isAuthenticated && !isVerified && (
               <NavLink to="/verify-email" className={navLinkClass}>
-                <span className="inline-flex items-center gap-1 text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                <span className="inline-flex items-center gap-1 text-text-primary bg-peach-soft px-2.5 py-1 rounded-lg border border-peach/50">
+                  <span className="w-2 h-2 rounded-full bg-peach-deep animate-pulse" />
                   Verify Email
                 </span>
               </NavLink>
@@ -121,10 +121,10 @@ export default function AppLayout() {
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <p className="text-sm font-semibold text-slate-800 truncate max-w-[160px]">
+                  <p className="text-sm font-semibold text-text-primary truncate max-w-[160px]">
                     {user?.full_name || user?.email}
                   </p>
-                  <p className="text-xs text-slate-500 truncate max-w-[160px]">{user?.email}</p>
+                  <p className="text-xs text-text-secondary truncate max-w-[160px]">{user?.email}</p>
                 </div>
                 <Button
                   variant="outline"
@@ -156,7 +156,7 @@ export default function AppLayout() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((open) => !open)}
-              className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-beige/40 focus:outline-none focus:ring-2 focus:ring-peach-deep"
               aria-expanded={mobileMenuOpen}
               aria-label="Toggle navigation menu"
             >
@@ -185,14 +185,14 @@ export default function AppLayout() {
 
         {/* Mobile dropdown menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200/80 bg-white px-4 pt-3 pb-6 space-y-3">
+          <div className="md:hidden border-t border-surface-border bg-surface px-4 pt-3 pb-6 space-y-3">
             {isAuthenticated && (
-              <div className="p-3 bg-slate-50 rounded-xl mb-2 flex items-center justify-between">
+              <div className="p-3 bg-beige/30 rounded-xl mb-2 flex items-center justify-between border border-surface-border">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">
+                  <p className="text-sm font-semibold text-text-primary">
                     {user?.full_name || 'Student User'}
                   </p>
-                  <p className="text-xs text-slate-500">{user?.email}</p>
+                  <p className="text-xs text-text-secondary">{user?.email}</p>
                 </div>
                 {user?.role === 'admin' ? (
                   <Badge variant="warning" size="sm">
@@ -291,7 +291,7 @@ export default function AppLayout() {
             </div>
 
             {isAuthenticated && (
-              <div className="pt-2 border-t border-slate-100">
+              <div className="pt-2 border-t border-surface-border">
                 <Button
                   variant="outline"
                   fullWidth
@@ -312,23 +312,23 @@ export default function AppLayout() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-200/80 bg-white py-8 text-center text-xs text-slate-500">
+      <footer className="mt-auto border-t border-surface-border bg-surface py-8 text-center text-xs text-text-secondary">
         <div className="max-w-7xl mx-auto px-4 space-y-3">
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium text-slate-600">
-            <Link to="/" className="hover:text-teal-700 transition-colors">Home</Link>
-            <Link to="/matches" className="hover:text-teal-700 transition-colors">Matches</Link>
-            <Link to="/chats" className="hover:text-teal-700 transition-colors">Chats</Link>
-            <Link to="/settings" className="hover:text-teal-700 transition-colors">Settings</Link>
-            <Link to="/terms" className="hover:text-teal-700 transition-colors">Terms of Service</Link>
-            <Link to="/privacy" className="hover:text-teal-700 transition-colors">Privacy Policy</Link>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium text-text-secondary">
+            <Link to="/" className="hover:text-peach-deep transition-colors">Home</Link>
+            <Link to="/matches" className="hover:text-peach-deep transition-colors">Matches</Link>
+            <Link to="/chats" className="hover:text-peach-deep transition-colors">Chats</Link>
+            <Link to="/settings" className="hover:text-peach-deep transition-colors">Settings</Link>
+            <Link to="/terms" className="hover:text-peach-deep transition-colors">Terms of Service</Link>
+            <Link to="/privacy" className="hover:text-peach-deep transition-colors">Privacy Policy</Link>
           </div>
-          <p className="font-medium text-slate-600">
+          <p className="font-medium text-text-primary">
             RoomieMatch — Smart Student Roommate Matching Platform
           </p>
-          <p className="text-slate-400">
+          <p className="text-text-secondary">
             Exclusively for university & college students. Campus verified. Bhopal community launch.
           </p>
-          <p className="text-slate-400 text-[11px] pt-1">
+          <p className="text-text-secondary text-[11px] pt-1">
             &copy; {new Date().getFullYear()} RoomieMatch. All rights reserved.
           </p>
         </div>

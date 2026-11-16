@@ -7,23 +7,25 @@ export default function Badge({
   ...props
 }) {
   const variantClasses = {
-    primary: 'bg-teal-50 text-teal-800 border-teal-200/80',
-    secondary: 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
-    success: 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
-    warning: 'bg-amber-50 text-amber-800 border-amber-200/80',
-    danger: 'bg-rose-50 text-rose-800 border-rose-200/80',
-    neutral: 'bg-slate-100 text-slate-700 border-slate-200',
-    info: 'bg-sky-50 text-sky-800 border-sky-200/80',
+    primary: 'bg-peach-soft text-text-primary border-peach/60',
+    secondary: 'bg-beige text-text-primary border-surface-border',
+    peach: 'bg-peach text-text-primary border-peach-deep/40',
+    success: 'bg-[#5E9C76]/15 text-[#2E4E38] border-[#5E9C76]/40',
+    warning: 'bg-[#D9A441]/15 text-[#6B4B10] border-[#D9A441]/40',
+    danger: 'bg-[#C75146]/15 text-[#6B241E] border-[#C75146]/40',
+    neutral: 'bg-beige text-text-secondary border-surface-border',
+    info: 'bg-peach-soft/60 text-text-primary border-peach/40',
   };
 
   const dotColorClasses = {
-    primary: 'bg-teal-500',
-    secondary: 'bg-emerald-500',
-    success: 'bg-emerald-500',
-    warning: 'bg-amber-500',
-    danger: 'bg-rose-500',
-    neutral: 'bg-slate-500',
-    info: 'bg-sky-500',
+    primary: 'bg-peach-deep',
+    secondary: 'bg-peach',
+    peach: 'bg-peach-deep',
+    success: 'bg-[#5E9C76]',
+    warning: 'bg-[#D9A441]',
+    danger: 'bg-[#C75146]',
+    neutral: 'bg-text-secondary',
+    info: 'bg-peach-deep',
   };
 
   const sizeClasses = {

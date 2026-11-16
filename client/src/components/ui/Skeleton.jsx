@@ -8,7 +8,7 @@ export default function Skeleton({
 
   return (
     <Component
-      className={`animate-pulse bg-slate-200/80 ${shapeClass} ${className}`}
+      className={`animate-pulse bg-[#EADFCF] ${shapeClass} ${className}`}
       aria-hidden="true"
       {...props}
     />

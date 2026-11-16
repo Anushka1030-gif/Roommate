@@ -6,12 +6,12 @@ export default function Card({
   ...props
 }) {
   const hoverClass = hover
-    ? 'hover:border-slate-300 hover:shadow-md transition-all duration-200'
+    ? 'hover:border-peach hover:shadow-sm transition-all duration-200'
     : '';
 
   return (
     <Component
-      className={`bg-white border border-slate-200/90 rounded-2xl shadow-sm overflow-hidden ${hoverClass} ${className}`}
+      className={`bg-surface border border-surface-border rounded-2xl shadow-xs overflow-hidden ${hoverClass} ${className}`}
       {...props}
     >
       {children}
@@ -21,7 +21,7 @@ export default function Card({
 
 Card.Header = function CardHeader({ children, className = '', ...props }) {
   return (
-    <div className={`p-6 border-b border-slate-100 ${className}`} {...props}>
+    <div className={`p-6 border-b border-surface-border/60 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -30,7 +30,7 @@ Card.Header = function CardHeader({ children, className = '', ...props }) {
 Card.Title = function CardTitle({ children, className = '', as: Component = 'h3', ...props }) {
   return (
     <Component
-      className={`text-xl font-semibold text-slate-900 tracking-tight ${className}`}
+      className={`text-xl font-semibold text-text-primary tracking-tight ${className}`}
       {...props}
     >
       {children}
@@ -40,7 +40,7 @@ Card.Title = function CardTitle({ children, className = '', as: Component = 'h3'
 
 Card.Description = function CardDescription({ children, className = '', ...props }) {
   return (
-    <p className={`text-sm text-slate-500 mt-1 ${className}`} {...props}>
+    <p className={`text-sm text-text-secondary mt-1 ${className}`} {...props}>
       {children}
     </p>
   );
@@ -57,7 +57,7 @@ Card.Body = function CardBody({ children, className = '', ...props }) {
 Card.Footer = function CardFooter({ children, className = '', ...props }) {
   return (
     <div
-      className={`p-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between ${className}`}
+      className={`p-6 bg-beige-50/50 border-t border-surface-border/60 flex items-center justify-between ${className}`}
       {...props}
     >
       {children}

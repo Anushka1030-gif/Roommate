@@ -1,50 +1,45 @@
 export default function MatchScoreBadge({ score, rank, className = '' }) {
   const numericScore = Math.round(Number(score) || 0);
 
-  // Dynamic styling based on compatibility score
+  // Dynamic styling based on compatibility score using peach tints (higher = deeper peach)
   let colorStyles = {
-    bg: 'bg-emerald-50',
-    text: 'text-emerald-700',
-    border: 'border-emerald-200',
-    ring: 'ring-emerald-500/20',
-    fill: 'text-emerald-600',
-    label: 'Exceptional Fit',
+    bg: 'bg-peach-soft',
+    text: 'text-text-primary',
+    border: 'border-peach/50',
+    ring: 'ring-peach-soft/40',
+    label: 'Good Match',
   };
 
   if (numericScore >= 90) {
     colorStyles = {
-      bg: 'bg-emerald-50',
-      text: 'text-emerald-700',
-      border: 'border-emerald-200',
-      ring: 'ring-emerald-500/20',
-      fill: 'text-emerald-600',
+      bg: 'bg-peach',
+      text: 'text-text-primary font-bold',
+      border: 'border-peach-deep',
+      ring: 'ring-peach-deep/30',
       label: 'Exceptional Fit',
     };
   } else if (numericScore >= 80) {
     colorStyles = {
-      bg: 'bg-teal-50',
-      text: 'text-teal-700',
-      border: 'border-teal-200',
-      ring: 'ring-teal-500/20',
-      fill: 'text-teal-600',
+      bg: 'bg-peach/70',
+      text: 'text-text-primary',
+      border: 'border-peach',
+      ring: 'ring-peach/30',
       label: 'Strong Match',
     };
   } else if (numericScore >= 70) {
     colorStyles = {
-      bg: 'bg-sky-50',
-      text: 'text-sky-700',
-      border: 'border-sky-200',
-      ring: 'ring-sky-500/20',
-      fill: 'text-sky-600',
+      bg: 'bg-peach-soft',
+      text: 'text-text-primary',
+      border: 'border-peach/50',
+      ring: 'ring-peach-soft/40',
       label: 'Good Match',
     };
   } else {
     colorStyles = {
-      bg: 'bg-amber-50',
-      text: 'text-amber-800',
-      border: 'border-amber-200',
-      ring: 'ring-amber-500/20',
-      fill: 'text-amber-600',
+      bg: 'bg-beige',
+      text: 'text-text-primary',
+      border: 'border-surface-border',
+      ring: 'ring-beige/40',
       label: 'Moderate Match',
     };
   }
@@ -60,7 +55,7 @@ export default function MatchScoreBadge({ score, rank, className = '' }) {
           <span className={`text-base font-extrabold tracking-tight ${colorStyles.text}`}>
             {numericScore}%
           </span>
-          <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mt-0.5">
+          <span className="text-[10px] font-semibold text-text-secondary uppercase tracking-wider mt-0.5">
             Fit
           </span>
         </div>
@@ -69,7 +64,7 @@ export default function MatchScoreBadge({ score, rank, className = '' }) {
       <div>
         <div className="flex items-center gap-1.5">
           {rank && (
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-beige text-text-primary border border-surface-border">
               #{rank} Ranked
             </span>
           )}
@@ -77,7 +72,7 @@ export default function MatchScoreBadge({ score, rank, className = '' }) {
             {colorStyles.label}
           </span>
         </div>
-        <p className="text-xs text-slate-500 mt-0.5">Lifestyle & preference compatibility</p>
+        <p className="text-xs text-text-secondary mt-0.5">Lifestyle & preference compatibility</p>
       </div>
     </div>
   );

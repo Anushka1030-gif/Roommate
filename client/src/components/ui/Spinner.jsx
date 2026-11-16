@@ -15,7 +15,7 @@ export default function Spinner({ size = 'md', className = '', label = 'Loading.
       aria-label={label}
     >
       <div
-        className={`${selectedSize} rounded-full border-slate-300 border-t-teal-600 animate-spin`}
+        className={`${selectedSize} rounded-full border-peach-soft border-t-peach-deep animate-spin`}
       />
       <span className="sr-only">{label}</span>
     </div>

@@ -19,11 +19,11 @@ const Input = forwardRef(function Input(
   ref
 ) {
   const baseClasses =
-    'rounded-xl border bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition-colors duration-150 focus:outline-none focus:ring-2 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed';
+    'rounded-xl border bg-beige-50/70 px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-secondary/60 transition-colors duration-150 focus:outline-none focus:ring-2 disabled:bg-beige-200/50 disabled:text-text-secondary/60 disabled:cursor-not-allowed';
 
   const stateClasses = hasError
-    ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20 text-rose-900'
-    : 'border-slate-300 hover:border-slate-400 focus:border-teal-600 focus:ring-teal-600/20';
+    ? 'border-brand-error focus:border-brand-error focus:ring-brand-error/20 text-brand-error'
+    : 'border-surface-border hover:border-peach focus:border-peach-deep focus:ring-peach-deep/20 focus:bg-white';
 
   const widthClass = fullWidth ? 'w-full' : '';
   const paddingLeft = leftIcon ? 'pl-10' : '';
@@ -32,7 +32,7 @@ const Input = forwardRef(function Input(
   return (
     <div className={`relative ${widthClass}`}>
       {leftIcon && (
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-text-secondary">
           {leftIcon}
         </div>
       )}
@@ -50,7 +50,7 @@ const Input = forwardRef(function Input(
         {...props}
       />
       {rightIcon && (
-        <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400">
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-text-secondary">
           {rightIcon}
         </div>
       )}

@@ -18,15 +18,15 @@ export default function Button({
 
   const variantClasses = {
     primary:
-      'bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white shadow-sm focus:ring-teal-500',
+      'bg-peach-deep hover:bg-peach-deeper active:bg-peach-deeper text-white shadow-xs focus:ring-peach-deep',
     secondary:
-      'bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 text-emerald-900 border border-emerald-200 focus:ring-emerald-500',
+      'bg-beige hover:bg-beige-300 active:bg-beige-400 text-text-primary border border-peach focus:ring-peach-deep',
     outline:
-      'bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 border border-slate-300 shadow-xs focus:ring-teal-500',
+      'bg-surface hover:bg-beige-50 active:bg-beige text-text-primary border border-surface-border shadow-xs focus:ring-peach-deep',
     danger:
-      'bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white shadow-sm focus:ring-rose-500',
+      'bg-brand-error hover:opacity-90 active:opacity-100 text-white shadow-xs focus:ring-brand-error',
     ghost:
-      'bg-transparent hover:bg-slate-100 active:bg-slate-200 text-slate-700 focus:ring-slate-400',
+      'bg-transparent hover:bg-beige-100 active:bg-beige-200 text-text-primary focus:ring-peach-deep',
   };
 
   const sizeClasses = {
