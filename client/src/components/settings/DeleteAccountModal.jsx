@@ -51,12 +51,12 @@ export default function DeleteAccountModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="delete-account-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3D2C24]/50 backdrop-blur-xs animate-in fade-in duration-200"
     >
-      <div className="bg-white rounded-2xl shadow-xl border border-rose-200 max-w-md w-full p-6 space-y-4 overflow-hidden">
+      <div className="bg-surface rounded-2xl shadow-xl border border-[#C75146]/30 max-w-md w-full p-6 space-y-4 overflow-hidden">
         {/* Header */}
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-[#C75146]/10 text-[#C75146] border border-[#C75146]/20 flex items-center justify-center shrink-0">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
@@ -67,10 +67,10 @@ export default function DeleteAccountModal({
             </svg>
           </div>
           <div>
-            <h3 id="delete-account-modal-title" className="text-lg font-bold text-slate-900">
+            <h3 id="delete-account-modal-title" className="text-lg font-bold text-text-primary">
               Delete Your Account?
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-text-secondary mt-0.5">
               Permanently remove your profile and deactivate your access.
             </p>
           </div>
@@ -98,22 +98,22 @@ export default function DeleteAccountModal({
             />
           </FormField>
 
-          <label className="flex items-start gap-3 p-3 bg-rose-50/70 border border-rose-200 rounded-xl cursor-pointer">
+          <label className="flex items-start gap-3 p-3 bg-[#C75146]/10 border border-[#C75146]/20 rounded-xl cursor-pointer">
             <input
               type="checkbox"
               data-testid="delete-confirm-checkbox"
               checked={confirmed}
               onChange={(e) => setConfirmed(e.target.checked)}
               disabled={loading}
-              className="mt-0.5 h-4 w-4 rounded border-rose-300 text-rose-600 focus:ring-rose-500"
+              className="mt-0.5 h-4 w-4 rounded border-[#C75146]/40 text-[#C75146] focus:ring-[#C75146]"
             />
-            <span className="text-xs font-medium text-rose-900 leading-snug">
+            <span className="text-xs font-medium text-[#C75146] leading-snug">
               I understand that deleting my account is permanent and cannot be undone.
             </span>
           </label>
 
           {/* Action buttons */}
-          <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-3 pt-2 border-t border-surface-border">
             <Button
               type="button"
               variant="outline"

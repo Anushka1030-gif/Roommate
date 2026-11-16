@@ -33,20 +33,20 @@ export default function ConnectModal({ match, isOpen, onClose }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="connect-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3D2C24]/50 backdrop-blur-xs animate-in fade-in duration-200"
     >
-      <div className="bg-white rounded-2xl shadow-xl border border-slate-200/90 max-w-lg w-full p-6 space-y-5 overflow-hidden">
+      <div className="bg-surface rounded-2xl shadow-xl border border-surface-border max-w-lg w-full p-6 space-y-5 overflow-hidden">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
+            <div className="w-12 h-12 rounded-xl bg-peach-soft text-text-primary border border-peach/50 flex items-center justify-center font-bold text-lg shadow-xs">
               {(candidate.full_name || 'R')[0]}
             </div>
             <div>
-              <h3 id="connect-modal-title" className="text-lg font-bold text-slate-900">
+              <h3 id="connect-modal-title" className="text-lg font-bold text-text-primary">
                 Start Chat with {candidate.full_name}
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-text-secondary">
                 {candidate.college_name || 'Student'} • {candidate.city || 'Bhopal'}
               </p>
             </div>
@@ -55,7 +55,7 @@ export default function ConnectModal({ match, isOpen, onClose }) {
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            className="text-text-secondary hover:text-text-primary p-1.5 rounded-lg hover:bg-beige/60 transition-colors cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -64,8 +64,8 @@ export default function ConnectModal({ match, isOpen, onClose }) {
         </div>
 
         {/* Mutual Privacy Guard Reminder */}
-        <div className="p-3.5 rounded-xl bg-teal-50/70 border border-teal-200/70 flex items-start gap-2.5 text-xs text-teal-900">
-          <svg className="w-4 h-4 text-teal-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="p-3.5 rounded-xl bg-peach-soft/30 border border-peach/40 flex items-start gap-2.5 text-xs text-text-primary">
+          <svg className="w-4 h-4 text-peach-deep shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
           <div>
@@ -77,20 +77,20 @@ export default function ConnectModal({ match, isOpen, onClose }) {
         {/* Icebreakers suggestion */}
         {icebreakers.length > 0 && (
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-700 block">
+            <label className="text-xs font-semibold text-text-primary block">
               Suggested AI Conversation Starters
             </label>
             <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
               {icebreakers.map((prompt, i) => (
                 <div
                   key={i}
-                  className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 text-xs flex items-center justify-between gap-3 text-slate-700"
+                  className="p-2.5 rounded-xl bg-beige-50/70 border border-surface-border text-xs flex items-center justify-between gap-3 text-text-primary"
                 >
                   <span className="italic truncate">&ldquo;{prompt}&rdquo;</span>
                   <button
                     type="button"
                     onClick={() => handleCopy(prompt)}
-                    className="shrink-0 text-[11px] font-medium text-teal-700 hover:text-teal-900 px-2 py-0.5 rounded bg-white border border-teal-200 hover:bg-teal-50 transition-colors cursor-pointer"
+                    className="shrink-0 text-[11px] font-medium text-peach-deep hover:text-peach-deeper px-2 py-0.5 rounded bg-surface border border-peach/40 hover:bg-peach-soft/40 transition-colors cursor-pointer"
                   >
                     {copiedText === prompt ? 'Copied!' : 'Copy'}
                   </button>
@@ -101,7 +101,7 @@ export default function ConnectModal({ match, isOpen, onClose }) {
         )}
 
         {/* Actions */}
-        <div className="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+        <div className="pt-2 flex items-center justify-end gap-3 border-t border-surface-border">
           <Button variant="outline" size="md" onClick={onClose}>
             Cancel
           </Button>

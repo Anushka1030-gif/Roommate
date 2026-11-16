@@ -53,13 +53,13 @@ export default function ReportModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="report-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3D2C24]/50 backdrop-blur-xs animate-in fade-in duration-200"
     >
-      <div className="bg-white rounded-2xl shadow-xl border border-slate-200/90 max-w-lg w-full p-6 space-y-4 overflow-hidden">
+      <div className="bg-surface rounded-2xl shadow-xl border border-surface-border max-w-lg w-full p-6 space-y-4 overflow-hidden">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#D9A441]/15 text-[#D9A441] border border-[#D9A441]/30 flex items-center justify-center shrink-0">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
@@ -70,10 +70,10 @@ export default function ReportModal({
               </svg>
             </div>
             <div>
-              <h3 id="report-modal-title" className="text-lg font-bold text-slate-900">
+              <h3 id="report-modal-title" className="text-lg font-bold text-text-primary">
                 Report {userName}
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-text-secondary">
                 Help keep the RoomieMatch student community safe and respectful.
               </p>
             </div>
@@ -82,7 +82,7 @@ export default function ReportModal({
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            className="text-text-secondary hover:text-text-primary p-1.5 rounded-lg hover:bg-beige/60 transition-colors cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -92,7 +92,7 @@ export default function ReportModal({
 
         {/* Error notice */}
         {error && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800">
+          <div className="p-3 bg-[#C75146]/10 border border-[#C75146]/20 rounded-xl text-xs text-[#C75146]">
             {error}
           </div>
         )}
@@ -130,7 +130,7 @@ export default function ReportModal({
             />
           </FormField>
 
-          <p className="text-[11px] text-slate-500 leading-relaxed">
+          <p className="text-[11px] text-text-secondary leading-relaxed">
             Your report is confidential and sent directly to our moderation administrators. The reported user will not be notified who submitted the report.
           </p>
 

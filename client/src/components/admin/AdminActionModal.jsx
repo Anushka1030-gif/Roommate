@@ -66,19 +66,19 @@ export default function AdminActionModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="admin-action-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#3D2C24]/50 backdrop-blur-xs animate-in fade-in duration-200"
     >
-      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-lg w-full p-6 space-y-4 overflow-hidden">
+      <div className="bg-surface rounded-2xl shadow-xl border border-surface-border max-w-lg w-full p-6 space-y-4 overflow-hidden">
         {/* Modal Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div
               className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                 isSuspend
-                  ? 'bg-rose-100 text-rose-700'
+                  ? 'bg-[#C75146]/10 text-[#C75146]'
                   : isWarn
-                  ? 'bg-amber-100 text-amber-700'
-                  : 'bg-slate-100 text-slate-700'
+                  ? 'bg-[#D9A441]/15 text-[#D9A441]'
+                  : 'bg-peach-soft text-text-primary'
               }`}
             >
               {isSuspend ? (
@@ -96,11 +96,11 @@ export default function AdminActionModal({
               )}
             </div>
             <div>
-              <h3 id="admin-action-modal-title" className="text-lg font-bold text-slate-900">
+              <h3 id="admin-action-modal-title" className="text-lg font-bold text-text-primary">
                 {actionTitle}
               </h3>
-              <p className="text-xs text-slate-500">
-                Report #{report.id} • Reason: <span className="font-semibold">{report.reason}</span>
+              <p className="text-xs text-text-secondary">
+                Report #{report.id} • Reason: <span className="font-semibold text-text-primary">{report.reason}</span>
               </p>
             </div>
           </div>
@@ -110,7 +110,7 @@ export default function AdminActionModal({
             onClick={handleClose}
             disabled={loading}
             aria-label="Close"
-            className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            className="text-text-secondary hover:text-text-primary p-1 rounded-lg hover:bg-beige/60 transition-colors cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -119,17 +119,17 @@ export default function AdminActionModal({
         </div>
 
         {/* Reported User Details Summary */}
-        <div className="bg-slate-50 rounded-xl p-3 border border-slate-200/80 text-xs space-y-1">
+        <div className="bg-beige-50/70 rounded-xl p-3 border border-surface-border text-xs space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-slate-500 font-medium">Reported Student:</span>
-            <span className="font-semibold text-slate-900">{report.reported_user?.name}</span>
+            <span className="text-text-secondary font-medium">Reported Student:</span>
+            <span className="font-semibold text-text-primary">{report.reported_user?.name}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-slate-500 font-medium">Student Email:</span>
-            <span className="font-mono text-slate-700">{report.reported_user?.email}</span>
+            <span className="text-text-secondary font-medium">Student Email:</span>
+            <span className="font-mono text-text-secondary">{report.reported_user?.email}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-slate-500 font-medium">Total Incident Reports:</span>
+            <span className="text-text-secondary font-medium">Total Incident Reports:</span>
             <Badge
               variant={report.reported_user?.total_reports_count > 1 ? 'danger' : 'neutral'}
               size="sm"
@@ -184,23 +184,23 @@ export default function AdminActionModal({
 
           {/* Suspend Confirmation Checkbox */}
           {isSuspend && (
-            <label className="flex items-start gap-3 p-3 bg-rose-50/70 border border-rose-200 rounded-xl cursor-pointer">
+            <label className="flex items-start gap-3 p-3 bg-[#C75146]/10 border border-[#C75146]/20 rounded-xl cursor-pointer">
               <input
                 type="checkbox"
                 data-testid="suspend-confirm-checkbox"
                 checked={confirmedSuspend}
                 onChange={(e) => setConfirmedSuspend(e.target.checked)}
                 disabled={loading}
-                className="mt-0.5 h-4 w-4 rounded border-rose-300 text-rose-600 focus:ring-rose-500"
+                className="mt-0.5 h-4 w-4 rounded border-[#C75146]/40 text-[#C75146] focus:ring-[#C75146]"
               />
-              <span className="text-xs font-medium text-rose-900 leading-snug">
+              <span className="text-xs font-medium text-[#C75146] leading-snug">
                 I confirm that I want to suspend <strong>{report.reported_user?.name}</strong> immediately.
               </span>
             </label>
           )}
 
           {/* Modal Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-3 pt-2 border-t border-surface-border">
             <Button
               type="button"
               variant="outline"

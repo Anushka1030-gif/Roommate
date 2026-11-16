@@ -20,7 +20,7 @@ export default function MatchFilters({
   return (
     <div className="space-y-4">
       {/* Status tabs */}
-      <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-2xl overflow-x-auto scrollbar-none border border-slate-200/60">
+      <div className="flex items-center gap-1.5 p-1 bg-beige/70 rounded-2xl overflow-x-auto scrollbar-none border border-surface-border">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -30,8 +30,8 @@ export default function MatchFilters({
               onClick={() => onTabChange(tab.id)}
               className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer ${
                 isActive
-                  ? 'bg-white text-slate-900 shadow-xs ring-1 ring-slate-200'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+                  ? 'bg-surface text-text-primary shadow-xs ring-1 ring-surface-border'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-surface/60'
               }`}
             >
               {tab.icon && <span className="text-xs">{tab.icon}</span>}
@@ -39,8 +39,8 @@ export default function MatchFilters({
               <span
                 className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
                   isActive
-                    ? 'bg-teal-50 text-teal-700'
-                    : 'bg-slate-200/70 text-slate-600'
+                    ? 'bg-peach-soft text-text-primary'
+                    : 'bg-beige-200 text-text-secondary'
                 }`}
               >
                 {tab.count}
@@ -55,7 +55,7 @@ export default function MatchFilters({
         {/* Search */}
         <div className="relative flex-1 max-w-sm">
           <svg
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary/60"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -68,13 +68,13 @@ export default function MatchFilters({
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by name or college..."
             aria-label="Search matches by name or college"
-            className="w-full pl-9 pr-4 py-2 text-xs bg-white rounded-xl border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-colors shadow-2xs"
+            className="w-full pl-9 pr-4 py-2 text-xs bg-beige-50/70 rounded-xl border border-surface-border text-text-primary placeholder-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-peach-deep/20 focus:border-peach-deep transition-colors shadow-2xs"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded cursor-pointer"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-secondary/70 hover:text-text-primary p-0.5 rounded cursor-pointer"
             >
               ✕
             </button>
@@ -88,7 +88,7 @@ export default function MatchFilters({
             value={lifestyleFilter}
             onChange={(e) => onLifestyleFilterChange(e.target.value)}
             aria-label="Filter by lifestyle preference"
-            className="px-3 py-2 text-xs font-medium bg-white rounded-xl border border-slate-200 text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 shadow-2xs cursor-pointer"
+            className="px-3 py-2 text-xs font-medium bg-beige-50/70 rounded-xl border border-surface-border text-text-primary focus:outline-none focus:ring-2 focus:ring-peach-deep/20 focus:border-peach-deep shadow-2xs cursor-pointer"
           >
             <option value="all">All Lifestyles</option>
             <option value="early_bird">Early Bird</option>
@@ -103,7 +103,7 @@ export default function MatchFilters({
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value)}
             aria-label="Sort matches by criteria"
-            className="px-3 py-2 text-xs font-medium bg-white rounded-xl border border-slate-200 text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 shadow-2xs cursor-pointer"
+            className="px-3 py-2 text-xs font-medium bg-beige-50/70 rounded-xl border border-surface-border text-text-primary focus:outline-none focus:ring-2 focus:ring-peach-deep/20 focus:border-peach-deep shadow-2xs cursor-pointer"
           >
             <option value="score">Sort: Highest Match</option>
             <option value="cleanliness">Sort: Cleanest First</option>

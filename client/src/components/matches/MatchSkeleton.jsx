@@ -5,7 +5,7 @@ export default function MatchSkeleton({ count = 3 }) {
   return (
     <div className="space-y-6">
       {Array.from({ length: count }).map((_, i) => (
-        <Card key={i} className="p-6 sm:p-7 border border-slate-200/90 shadow-xs relative overflow-hidden">
+        <Card key={i} className="p-6 sm:p-7 border border-surface-border shadow-xs relative overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             {/* Header info */}
             <div className="flex items-start gap-4 flex-1">
@@ -31,7 +31,7 @@ export default function MatchSkeleton({ count = 3 }) {
           </div>
 
           {/* Explanation Skeleton */}
-          <div className="mt-5 p-4 rounded-xl bg-slate-50/70 border border-slate-100 space-y-2">
+          <div className="mt-5 p-4 rounded-xl bg-beige-50/70 border border-surface-border space-y-2">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-5/6" />
           </div>
@@ -50,7 +50,7 @@ export default function MatchSkeleton({ count = 3 }) {
           </div>
 
           {/* Action Bar */}
-          <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
+          <div className="mt-6 pt-5 border-t border-surface-border flex items-center justify-between">
             <div className="flex gap-2">
               <Skeleton className="h-10 w-24 rounded-xl" />
               <Skeleton className="h-10 w-24 rounded-xl" />

@@ -55,7 +55,7 @@ export default function SafetyActionMenu({
         aria-haspopup="true"
         aria-expanded={isOpen}
         aria-label={`Safety options for ${userName}`}
-        className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+        className="p-1.5 text-text-secondary/70 hover:text-text-primary hover:bg-beige/60 rounded-lg transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-peach-deep/20"
       >
         {/* Three dots horizontal SVG */}
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -72,7 +72,7 @@ export default function SafetyActionMenu({
         <div
           role="menu"
           aria-orientation="vertical"
-          className={`absolute z-30 mt-1 w-44 rounded-xl bg-white shadow-lg border border-slate-200 py-1 focus:outline-none animate-in fade-in zoom-in-95 duration-100 ${
+          className={`absolute z-30 mt-1 w-44 rounded-xl bg-surface shadow-lg border border-surface-border py-1 focus:outline-none animate-in fade-in zoom-in-95 duration-100 ${
             align === 'left' ? 'left-0' : 'right-0'
           }`}
         >
@@ -81,9 +81,9 @@ export default function SafetyActionMenu({
             type="button"
             role="menuitem"
             onClick={() => handleAction(onReport)}
-            className="w-full text-left px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-amber-700 flex items-center gap-2 cursor-pointer transition-colors"
+            className="w-full text-left px-3.5 py-2 text-xs font-medium text-text-primary hover:bg-beige/40 hover:text-[#D9A441] flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <svg className="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4 text-[#D9A441] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -99,9 +99,9 @@ export default function SafetyActionMenu({
             type="button"
             role="menuitem"
             onClick={() => handleAction(onBlock)}
-            className="w-full text-left px-3.5 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 flex items-center gap-2 cursor-pointer transition-colors"
+            className="w-full text-left px-3.5 py-2 text-xs font-medium text-[#C75146] hover:bg-[#C75146]/10 flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <svg className="w-4 h-4 text-rose-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4 text-[#C75146] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

@@ -7,18 +7,18 @@ export default function ChatMessageBubble({ message, isMe, partnerName }) {
     return (
       <div className="flex justify-end mb-2.5 group">
         <div className="max-w-[82%] sm:max-w-[72%] flex flex-col items-end">
-          <div className="bg-gradient-to-tr from-teal-700 to-teal-600 text-white rounded-2xl rounded-br-xs px-4 py-2.5 shadow-xs transition-shadow">
-            <p className="text-sm leading-relaxed whitespace-pre-wrap break-words selection:bg-teal-900 selection:text-white">
+          <div className="bg-peach-soft border border-peach/50 text-text-primary rounded-2xl rounded-br-xs px-4 py-2.5 shadow-xs transition-shadow">
+            <p className="text-sm leading-relaxed whitespace-pre-wrap break-words selection:bg-peach selection:text-text-primary">
               {message.content}
             </p>
           </div>
-          <div className="flex items-center gap-1.5 mt-1 px-1 text-[11px] text-slate-400 select-none">
+          <div className="flex items-center gap-1.5 mt-1 px-1 text-[11px] text-text-secondary/70 select-none">
             <span>{timeStr}</span>
             {message.is_read ? (
               <span
                 title="Read by partner"
                 aria-label="Read"
-                className="text-teal-600 flex items-center font-bold"
+                className="text-peach-deep flex items-center font-bold"
               >
                 <svg className="w-3.5 h-3.5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -28,7 +28,7 @@ export default function ChatMessageBubble({ message, isMe, partnerName }) {
                 </svg>
               </span>
             ) : (
-              <span title="Delivered" aria-label="Delivered" className="text-slate-400">
+              <span title="Delivered" aria-label="Delivered" className="text-text-secondary/60">
                 <svg className="w-3.5 h-3.5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
@@ -46,18 +46,18 @@ export default function ChatMessageBubble({ message, isMe, partnerName }) {
   return (
     <div className="flex justify-start items-end gap-2 mb-2.5 group">
       <div
-        className="w-7 h-7 rounded-full bg-gradient-to-tr from-teal-600 to-emerald-500 text-white flex items-center justify-center text-xs font-semibold shrink-0 shadow-xs mb-4"
+        className="w-7 h-7 rounded-full bg-peach-soft text-text-primary border border-peach/50 flex items-center justify-center text-xs font-semibold shrink-0 shadow-xs mb-4"
         title={partnerName}
       >
         {initial}
       </div>
       <div className="max-w-[82%] sm:max-w-[72%] flex flex-col items-start">
-        <div className="bg-white border border-slate-200/90 text-slate-800 rounded-2xl rounded-bl-xs px-4 py-2.5 shadow-xs">
+        <div className="bg-surface border border-surface-border text-text-primary rounded-2xl rounded-bl-xs px-4 py-2.5 shadow-xs">
           <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
             {message.content}
           </p>
         </div>
-        <div className="flex items-center gap-1.5 mt-1 px-1 text-[11px] text-slate-400 select-none">
+        <div className="flex items-center gap-1.5 mt-1 px-1 text-[11px] text-text-secondary/70 select-none">
           <span>{timeStr}</span>
         </div>
       </div>

@@ -35,9 +35,9 @@ export default function ChatMessageList({
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center p-8 text-slate-400">
+      <div className="flex-1 flex items-center justify-center p-8 text-text-secondary">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-3 border-teal-600 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-3 border-peach-deep border-t-transparent rounded-full animate-spin" />
           <span className="text-sm font-medium">Loading chat history...</span>
         </div>
       </div>
@@ -47,7 +47,7 @@ export default function ChatMessageList({
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-gradient-to-b from-slate-50/60 to-white"
+      className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-page"
       aria-label="Message History"
     >
       {/* Load earlier messages button */}
@@ -57,11 +57,11 @@ export default function ChatMessageList({
             type="button"
             onClick={onLoadMore}
             disabled={loadingMore}
-            className="text-xs font-medium text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200/80 px-3.5 py-1.5 rounded-full shadow-2xs transition-colors cursor-pointer inline-flex items-center gap-2"
+            className="text-xs font-medium text-peach-deep bg-surface hover:bg-peach-soft/30 border border-peach/40 px-3.5 py-1.5 rounded-full shadow-2xs transition-colors cursor-pointer inline-flex items-center gap-2"
           >
             {loadingMore ? (
               <>
-                <div className="w-3 h-3 border-2 border-teal-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-3 h-3 border-2 border-peach-deep border-t-transparent rounded-full animate-spin" />
                 <span>Loading older messages...</span>
               </>
             ) : (
@@ -79,16 +79,16 @@ export default function ChatMessageList({
       {/* Empty State */}
       {messages.length === 0 && (
         <div className="h-full min-h-[220px] flex flex-col items-center justify-center text-center p-6 space-y-3">
-          <div className="w-14 h-14 rounded-2xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-600 shadow-xs">
+          <div className="w-14 h-14 rounded-2xl bg-peach-soft border border-peach/50 flex items-center justify-center text-text-primary shadow-xs">
             <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
           <div className="max-w-xs">
-            <h4 className="text-sm font-bold text-slate-800">
+            <h4 className="text-sm font-bold text-text-primary">
               Start chatting with {partnerName || 'Roommate'}
             </h4>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            <p className="text-xs text-text-secondary mt-1 leading-relaxed">
               Your contact details remain private until you both choose to share them. Say hello or pick an icebreaker below!
             </p>
           </div>
@@ -104,11 +104,11 @@ export default function ChatMessageList({
           <div key={message.id || index}>
             {showDateDivider && (
               <div className="flex items-center my-4">
-                <div className="flex-grow border-t border-slate-200/80" />
-                <span className="mx-3 text-[11px] font-semibold text-slate-400 bg-white px-3 py-0.5 rounded-full border border-slate-200/60 shadow-2xs">
+                <div className="flex-grow border-t border-surface-border" />
+                <span className="mx-3 text-[11px] font-semibold text-text-secondary/80 bg-surface px-3 py-0.5 rounded-full border border-surface-border shadow-2xs">
                   {formatDateDivider(message.created_at)}
                 </span>
-                <div className="flex-grow border-t border-slate-200/80" />
+                <div className="flex-grow border-t border-surface-border" />
               </div>
             )}
             <ChatMessageBubble
@@ -123,14 +123,14 @@ export default function ChatMessageList({
       {/* Partner Typing Bubble */}
       {partnerTyping && (
         <div className="flex items-end gap-2 animate-in fade-in duration-200">
-          <div className="w-7 h-7 rounded-full bg-teal-600 text-white flex items-center justify-center text-xs font-semibold shrink-0 mb-1">
+          <div className="w-7 h-7 rounded-full bg-peach-soft text-text-primary border border-peach/50 flex items-center justify-center text-xs font-semibold shrink-0 mb-1">
             {(partnerName || 'R')[0]?.toUpperCase()}
           </div>
-          <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-xs px-4 py-2.5 shadow-xs flex items-center gap-1.5">
-            <span className="text-xs text-slate-500 font-medium mr-1">{partnerName} is typing</span>
-            <span className="w-1.5 h-1.5 bg-teal-600 rounded-full animate-bounce [animation-delay:-0.3s]" />
-            <span className="w-1.5 h-1.5 bg-teal-600 rounded-full animate-bounce [animation-delay:-0.15s]" />
-            <span className="w-1.5 h-1.5 bg-teal-600 rounded-full animate-bounce" />
+          <div className="bg-surface border border-surface-border rounded-2xl rounded-bl-xs px-4 py-2.5 shadow-xs flex items-center gap-1.5">
+            <span className="text-xs text-text-secondary font-medium mr-1">{partnerName} is typing</span>
+            <span className="w-1.5 h-1.5 bg-peach-deep rounded-full animate-bounce [animation-delay:-0.3s]" />
+            <span className="w-1.5 h-1.5 bg-peach-deep rounded-full animate-bounce [animation-delay:-0.15s]" />
+            <span className="w-1.5 h-1.5 bg-peach-deep rounded-full animate-bounce" />
           </div>
         </div>
       )}

@@ -58,8 +58,8 @@ export default function MatchLifestyleSummary({ user = {}, className = '' }) {
 
   return (
     <div className={`space-y-3 ${className}`}>
-      <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-        <svg className="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <h4 className="text-xs font-semibold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+        <svg className="w-3.5 h-3.5 text-text-secondary/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
         Lifestyle & Habit Overview
@@ -67,16 +67,16 @@ export default function MatchLifestyleSummary({ user = {}, className = '' }) {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {/* Cleanliness */}
-        <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 text-xs">
-          <span className="text-slate-500 block text-[11px]">Cleanliness</span>
-          <div className="flex items-center gap-1 mt-0.5 font-medium text-slate-800">
+        <div className="p-2.5 rounded-xl bg-beige-50/70 border border-surface-border text-xs">
+          <span className="text-text-secondary block text-[11px]">Cleanliness</span>
+          <div className="flex items-center gap-1 mt-0.5 font-medium text-text-primary">
             <span>Level {cleanliness}/5</span>
             <div className="flex gap-0.5 ml-1">
               {[1, 2, 3, 4, 5].map((lvl) => (
                 <div
                   key={lvl}
                   className={`w-1.5 h-1.5 rounded-full ${
-                    lvl <= cleanliness ? 'bg-teal-600' : 'bg-slate-200'
+                    lvl <= cleanliness ? 'bg-peach-deep' : 'bg-beige-300'
                   }`}
                 />
               ))}
@@ -85,62 +85,62 @@ export default function MatchLifestyleSummary({ user = {}, className = '' }) {
         </div>
 
         {/* Sleep */}
-        <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 text-xs">
-          <span className="text-slate-500 block text-[11px]">Sleep Schedule</span>
-          <span className="font-medium text-slate-800 truncate block mt-0.5" title={sleepLabel}>
+        <div className="p-2.5 rounded-xl bg-beige-50/70 border border-surface-border text-xs">
+          <span className="text-text-secondary block text-[11px]">Sleep Schedule</span>
+          <span className="font-medium text-text-primary truncate block mt-0.5" title={sleepLabel}>
             {sleepLabel}
           </span>
         </div>
 
         {/* Study Habits */}
-        <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 text-xs">
-          <span className="text-slate-500 block text-[11px]">Study Routine</span>
-          <span className="font-medium text-slate-800 truncate block mt-0.5" title={studyLabel}>
+        <div className="p-2.5 rounded-xl bg-beige-50/70 border border-surface-border text-xs">
+          <span className="text-text-secondary block text-[11px]">Study Routine</span>
+          <span className="font-medium text-text-primary truncate block mt-0.5" title={studyLabel}>
             {studyLabel}
           </span>
         </div>
 
         {/* Noise Tolerance */}
-        <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 text-xs">
-          <span className="text-slate-500 block text-[11px]">Noise Level</span>
-          <span className="font-medium text-slate-800 truncate block mt-0.5" title={noiseLabel}>
+        <div className="p-2.5 rounded-xl bg-beige-50/70 border border-surface-border text-xs">
+          <span className="text-text-secondary block text-[11px]">Noise Level</span>
+          <span className="font-medium text-text-primary truncate block mt-0.5" title={noiseLabel}>
             {noiseLabel}
           </span>
         </div>
 
         {/* Food */}
-        <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 text-xs">
-          <span className="text-slate-500 block text-[11px]">Dietary Habit</span>
-          <span className="font-medium text-slate-800 truncate block mt-0.5" title={foodLabel}>
+        <div className="p-2.5 rounded-xl bg-beige-50/70 border border-surface-border text-xs">
+          <span className="text-text-secondary block text-[11px]">Dietary Habit</span>
+          <span className="font-medium text-text-primary truncate block mt-0.5" title={foodLabel}>
             {foodLabel}
           </span>
         </div>
 
         {/* Guests */}
-        <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 text-xs">
-          <span className="text-slate-500 block text-[11px]">Guests & Visitors</span>
-          <span className="font-medium text-slate-800 truncate block mt-0.5" title={guestLabel}>
+        <div className="p-2.5 rounded-xl bg-beige-50/70 border border-surface-border text-xs">
+          <span className="text-text-secondary block text-[11px]">Guests & Visitors</span>
+          <span className="font-medium text-text-primary truncate block mt-0.5" title={guestLabel}>
             {guestLabel}
           </span>
         </div>
 
         {/* Smoking & Drinking */}
-        <div className="col-span-2 sm:col-span-3 p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 text-xs flex items-center justify-between">
+        <div className="col-span-2 sm:col-span-3 p-2.5 rounded-xl bg-beige-50/70 border border-surface-border text-xs flex items-center justify-between">
           <div>
-            <span className="text-slate-500 text-[11px]">Smoking: </span>
-            <span className="font-medium text-slate-800">{smokeLabel}</span>
+            <span className="text-text-secondary text-[11px]">Smoking: </span>
+            <span className="font-medium text-text-primary">{smokeLabel}</span>
           </div>
-          <span className="text-slate-300">•</span>
+          <span className="text-surface-border">•</span>
           <div>
-            <span className="text-slate-500 text-[11px]">Drinking: </span>
-            <span className="font-medium text-slate-800">{drinkLabel}</span>
+            <span className="text-text-secondary text-[11px]">Drinking: </span>
+            <span className="font-medium text-text-primary">{drinkLabel}</span>
           </div>
           {user.pet_preference && (
             <>
-              <span className="text-slate-300">•</span>
+              <span className="text-surface-border">•</span>
               <div>
-                <span className="text-slate-500 text-[11px]">Pets: </span>
-                <span className="font-medium text-slate-800 capitalize">
+                <span className="text-text-secondary text-[11px]">Pets: </span>
+                <span className="font-medium text-text-primary capitalize">
                   {user.pet_preference.replace('_', ' ')}
                 </span>
               </div>
