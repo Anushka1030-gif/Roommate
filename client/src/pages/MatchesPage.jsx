@@ -319,17 +319,17 @@ export default function MatchesPage() {
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 space-y-8 animate-in fade-in duration-200">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-border pb-6">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">
               Compatible Roommates
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-50 text-teal-700 border border-teal-200">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-peach-soft text-text-primary border border-peach/50">
               Top 3 AI Ranked
             </span>
           </div>
-          <p className="text-sm text-slate-600 mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Ranked based on your lifestyle profile, habits, deal-breakers, and importance weights.
           </p>
         </div>
@@ -356,29 +356,29 @@ export default function MatchesPage() {
 
       {/* Active Requirement Summary Pill / Bar */}
       {activeRequirement ? (
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-slate-700">
-            <span className="font-semibold text-slate-900 flex items-center gap-1.5">
-              <svg className="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="p-4 rounded-2xl bg-surface border border-surface-border shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-text-primary">
+            <span className="font-semibold text-text-primary flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-peach-deep" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
               {activeRequirement.city || 'Bhopal'}
             </span>
-            <span className="text-slate-300">•</span>
+            <span className="text-surface-border">•</span>
             <span>
               Budget: ₹{activeRequirement.budget_min?.toLocaleString()} – ₹{activeRequirement.budget_max?.toLocaleString()}/mo
             </span>
-            <span className="text-slate-300">•</span>
+            <span className="text-surface-border">•</span>
             <span className="capitalize">
               {activeRequirement.preferred_sleep_schedule?.replace(/_/g, ' ') || 'Any sleep routine'}
             </span>
-            <span className="text-slate-300">•</span>
+            <span className="text-surface-border">•</span>
             <span>Cleanliness ≥ {activeRequirement.preferred_cleanliness_min || 1}/5</span>
           </div>
 
           <Link
             to="/requirement"
-            className="text-teal-700 hover:text-teal-900 font-semibold flex items-center gap-1 hover:underline"
+            className="text-peach-deep hover:text-peach-deeper font-semibold flex items-center gap-1 hover:underline"
           >
             <span>Edit Criteria</span>
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -405,15 +405,15 @@ export default function MatchesPage() {
 
       {/* Candidate Pool Warning (< 3 candidates) */}
       {!hasEnoughMatches && infoMessage && (
-        <div className="p-4 rounded-2xl bg-amber-50/90 border border-amber-200/90 text-amber-900 text-xs flex items-start gap-3 shadow-2xs">
-          <svg className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="p-4 rounded-2xl bg-[#D9A441]/15 border border-[#D9A441]/30 text-[#6B4B10] text-xs flex items-start gap-3 shadow-2xs">
+          <svg className="w-5 h-5 text-[#D9A441] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div className="space-y-1">
-            <span className="font-bold text-sm block">Growing Community in Your City</span>
-            <p className="text-amber-800 leading-relaxed">
+            <span className="font-bold text-sm block text-text-primary">Growing Community in Your City</span>
+            <p className="text-[#6B4B10] leading-relaxed">
               {infoMessage} You can also consider widening your budget range in{' '}
-              <Link to="/requirement" className="underline font-semibold hover:text-amber-950">
+              <Link to="/requirement" className="underline font-semibold hover:text-text-primary">
                 Housing Requirements
               </Link>{' '}
               to discover more potential candidates.
@@ -423,9 +423,9 @@ export default function MatchesPage() {
       )}
 
       {/* Privacy Notice Banner */}
-      <div className="p-3.5 rounded-2xl bg-slate-100/70 border border-slate-200/70 flex items-center justify-between gap-3 text-xs text-slate-600">
+      <div className="p-3.5 rounded-2xl bg-beige-50/70 border border-surface-border flex items-center justify-between gap-3 text-xs text-text-secondary">
         <div className="flex items-center gap-2">
-          <svg className="w-4 h-4 text-teal-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-4 h-4 text-peach-deep shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
           </svg>
           <span>
@@ -454,18 +454,18 @@ export default function MatchesPage() {
         <MatchSkeleton count={3} />
       ) : error ? (
         <Card className="p-10 text-center space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
+          <div className="w-12 h-12 mx-auto rounded-full bg-error/10 text-error border border-error/25 flex items-center justify-center text-xl">
             ⚠️
           </div>
           <Card.Title>Unable to Load Matches</Card.Title>
-          <p className="text-sm text-slate-600 max-w-md mx-auto">{error}</p>
+          <p className="text-sm text-text-secondary max-w-md mx-auto">{error}</p>
           <Button variant="primary" size="md" onClick={loadData}>
             Retry
           </Button>
         </Card>
       ) : filteredMatches.length === 0 ? (
-        <Card className="p-10 text-center space-y-4 bg-white border border-slate-200">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-2xl shadow-2xs">
+        <Card className="p-10 text-center space-y-4 bg-surface border border-surface-border">
+          <div className="w-14 h-14 mx-auto rounded-2xl bg-peach-soft/60 text-peach-deep border border-peach-soft flex items-center justify-center text-2xl shadow-2xs">
             {activeTab === 'liked' ? '❤️' : activeTab === 'skipped' ? '👁️‍🗨️' : '🔍'}
           </div>
           <Card.Title>
@@ -477,7 +477,7 @@ export default function MatchesPage() {
               ? 'No Connected Matches Yet'
               : 'No Matches Found with Current Filters'}
           </Card.Title>
-          <p className="text-sm text-slate-500 max-w-md mx-auto">
+          <p className="text-sm text-text-secondary max-w-md mx-auto">
             {activeTab === 'liked'
               ? 'When you like a candidate by tapping the heart icon, they will be organized right here for easy reference.'
               : activeTab === 'skipped'

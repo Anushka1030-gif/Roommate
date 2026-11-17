@@ -3,6 +3,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import app from './app.js';
 import config from './config/index.js';
 import registerChatSocket from './sockets/chat.socket.js';
+import mailService from './services/mail.service.js';
 
 const server = http.createServer(app);
 
@@ -22,8 +23,9 @@ registerChatSocket(io);
 const PORT = config.port;
 
 if (process.env.NODE_ENV !== 'test') {
-  server.listen(PORT, () => {
+  server.listen(PORT, async () => {
     console.log(`🚀 RoomieMatch server running on port ${PORT} [${config.nodeEnv}]`);
+    await mailService.verifyConnection();
   });
 }
 

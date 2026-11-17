@@ -416,8 +416,8 @@ export default function ProfileOnboardingPage() {
   if (isLoading) {
     return (
       <div className="max-w-3xl mx-auto py-16 text-center">
-        <Spinner size="lg" className="mx-auto text-teal-600 mb-4" />
-        <p className="text-slate-600 font-medium">Loading your profile preferences...</p>
+        <Spinner size="lg" className="mx-auto text-peach-deep mb-4" />
+        <p className="text-text-secondary font-medium">Loading your profile preferences...</p>
       </div>
     );
   }
@@ -425,8 +425,8 @@ export default function ProfileOnboardingPage() {
   return (
     <div className="max-w-3xl mx-auto py-6 sm:py-10 px-4 sm:px-0">
       {/* Privacy Notice Banner */}
-      <div className="mb-6 p-4 rounded-2xl bg-teal-50/90 border border-teal-200/80 shadow-xs flex items-start gap-3">
-        <div className="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+      <div className="mb-6 p-4 rounded-2xl bg-beige/70 border border-surface-border shadow-xs flex items-start gap-3">
+        <div className="w-8 h-8 rounded-xl bg-peach-soft text-text-primary border border-peach/50 flex items-center justify-center shrink-0 mt-0.5">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
@@ -438,21 +438,21 @@ export default function ProfileOnboardingPage() {
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-sm font-bold text-teal-950">Student Privacy Guard</h2>
+            <h2 className="text-sm font-bold text-text-primary">Student Privacy Guard</h2>
             <Badge variant="success" size="sm">
               Protected
             </Badge>
           </div>
-          <p className="text-xs sm:text-sm text-teal-800 mt-0.5 font-medium">
+          <p className="text-xs sm:text-sm text-text-secondary mt-0.5 font-medium">
             Only verified students you match with can see your profile.
           </p>
         </div>
       </div>
 
       {/* Main Container Card */}
-      <Card className="shadow-xl border-slate-200/80 overflow-hidden">
+      <Card className="shadow-xl border-surface-border overflow-hidden">
         {/* Header & Completeness Progress */}
-        <div className="bg-gradient-to-r from-teal-900 via-teal-800 to-emerald-900 p-6 sm:p-8 text-white">
+        <div className="bg-gradient-to-r from-[#3D2C24] via-[#4A372E] to-[#2E201A] p-6 sm:p-8 text-white">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 mb-2">
@@ -460,7 +460,7 @@ export default function ProfileOnboardingPage() {
                   Step 5 • Student Onboarding
                 </span>
                 {completeness.isComplete && (
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-400 text-emerald-950">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#5E9C76] text-white">
                     100% Complete
                   </span>
                 )}
@@ -468,20 +468,20 @@ export default function ProfileOnboardingPage() {
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
                 Student Profile Setup
               </h1>
-              <p className="text-teal-100 text-sm mt-1 max-w-xl">
+              <p className="text-[#F3E9DA]/90 text-sm mt-1 max-w-xl">
                 Configure your lifestyle, habits, and preferences to discover compatible roommates.
               </p>
             </div>
 
             {/* Completeness Badge */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/15 text-center min-w-[130px] self-start sm:self-auto">
-              <span className="text-xs uppercase tracking-wider text-teal-200 font-semibold block">
+              <span className="text-xs uppercase tracking-wider text-peach font-semibold block">
                 Completeness
               </span>
               <span className="text-2xl font-black text-white">{completeness.percent}%</span>
               <div className="w-full bg-white/20 h-1.5 rounded-full mt-1.5 overflow-hidden">
                 <div
-                  className="bg-emerald-400 h-full rounded-full transition-all duration-300"
+                  className="bg-peach h-full rounded-full transition-all duration-300"
                   style={{ width: `${completeness.percent}%` }}
                 />
               </div>
@@ -502,27 +502,27 @@ export default function ProfileOnboardingPage() {
                       setCurrentStep(step.id);
                     }
                   }}
-                  className={`group flex flex-col items-center transition focus:outline-none ${
+                  className={`group flex flex-col items-center transition focus:outline-none cursor-pointer ${
                     isActive
                       ? 'text-white'
                       : isPast
-                        ? 'text-teal-200 hover:text-white'
-                        : 'text-teal-300/60'
+                        ? 'text-peach-soft hover:text-white'
+                        : 'text-white/60'
                   }`}
                 >
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition duration-200 mb-1.5 ${
                       isActive
-                        ? 'bg-white text-teal-900 shadow-md ring-4 ring-white/30'
+                        ? 'bg-peach text-[#3D2C24] shadow-md ring-4 ring-peach/30'
                         : isPast
-                          ? 'bg-teal-700/80 text-white'
+                          ? 'bg-[#5E9C76] text-white'
                           : 'bg-white/10 text-white/50'
                     }`}
                   >
                     {isPast ? '✓' : step.id}
                   </div>
                   <span className="text-xs font-semibold truncate w-full">{step.title}</span>
-                  <span className="hidden sm:block text-[10px] text-teal-200/70 truncate w-full">
+                  <span className="hidden sm:block text-[10px] text-[#F3E9DA]/70 truncate w-full">
                     {step.description}
                   </span>
                 </button>
@@ -560,8 +560,8 @@ export default function ProfileOnboardingPage() {
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900">Academic & Basic Details</h2>
-                  <p className="text-sm text-slate-500">
+                  <h2 className="text-lg font-bold text-text-primary">Academic & Basic Details</h2>
+                  <p className="text-sm text-text-secondary">
                     Basic information that helps potential flatmates identify your college cohort.
                   </p>
                 </div>
@@ -690,19 +690,19 @@ export default function ProfileOnboardingPage() {
             {currentStep === 2 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900">Lifestyle & Living Preferences</h2>
-                  <p className="text-sm text-slate-500">
+                  <h2 className="text-lg font-bold text-text-primary">Lifestyle & Living Preferences</h2>
+                  <p className="text-sm text-text-secondary">
                     Schedules and environment rules are crucial for preventing flatmate friction.
                   </p>
                 </div>
 
                 {/* Sleep Schedule */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Sleep Schedule <span className="text-rose-500">*</span>
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    Sleep Schedule <span className="text-[#C75146]">*</span>
                   </label>
                   {errors.sleep_schedule && (
-                    <p className="text-xs text-rose-600 mb-2">{errors.sleep_schedule}</p>
+                    <p className="text-xs text-[#C75146] mb-2">{errors.sleep_schedule}</p>
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {SLEEP_OPTIONS.map((opt) => {
@@ -712,14 +712,14 @@ export default function ProfileOnboardingPage() {
                           key={opt.value}
                           type="button"
                           onClick={() => handleSelectOption('sleep_schedule', opt.value)}
-                          className={`p-4 rounded-xl border text-left transition duration-150 focus:outline-none ${
+                          className={`p-4 rounded-xl border text-left transition duration-150 focus:outline-none cursor-pointer ${
                             selected
-                              ? 'border-teal-600 bg-teal-50/60 ring-2 ring-teal-600/20'
-                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                              ? 'border-peach-deep bg-peach-soft/60 ring-2 ring-peach-deep/20 text-text-primary'
+                              : 'border-surface-border hover:border-peach/50 bg-surface text-text-primary'
                           }`}
                         >
-                          <div className="font-semibold text-slate-900 text-sm">{opt.title}</div>
-                          <div className="text-xs text-slate-500 mt-1">{opt.subtitle}</div>
+                          <div className="font-semibold text-text-primary text-sm">{opt.title}</div>
+                          <div className="text-xs text-text-secondary mt-1">{opt.subtitle}</div>
                         </button>
                       );
                     })}
@@ -727,16 +727,16 @@ export default function ProfileOnboardingPage() {
                 </div>
 
                 {/* Cleanliness Scale (1 to 5) */}
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                <div className="p-4 rounded-2xl bg-beige-50/70 border border-surface-border">
                   <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-semibold text-slate-900">
-                      Cleanliness Level (1 to 5) <span className="text-rose-500">*</span>
+                    <label className="block text-sm font-semibold text-text-primary">
+                      Cleanliness Level (1 to 5) <span className="text-[#C75146]">*</span>
                     </label>
-                    <Badge variant="teal" size="sm">
+                    <Badge variant="primary" size="sm">
                       Level {formData.cleanliness_level} of 5
                     </Badge>
                   </div>
-                  <p className="text-xs text-slate-500 mb-4">
+                  <p className="text-xs text-text-secondary mb-4">
                     1 = relaxed & casual, 5 = spotless & neat freak.
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
@@ -747,16 +747,16 @@ export default function ProfileOnboardingPage() {
                           key={lvl.level}
                           type="button"
                           onClick={() => handleSelectOption('cleanliness_level', lvl.level)}
-                          className={`p-3 rounded-xl border text-left transition text-xs ${
+                          className={`p-3 rounded-xl border text-left transition text-xs cursor-pointer ${
                             selected
-                              ? 'border-teal-600 bg-teal-600 text-white shadow-sm'
-                              : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                              ? 'border-peach-deep bg-peach-deep text-white shadow-xs'
+                              : 'border-surface-border bg-surface text-text-primary hover:border-peach/50'
                           }`}
                         >
                           <div className="font-bold">{lvl.label}</div>
                           <div
                             className={`text-[11px] mt-0.5 ${
-                              selected ? 'text-teal-100' : 'text-slate-500'
+                              selected ? 'text-white/90' : 'text-text-secondary'
                             }`}
                           >
                             {lvl.desc}
@@ -769,11 +769,11 @@ export default function ProfileOnboardingPage() {
 
                 {/* Noise Level */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Noise Level Tolerance <span className="text-rose-500">*</span>
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    Noise Level Tolerance <span className="text-[#C75146]">*</span>
                   </label>
                   {errors.noise_level && (
-                    <p className="text-xs text-rose-600 mb-2">{errors.noise_level}</p>
+                    <p className="text-xs text-[#C75146] mb-2">{errors.noise_level}</p>
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {NOISE_OPTIONS.map((opt) => {
@@ -783,14 +783,14 @@ export default function ProfileOnboardingPage() {
                           key={opt.value}
                           type="button"
                           onClick={() => handleSelectOption('noise_level', opt.value)}
-                          className={`p-4 rounded-xl border text-left transition duration-150 focus:outline-none ${
+                          className={`p-4 rounded-xl border text-left transition duration-150 focus:outline-none cursor-pointer ${
                             selected
-                              ? 'border-teal-600 bg-teal-50/60 ring-2 ring-teal-600/20'
-                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                              ? 'border-peach-deep bg-peach-soft/60 ring-2 ring-peach-deep/20 text-text-primary'
+                              : 'border-surface-border hover:border-peach/50 bg-surface text-text-primary'
                           }`}
                         >
-                          <div className="font-semibold text-slate-900 text-sm">{opt.title}</div>
-                          <div className="text-xs text-slate-500 mt-1">{opt.subtitle}</div>
+                          <div className="font-semibold text-text-primary text-sm">{opt.title}</div>
+                          <div className="text-xs text-text-secondary mt-1">{opt.subtitle}</div>
                         </button>
                       );
                     })}
@@ -799,11 +799,11 @@ export default function ProfileOnboardingPage() {
 
                 {/* Guest Policy */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Guest Policy <span className="text-rose-500">*</span>
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    Guest Policy <span className="text-[#C75146]">*</span>
                   </label>
                   {errors.guest_policy && (
-                    <p className="text-xs text-rose-600 mb-2">{errors.guest_policy}</p>
+                    <p className="text-xs text-[#C75146] mb-2">{errors.guest_policy}</p>
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {GUEST_OPTIONS.map((opt) => {
@@ -813,14 +813,14 @@ export default function ProfileOnboardingPage() {
                           key={opt.value}
                           type="button"
                           onClick={() => handleSelectOption('guest_policy', opt.value)}
-                          className={`p-3.5 rounded-xl border text-left transition duration-150 focus:outline-none ${
+                          className={`p-3.5 rounded-xl border text-left transition duration-150 focus:outline-none cursor-pointer ${
                             selected
-                              ? 'border-teal-600 bg-teal-50/60 ring-2 ring-teal-600/20'
-                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                              ? 'border-peach-deep bg-peach-soft/60 ring-2 ring-peach-deep/20 text-text-primary'
+                              : 'border-surface-border hover:border-peach/50 bg-surface text-text-primary'
                           }`}
                         >
-                          <div className="font-semibold text-slate-900 text-sm">{opt.title}</div>
-                          <div className="text-xs text-slate-500 mt-0.5">{opt.subtitle}</div>
+                          <div className="font-semibold text-text-primary text-sm">{opt.title}</div>
+                          <div className="text-xs text-text-secondary mt-0.5">{opt.subtitle}</div>
                         </button>
                       );
                     })}
@@ -833,19 +833,19 @@ export default function ProfileOnboardingPage() {
             {currentStep === 3 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900">Study, Dietary & Social Habits</h2>
-                  <p className="text-sm text-slate-500">
+                  <h2 className="text-lg font-bold text-text-primary">Study, Dietary & Social Habits</h2>
+                  <p className="text-sm text-text-secondary">
                     Help your matching algorithm understand daily personal routines.
                   </p>
                 </div>
 
                 {/* Study Habits */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Study Environment Habits <span className="text-rose-500">*</span>
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    Study Environment Habits <span className="text-[#C75146]">*</span>
                   </label>
                   {errors.study_habits && (
-                    <p className="text-xs text-rose-600 mb-2">{errors.study_habits}</p>
+                    <p className="text-xs text-[#C75146] mb-2">{errors.study_habits}</p>
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {STUDY_OPTIONS.map((opt) => {
@@ -855,14 +855,14 @@ export default function ProfileOnboardingPage() {
                           key={opt.value}
                           type="button"
                           onClick={() => handleSelectOption('study_habits', opt.value)}
-                          className={`p-3.5 rounded-xl border text-left transition duration-150 focus:outline-none ${
+                          className={`p-3.5 rounded-xl border text-left transition duration-150 focus:outline-none cursor-pointer ${
                             selected
-                              ? 'border-teal-600 bg-teal-50/60 ring-2 ring-teal-600/20'
-                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                              ? 'border-peach-deep bg-peach-soft/60 ring-2 ring-peach-deep/20 text-text-primary'
+                              : 'border-surface-border hover:border-peach/50 bg-surface text-text-primary'
                           }`}
                         >
-                          <div className="font-semibold text-slate-900 text-sm">{opt.title}</div>
-                          <div className="text-xs text-slate-500 mt-0.5">{opt.subtitle}</div>
+                          <div className="font-semibold text-text-primary text-sm">{opt.title}</div>
+                          <div className="text-xs text-text-secondary mt-0.5">{opt.subtitle}</div>
                         </button>
                       );
                     })}
@@ -871,11 +871,11 @@ export default function ProfileOnboardingPage() {
 
                 {/* Food Preference */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Food & Dietary Preference <span className="text-rose-500">*</span>
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    Food & Dietary Preference <span className="text-[#C75146]">*</span>
                   </label>
                   {errors.food_preference && (
-                    <p className="text-xs text-rose-600 mb-2">{errors.food_preference}</p>
+                    <p className="text-xs text-[#C75146] mb-2">{errors.food_preference}</p>
                   )}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                     {FOOD_OPTIONS.map((opt) => {
@@ -885,16 +885,16 @@ export default function ProfileOnboardingPage() {
                           key={opt.value}
                           type="button"
                           onClick={() => handleSelectOption('food_preference', opt.value)}
-                          className={`p-3 rounded-xl border text-left transition duration-150 focus:outline-none ${
+                          className={`p-3 rounded-xl border text-left transition duration-150 focus:outline-none cursor-pointer ${
                             selected
-                              ? 'border-teal-600 bg-teal-50/60 ring-2 ring-teal-600/20'
-                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                              ? 'border-peach-deep bg-peach-soft/60 ring-2 ring-peach-deep/20 text-text-primary'
+                              : 'border-surface-border hover:border-peach/50 bg-surface text-text-primary'
                           }`}
                         >
-                          <div className="font-semibold text-slate-900 text-xs sm:text-sm">
+                          <div className="font-semibold text-text-primary text-xs sm:text-sm">
                             {opt.title}
                           </div>
-                          <div className="text-[11px] text-slate-500 mt-0.5">{opt.subtitle}</div>
+                          <div className="text-[11px] text-text-secondary mt-0.5">{opt.subtitle}</div>
                         </button>
                       );
                     })}
@@ -904,11 +904,11 @@ export default function ProfileOnboardingPage() {
                 {/* Smoking & Drinking Preferences */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Smoking Preference <span className="text-rose-500">*</span>
+                    <label className="block text-sm font-medium text-text-primary mb-2">
+                      Smoking Preference <span className="text-[#C75146]">*</span>
                     </label>
                     {errors.smoking_preference && (
-                      <p className="text-xs text-rose-600 mb-2">{errors.smoking_preference}</p>
+                      <p className="text-xs text-[#C75146] mb-2">{errors.smoking_preference}</p>
                     )}
                     <div className="space-y-2">
                       {SMOKING_OPTIONS.map((opt) => {
@@ -918,14 +918,14 @@ export default function ProfileOnboardingPage() {
                             key={opt.value}
                             type="button"
                             onClick={() => handleSelectOption('smoking_preference', opt.value)}
-                            className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between text-xs sm:text-sm ${
+                            className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between text-xs sm:text-sm cursor-pointer ${
                               selected
-                                ? 'border-teal-600 bg-teal-50/60 font-semibold text-teal-900'
-                                : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                                ? 'border-peach-deep bg-peach-soft/60 font-semibold text-text-primary'
+                                : 'border-surface-border hover:border-peach/50 bg-surface text-text-primary'
                             }`}
                           >
                             <span>{opt.title}</span>
-                            <span className="text-[11px] text-slate-400 font-normal">
+                            <span className="text-[11px] text-text-secondary/70 font-normal">
                               {opt.subtitle}
                             </span>
                           </button>
@@ -935,11 +935,11 @@ export default function ProfileOnboardingPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Drinking Preference <span className="text-rose-500">*</span>
+                    <label className="block text-sm font-medium text-text-primary mb-2">
+                      Drinking Preference <span className="text-[#C75146]">*</span>
                     </label>
                     {errors.drinking_preference && (
-                      <p className="text-xs text-rose-600 mb-2">{errors.drinking_preference}</p>
+                      <p className="text-xs text-[#C75146] mb-2">{errors.drinking_preference}</p>
                     )}
                     <div className="space-y-2">
                       {DRINKING_OPTIONS.map((opt) => {
@@ -949,14 +949,14 @@ export default function ProfileOnboardingPage() {
                             key={opt.value}
                             type="button"
                             onClick={() => handleSelectOption('drinking_preference', opt.value)}
-                            className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between text-xs sm:text-sm ${
+                            className={`w-full p-2.5 rounded-xl border text-left transition flex items-center justify-between text-xs sm:text-sm cursor-pointer ${
                               selected
-                                ? 'border-teal-600 bg-teal-50/60 font-semibold text-teal-900'
-                                : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                                ? 'border-peach-deep bg-peach-soft/60 font-semibold text-text-primary'
+                                : 'border-surface-border hover:border-peach/50 bg-surface text-text-primary'
                             }`}
                           >
                             <span>{opt.title}</span>
-                            <span className="text-[11px] text-slate-400 font-normal">
+                            <span className="text-[11px] text-text-secondary/70 font-normal">
                               {opt.subtitle}
                             </span>
                           </button>
@@ -968,11 +968,11 @@ export default function ProfileOnboardingPage() {
 
                 {/* Pet Preference */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Pet Preference <span className="text-rose-500">*</span>
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    Pet Preference <span className="text-[#C75146]">*</span>
                   </label>
                   {errors.pet_preference && (
-                    <p className="text-xs text-rose-600 mb-2">{errors.pet_preference}</p>
+                    <p className="text-xs text-[#C75146] mb-2">{errors.pet_preference}</p>
                   )}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                     {PET_OPTIONS.map((opt) => {
@@ -982,14 +982,14 @@ export default function ProfileOnboardingPage() {
                           key={opt.value}
                           type="button"
                           onClick={() => handleSelectOption('pet_preference', opt.value)}
-                          className={`p-3 rounded-xl border text-left transition text-xs sm:text-sm ${
+                          className={`p-3 rounded-xl border text-left transition text-xs sm:text-sm cursor-pointer ${
                             selected
-                              ? 'border-teal-600 bg-teal-50/60 ring-2 ring-teal-600/20 font-semibold'
-                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                              ? 'border-peach-deep bg-peach-soft/60 ring-2 ring-peach-deep/20 font-semibold text-text-primary'
+                              : 'border-surface-border hover:border-peach/50 bg-surface text-text-primary'
                           }`}
                         >
                           <div>{opt.title}</div>
-                          <div className="text-[11px] text-slate-500 mt-0.5">{opt.subtitle}</div>
+                          <div className="text-[11px] text-text-secondary mt-0.5">{opt.subtitle}</div>
                         </button>
                       );
                     })}
@@ -1002,8 +1002,8 @@ export default function ProfileOnboardingPage() {
             {currentStep === 4 && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900">About You & Contact</h2>
-                  <p className="text-sm text-slate-500">
+                  <h2 className="text-lg font-bold text-text-primary">About You & Contact</h2>
+                  <p className="text-sm text-text-secondary">
                     A brief intro to showcase your personality and optional contact info for mutual verification.
                   </p>
                 </div>
@@ -1023,9 +1023,9 @@ export default function ProfileOnboardingPage() {
                     value={formData.bio}
                     onChange={handleChange}
                   />
-                  <div className="flex justify-between items-center text-xs text-slate-400 mt-1">
+                  <div className="flex justify-between items-center text-xs text-text-secondary/70 mt-1">
                     <span>Helpful for LLM match explanations</span>
-                    <span className={formData.bio.length > 600 ? 'text-rose-500 font-bold' : ''}>
+                    <span className={formData.bio.length > 600 ? 'text-[#C75146] font-bold' : ''}>
                       {formData.bio.length} / 600
                     </span>
                   </div>
@@ -1049,9 +1049,9 @@ export default function ProfileOnboardingPage() {
                 </FormField>
 
                 {/* Review & Readiness Summary */}
-                <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-teal-50/30 border border-slate-200">
+                <div className="p-5 rounded-2xl bg-beige-50/70 border border-surface-border">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-bold text-slate-900 text-sm">Profile Summary & Status</h3>
+                    <h3 className="font-bold text-text-primary text-sm">Profile Summary & Status</h3>
                     <Badge
                       variant={completeness.isComplete ? 'success' : 'warning'}
                       size="md"
@@ -1062,35 +1062,35 @@ export default function ProfileOnboardingPage() {
                     </Badge>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-600 mb-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-text-secondary mb-3">
                     <div>
-                      <span className="text-slate-400 block">Name:</span>
-                      <span className="font-semibold text-slate-800 truncate block">
+                      <span className="text-text-secondary/70 block">Name:</span>
+                      <span className="font-semibold text-text-primary truncate block">
                         {formData.full_name || '—'}
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block">College:</span>
-                      <span className="font-semibold text-slate-800 truncate block">
+                      <span className="text-text-secondary/70 block">College:</span>
+                      <span className="font-semibold text-text-primary truncate block">
                         {formData.college_name || '—'}
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block">Schedule:</span>
-                      <span className="font-semibold text-slate-800 truncate block">
+                      <span className="text-text-secondary/70 block">Schedule:</span>
+                      <span className="font-semibold text-text-primary truncate block">
                         {formData.sleep_schedule || '—'}
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block">Cleanliness:</span>
-                      <span className="font-semibold text-slate-800 truncate block">
+                      <span className="text-text-secondary/70 block">Cleanliness:</span>
+                      <span className="font-semibold text-text-primary truncate block">
                         Level {formData.cleanliness_level}
                       </span>
                     </div>
                   </div>
 
                   {!completeness.isComplete && (
-                    <p className="text-xs text-amber-700 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+                    <p className="text-xs text-[#6B4B10] bg-[#D9A441]/15 p-2.5 rounded-xl border border-[#D9A441]/30">
                       ℹ️ You have {completeness.total - completeness.filled} required field(s) remaining. You can save your progress now or complete all fields to enable matchmaking.
                     </p>
                   )}
@@ -1099,7 +1099,7 @@ export default function ProfileOnboardingPage() {
             )}
 
             {/* Stepper Footer Controls */}
-            <div className="mt-8 pt-6 border-t border-slate-200 flex items-center justify-between">
+            <div className="mt-8 pt-6 border-t border-surface-border flex items-center justify-between">
               {currentStep > 1 ? (
                 <Button
                   type="button"

@@ -169,14 +169,14 @@ export default function AdminPage() {
             <Badge variant="primary" size="sm">
               Staff Portal
             </Badge>
-            <span className="text-xs text-slate-400 font-mono">
+            <span className="text-xs text-text-secondary font-mono">
               Admin Access Only
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">
             Campus Administration & Moderation
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-text-secondary mt-1">
             Monitor platform metrics, protect student safety, and moderate reported incidents across campus.
           </p>
         </div>
@@ -195,7 +195,7 @@ export default function AdminPage() {
             className="flex items-center gap-1.5"
           >
             <svg
-              className={`w-4 h-4 text-slate-500 ${loadingStats || loadingReports ? 'animate-spin' : ''}`}
+              className={`w-4 h-4 text-peach-deep ${loadingStats || loadingReports ? 'animate-spin' : ''}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -216,7 +216,7 @@ export default function AdminPage() {
 
       {/* Stats Section with Confirmed Roommate Pairs Highlighted */}
       <section aria-labelledby="platform-stats-heading" className="space-y-3">
-        <h2 id="platform-stats-heading" className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+        <h2 id="platform-stats-heading" className="text-sm font-semibold uppercase tracking-wider text-text-secondary">
           Platform Activity & Key Metrics
         </h2>
         <AdminStatsGrid stats={stats} loading={loadingStats} />

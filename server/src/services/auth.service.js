@@ -4,6 +4,7 @@ import db from '../db/index.js';
 import config, { BLOCKED_EMAIL_DOMAINS } from '../config/index.js';
 import mailService from './mail.service.js';
 import {
+  AppError,
   BadRequestError,
   UnauthorizedError,
   ForbiddenError,
@@ -61,8 +62,8 @@ export async function register({ full_name, email, password }) {
   const normalizedEmail = email.toLowerCase().trim();
   const domain = normalizedEmail.split('@')[1];
 
-  // 1. Enforce blocked domains rule
-  if (domain && BLOCKED_EMAIL_DOMAINS.includes(domain)) {
+  // 1. Enforce blocked domains rule if personal emails are NOT allowed
+  if (!config.allowPersonalEmails && domain && BLOCKED_EMAIL_DOMAINS.includes(domain)) {
     throw new BadRequestError(
       `Public email providers (${domain}) are not permitted. Please use your official college or university email address.`,
       'EMAIL_DOMAIN_NOT_ALLOWED'
@@ -118,11 +119,27 @@ export async function register({ full_name, email, password }) {
   });
 
   // 6. Send OTP via email (or dev log)
-  await mailService.sendOtpEmail({
-    to: normalizedEmail,
-    otp: rawOtp,
-    type: 'registration',
-  });
+  try {
+    await mailService.sendOtpEmail({
+      to: normalizedEmail,
+      otp: rawOtp,
+      type: 'registration',
+    });
+  } catch (err) {
+    // If sending fails, clean up created user and unconsumed OTP so they can retry
+    try {
+      await db('email_otps').where({ email: normalizedEmail }).delete();
+      await db('users').where({ id: newUserId }).delete();
+    } catch (cleanupErr) {
+      console.error('Failed to clean up unverified user after email send failure:', cleanupErr);
+    }
+
+    throw new AppError(
+      `Failed to send verification email (${err.message || 'SMTP error'}). Please verify your email address or check server mail settings.`,
+      502,
+      'EMAIL_DELIVERY_FAILED'
+    );
+  }
 
   return {
     message: 'Registration successful. A 6-digit verification code has been sent to your email.',
@@ -242,11 +259,19 @@ export async function resendOtp({ email }) {
     expires_at: expiresAt,
   });
 
-  await mailService.sendOtpEmail({
-    to: normalizedEmail,
-    otp: rawOtp,
-    type: 'registration',
-  });
+  try {
+    await mailService.sendOtpEmail({
+      to: normalizedEmail,
+      otp: rawOtp,
+      type: 'registration',
+    });
+  } catch (err) {
+    throw new AppError(
+      `Failed to send verification email (${err.message || 'SMTP error'}). Please check server mail settings.`,
+      502,
+      'EMAIL_DELIVERY_FAILED'
+    );
+  }
 
   return {
     message: 'A new verification OTP has been sent to your email.',

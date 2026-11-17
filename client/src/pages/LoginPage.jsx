@@ -117,7 +117,7 @@ export default function LoginPage() {
     <div className="max-w-md mx-auto py-6">
       <Card className="shadow-lg border-slate-200">
         <Card.Header className="text-center pb-4">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 mx-auto mb-3">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-peach-soft text-text-primary border border-peach/50 mx-auto mb-3">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
@@ -183,7 +183,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-xs font-medium text-slate-500 hover:text-slate-800 p-1 pointer-events-auto cursor-pointer"
+                    className="text-xs font-medium text-text-secondary hover:text-text-primary p-1 pointer-events-auto cursor-pointer"
                   >
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
@@ -204,11 +204,11 @@ export default function LoginPage() {
           </form>
         </Card.Body>
 
-        <Card.Footer className="justify-center text-center text-sm text-slate-600">
+        <Card.Footer className="justify-center text-center text-sm text-text-secondary">
           Don&apos;t have an account yet?{' '}
           <Link
             to="/register"
-            className="text-teal-700 hover:text-teal-800 font-semibold underline ml-1"
+            className="text-peach-deep hover:text-peach-deeper font-semibold underline ml-1"
           >
             Create account
           </Link>

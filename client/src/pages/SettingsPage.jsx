@@ -230,20 +230,20 @@ export default function SettingsPage() {
     <div className="max-w-3xl mx-auto py-6 sm:py-10 px-4 sm:px-0 space-y-6 sm:space-y-8">
       {/* Page Title */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">
           Account & Profile Settings
         </h1>
-        <p className="text-slate-600 text-sm mt-1">
+        <p className="text-text-secondary text-sm mt-1">
           Manage your student profile preferences, housing criteria, and account security.
         </p>
       </div>
 
       {/* 1. Profile Overview Section (Edit Profile Link) */}
-      <Card className="shadow-md border-slate-200">
-        <Card.Header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+      <Card className="shadow-md border-surface-border">
+        <Card.Header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-surface-border">
           <div>
             <div className="flex items-center gap-2">
-              <Card.Title as="h2" className="text-xl font-bold text-slate-900">
+              <Card.Title as="h2" className="text-xl font-bold text-text-primary">
                 Student Profile
               </Card.Title>
               <Badge variant={profileComplete ? 'success' : 'warning'} size="sm">
@@ -268,31 +268,31 @@ export default function SettingsPage() {
         <Card.Body className="pt-4 space-y-4">
           {loading ? (
             <div className="py-6 text-center">
-              <Spinner size="md" className="mx-auto text-teal-600" />
+              <Spinner size="md" className="mx-auto text-peach-deep" />
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-xs text-slate-400 font-medium block">Full Name</span>
-                <span className="font-semibold text-slate-800">
+              <div className="p-3.5 bg-beige-50/70 rounded-xl border border-surface-border">
+                <span className="text-xs text-text-secondary font-medium block">Full Name</span>
+                <span className="font-semibold text-text-primary">
                   {profileData?.full_name || user?.full_name || 'Not set'}
                 </span>
               </div>
-              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-xs text-slate-400 font-medium block">College / University</span>
-                <span className="font-semibold text-slate-800">
+              <div className="p-3.5 bg-beige-50/70 rounded-xl border border-surface-border">
+                <span className="text-xs text-text-secondary font-medium block">College / University</span>
+                <span className="font-semibold text-text-primary">
                   {profileData?.college_name || 'Not set'}
                 </span>
               </div>
-              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-xs text-slate-400 font-medium block">Major & Grad Year</span>
-                <span className="font-semibold text-slate-800">
+              <div className="p-3.5 bg-beige-50/70 rounded-xl border border-surface-border">
+                <span className="text-xs text-text-secondary font-medium block">Major & Grad Year</span>
+                <span className="font-semibold text-text-primary">
                   {profileData?.major ? `${profileData.major} (${profileData.graduation_year || ''})` : 'Not set'}
                 </span>
               </div>
-              <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-xs text-slate-400 font-medium block">City</span>
-                <span className="font-semibold text-slate-800">
+              <div className="p-3.5 bg-beige-50/70 rounded-xl border border-surface-border">
+                <span className="text-xs text-text-secondary font-medium block">City</span>
+                <span className="font-semibold text-text-primary">
                   {profileData?.city || 'Bhopal'}
                 </span>
               </div>
@@ -300,8 +300,8 @@ export default function SettingsPage() {
           )}
 
           {/* Privacy Note */}
-          <div className="p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-xs text-teal-900 flex items-center gap-2">
-            <svg className="w-4 h-4 text-teal-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="p-3.5 rounded-xl bg-peach-soft/40 border border-peach-soft text-xs text-text-primary flex items-center gap-2">
+            <svg className="w-4 h-4 text-peach-deep shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             <span>
@@ -312,10 +312,10 @@ export default function SettingsPage() {
       </Card>
 
       {/* 2. Housing Requirements Section (Edit Requirement Link) */}
-      <Card className="shadow-md border-slate-200">
-        <Card.Header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+      <Card className="shadow-md border-surface-border">
+        <Card.Header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-surface-border">
           <div>
-            <Card.Title as="h2" className="text-xl font-bold text-slate-900">
+            <Card.Title as="h2" className="text-xl font-bold text-text-primary">
               Housing & Roommate Criteria
             </Card.Title>
             <Card.Description>
@@ -332,15 +332,15 @@ export default function SettingsPage() {
             </Button>
           </Link>
         </Card.Header>
-        <Card.Body className="pt-2 text-xs text-slate-500">
+        <Card.Body className="pt-2 text-xs text-text-secondary">
           Updating your criteria automatically re-evaluates candidate compatibility and updates your match recommendations.
         </Card.Body>
       </Card>
 
       {/* 3. Account Contact Phone Card */}
-      <Card className="shadow-md border-slate-200">
+      <Card className="shadow-md border-surface-border">
         <Card.Header>
-          <Card.Title as="h2" className="text-xl font-bold text-slate-900">
+          <Card.Title as="h2" className="text-xl font-bold text-text-primary">
             Contact Phone Number
           </Card.Title>
           <Card.Description>
@@ -393,9 +393,9 @@ export default function SettingsPage() {
       </Card>
 
       {/* 4. Change Password Section */}
-      <Card className="shadow-md border-slate-200">
+      <Card className="shadow-md border-surface-border">
         <Card.Header>
-          <Card.Title as="h2" className="text-xl font-bold text-slate-900">
+          <Card.Title as="h2" className="text-xl font-bold text-text-primary">
             Change Password
           </Card.Title>
           <Card.Description>
@@ -485,10 +485,10 @@ export default function SettingsPage() {
       </Card>
 
       {/* 5. Blocked Users Section */}
-      <Card className="shadow-md border-slate-200">
+      <Card className="shadow-md border-surface-border">
         <Card.Header>
           <div className="flex items-center gap-2">
-            <Card.Title as="h2" className="text-xl font-bold text-slate-900">
+            <Card.Title as="h2" className="text-xl font-bold text-text-primary">
               Blocked Users
             </Card.Title>
             {blockedUsers.length > 0 && (
@@ -505,28 +505,28 @@ export default function SettingsPage() {
         <Card.Body className="pt-2">
           {loadingBlocks ? (
             <div className="py-6 text-center">
-              <Spinner size="sm" className="mx-auto text-teal-600" />
+              <Spinner size="sm" className="mx-auto text-peach-deep" />
             </div>
           ) : blockedUsers.length === 0 ? (
-            <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center text-xs text-slate-500">
+            <div className="p-4 bg-beige-50/70 border border-surface-border rounded-xl text-center text-xs text-text-secondary">
               You haven&apos;t blocked any users.
             </div>
           ) : (
-            <ul className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden">
+            <ul className="divide-y divide-surface-border border border-surface-border rounded-xl overflow-hidden">
               {blockedUsers.map((item) => (
                 <li
                   key={item.block_id || item.blocked_user_id}
-                  className="p-3.5 bg-white flex items-center justify-between gap-3 hover:bg-slate-50/60 transition-colors"
+                  className="p-3.5 bg-surface flex items-center justify-between gap-3 hover:bg-beige-50/60 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-600 text-sm shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-peach-soft/60 border border-surface-border flex items-center justify-center font-bold text-peach-deep text-sm shrink-0">
                       {(item.display_name || 'S')[0]?.toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-800 truncate">
+                      <p className="text-sm font-semibold text-text-primary truncate">
                         {item.display_name}
                       </p>
-                      <p className="text-[11px] text-slate-400">
+                      <p className="text-[11px] text-text-secondary">
                         Blocked on {new Date(item.created_at).toLocaleDateString()}
                       </p>
                     </div>
@@ -550,35 +550,35 @@ export default function SettingsPage() {
       </Card>
 
       {/* 6. Account Info & Security Summary */}
-      <Card className="shadow-md border-slate-200">
+      <Card className="shadow-md border-surface-border">
         <Card.Header>
-          <Card.Title as="h2" className="text-xl font-bold text-slate-900">
+          <Card.Title as="h2" className="text-xl font-bold text-text-primary">
             Account Status & Details
           </Card.Title>
         </Card.Header>
-        <Card.Body className="pt-2 text-sm text-slate-600 space-y-2">
-          <div><span className="font-semibold text-slate-800">Email:</span> {user?.email}</div>
-          <div><span className="font-semibold text-slate-800">Role:</span> {user?.role}</div>
-          <div><span className="font-semibold text-slate-800">Account Status:</span> {user?.status}</div>
-          <div><span className="font-semibold text-slate-800">Verified Campus Email:</span> {user?.email_verified ? 'Yes' : 'No'}</div>
+        <Card.Body className="pt-2 text-sm text-text-secondary space-y-2">
+          <div><span className="font-semibold text-text-primary">Email:</span> {user?.email}</div>
+          <div><span className="font-semibold text-text-primary">Role:</span> {user?.role}</div>
+          <div><span className="font-semibold text-text-primary">Account Status:</span> {user?.status}</div>
+          <div><span className="font-semibold text-text-primary">Verified Campus Email:</span> {user?.email_verified ? 'Yes' : 'No'}</div>
         </Card.Body>
       </Card>
 
       {/* 7. Danger Zone: Delete Account */}
-      <div className="rounded-2xl border border-rose-300 bg-rose-50/40 p-6 space-y-4">
+      <div className="rounded-2xl border border-error/30 bg-error/5 p-6 space-y-4">
         <div>
-          <h2 className="text-lg font-bold text-rose-900">Danger Zone</h2>
-          <p className="text-xs text-rose-700 mt-0.5">
+          <h2 className="text-lg font-bold text-error">Danger Zone</h2>
+          <p className="text-xs text-error/80 mt-0.5">
             Permanently delete your account and personal data.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white rounded-xl border border-rose-200 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-surface rounded-xl border border-error/20 shadow-xs">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">
+            <h3 className="text-sm font-semibold text-text-primary">
               Deactivate and Delete Account
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5 max-w-md">
+            <p className="text-xs text-text-secondary mt-0.5 max-w-md">
               Permanently removes your profile, requirements, and match results. Messages you sent will be replaced with &quot;[deleted]&quot;.
             </p>
           </div>

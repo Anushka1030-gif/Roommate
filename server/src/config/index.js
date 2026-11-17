@@ -17,11 +17,16 @@ const envSchema = z.object({
   JWT_SECRET: z.string().default('dev_jwt_secret_key_change_in_production_12345'),
   JWT_EXPIRES_IN: z.string().default('7d'),
 
-  SMTP_HOST: z.string().default('localhost'),
+  ALLOW_PERSONAL_EMAILS: z
+    .union([z.boolean(), z.string()])
+    .default('true')
+    .transform((v) => v === true || v === 'true' || v === '1'),
+
+  SMTP_HOST: z.string().default(''),
   SMTP_PORT: z.string().default('587').transform((v) => parseInt(v, 10)),
   SMTP_USER: z.string().default(''),
   SMTP_PASS: z.string().default(''),
-  MAIL_FROM: z.string().default('noreply@roomiematch.edu'),
+  MAIL_FROM: z.string().default('NestMate <noreply@roomiematch.edu>'),
 
   LLM_PROVIDER: z.string().default('anthropic'),
   LLM_API_KEY: z.string().default(''),
@@ -57,6 +62,7 @@ export const config = {
   port: parsed.data.PORT,
   nodeEnv: parsed.data.NODE_ENV,
   clientUrl: parsed.data.CLIENT_URL,
+  allowPersonalEmails: parsed.data.ALLOW_PERSONAL_EMAILS,
   db: {
     host: parsed.data.DB_HOST,
     port: parsed.data.DB_PORT,

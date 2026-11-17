@@ -296,9 +296,9 @@ export default function RequirementPage() {
   if (loading) {
     return (
       <div className="max-w-3xl mx-auto py-12 px-4 space-y-6">
-        <div className="flex flex-col items-center justify-center p-12 bg-white rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
-          <Spinner size="lg" className="text-teal-600" />
-          <p className="text-slate-600 font-medium animate-pulse">
+        <div className="flex flex-col items-center justify-center p-12 bg-surface rounded-2xl border border-surface-border shadow-xs space-y-4">
+          <Spinner size="lg" className="text-peach-deep" />
+          <p className="text-text-secondary font-medium animate-pulse">
             Loading your roommate match requirements...
           </p>
         </div>
@@ -320,10 +320,10 @@ export default function RequirementPage() {
             </Badge>
           )}
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">
           Housing & Roommate Requirements
         </h1>
-        <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+        <p className="text-text-secondary text-sm sm:text-base leading-relaxed">
           Define your target budget, lifestyle rules, and deal-breakers. These criteria directly
           drive the algorithmic compatibility matching engine to surface your top roommate matches.
         </p>
@@ -345,14 +345,14 @@ export default function RequirementPage() {
       <form onSubmit={handleSubmit} className="space-y-8" noValidate>
         {/* SECTION 1: BUDGET AND LOCATION */}
         <Card className="p-6 sm:p-8 space-y-6">
-          <div className="border-b border-slate-100 pb-4">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
+          <div className="border-b border-surface-border pb-4">
+            <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg bg-peach-soft text-text-primary border border-peach/50 flex items-center justify-center text-xs font-bold">
                 1
               </span>
               Budget and Location
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            <p className="text-xs sm:text-sm text-text-secondary mt-1">
               Where you plan to live and your monthly budget capacity.
             </p>
           </div>
@@ -370,7 +370,7 @@ export default function RequirementPage() {
                 onChange={handleChange}
                 placeholder="e.g. Bhopal"
                 readOnly
-                className="bg-slate-50 cursor-not-allowed"
+                className="bg-beige-50/70 cursor-not-allowed text-text-secondary"
               />
             </FormField>
 
@@ -424,9 +424,9 @@ export default function RequirementPage() {
             </FormField>
           </div>
 
-          <div className="p-3 bg-teal-50/70 border border-teal-100 rounded-xl flex items-center justify-between text-xs sm:text-sm text-teal-800">
+          <div className="p-3 bg-peach-soft/30 border border-peach/40 rounded-xl flex items-center justify-between text-xs sm:text-sm text-text-primary">
             <span className="font-medium">Selected Budget Range:</span>
-            <span className="font-bold text-teal-900">
+            <span className="font-bold text-peach-deep">
               ₹{Number(formData.budget_min || 0).toLocaleString('en-IN')} – ₹{Number(formData.budget_max || 0).toLocaleString('en-IN')} / month
             </span>
           </div>
@@ -441,8 +441,8 @@ export default function RequirementPage() {
               <label
                 className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
                   formData.gender_preference === 'same_gender_only'
-                    ? 'border-teal-600 bg-teal-50/50 text-teal-900 ring-1 ring-teal-600'
-                    : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                    ? 'border-peach-deep bg-peach-soft/50 text-text-primary ring-1 ring-peach-deep'
+                    : 'border-surface-border hover:border-peach/50 bg-surface text-text-primary'
                 }`}
               >
                 <input
@@ -451,19 +451,19 @@ export default function RequirementPage() {
                   value="same_gender_only"
                   checked={formData.gender_preference === 'same_gender_only'}
                   onChange={handleChange}
-                  className="text-teal-600 focus:ring-teal-500 h-4 w-4"
+                  className="text-peach-deep focus:ring-peach-deep h-4 w-4"
                 />
                 <div className="text-left">
                   <p className="text-sm font-semibold">Same gender only</p>
-                  <p className="text-xs text-slate-500">Only match with peers of your gender</p>
+                  <p className="text-xs text-text-secondary">Only match with peers of your gender</p>
                 </div>
               </label>
 
               <label
                 className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
                   formData.gender_preference === 'any'
-                    ? 'border-teal-600 bg-teal-50/50 text-teal-900 ring-1 ring-teal-600'
-                    : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                    ? 'border-peach-deep bg-peach-soft/50 text-text-primary ring-1 ring-peach-deep'
+                    : 'border-surface-border hover:border-peach/50 bg-surface text-text-primary'
                 }`}
               >
                 <input
@@ -472,11 +472,11 @@ export default function RequirementPage() {
                   value="any"
                   checked={formData.gender_preference === 'any'}
                   onChange={handleChange}
-                  className="text-teal-600 focus:ring-teal-500 h-4 w-4"
+                  className="text-peach-deep focus:ring-peach-deep h-4 w-4"
                 />
                 <div className="text-left">
                   <p className="text-sm font-semibold">Any gender</p>
-                  <p className="text-xs text-slate-500">Open to roommates of any gender</p>
+                  <p className="text-xs text-text-secondary">Open to roommates of any gender</p>
                 </div>
               </label>
             </div>
@@ -485,14 +485,14 @@ export default function RequirementPage() {
 
         {/* SECTION 2: LIFESTYLE PREFERENCES */}
         <Card className="p-6 sm:p-8 space-y-6">
-          <div className="border-b border-slate-100 pb-4">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
+          <div className="border-b border-surface-border pb-4">
+            <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg bg-peach-soft text-text-primary border border-peach/50 flex items-center justify-center text-xs font-bold">
                 2
               </span>
               Lifestyle Preferences
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            <p className="text-xs sm:text-sm text-text-secondary mt-1">
               Your living standards and daily expectations for potential roommates.
             </p>
           </div>
@@ -597,12 +597,12 @@ export default function RequirementPage() {
                       }
                       className={`p-3 rounded-xl border flex flex-col items-center justify-center text-center transition-all cursor-pointer ${
                         isSelected
-                          ? 'border-teal-600 bg-teal-50 text-teal-900 ring-2 ring-teal-600 font-bold'
-                          : 'border-slate-200 hover:border-slate-300 bg-white text-slate-700'
+                          ? 'border-peach-deep bg-peach-deep text-white ring-2 ring-peach-deep font-bold shadow-xs'
+                          : 'border-surface-border hover:border-peach/50 bg-surface text-text-primary'
                       }`}
                     >
                       <span className="text-base font-extrabold">{lvl}</span>
-                      <span className="text-[10px] mt-0.5 leading-tight text-slate-500">
+                      <span className={`text-[10px] mt-0.5 leading-tight ${isSelected ? 'text-white/90' : 'text-text-secondary'}`}>
                         {labels[lvl - 1]}
                       </span>
                     </button>
@@ -614,11 +614,11 @@ export default function RequirementPage() {
 
           {/* Substance acceptance toggles */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
-            <div className="p-4 rounded-xl border border-slate-200 space-y-2">
+            <div className="p-4 rounded-xl border border-surface-border space-y-2 bg-surface">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Smoking Acceptable?</p>
-                  <p className="text-xs text-slate-500">Can your roommate smoke?</p>
+                  <p className="text-sm font-semibold text-text-primary">Smoking Acceptable?</p>
+                  <p className="text-xs text-text-secondary">Can your roommate smoke?</p>
                 </div>
                 <div className="flex gap-1.5">
                   <button
@@ -626,8 +626,8 @@ export default function RequirementPage() {
                     onClick={() => setFormData((prev) => ({ ...prev, smoking_ok: false }))}
                     className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
                       !formData.smoking_ok
-                        ? 'bg-rose-50 border-rose-300 text-rose-700 ring-1 ring-rose-400'
-                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                        ? 'bg-[#C75146]/10 border-[#C75146]/30 text-[#C75146] ring-1 ring-[#C75146]/40'
+                        : 'border-surface-border text-text-secondary hover:bg-beige/40'
                     }`}
                   >
                     No
@@ -637,26 +637,26 @@ export default function RequirementPage() {
                     onClick={() => setFormData((prev) => ({ ...prev, smoking_ok: true }))}
                     className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
                       formData.smoking_ok
-                        ? 'bg-teal-50 border-teal-300 text-teal-800 ring-1 ring-teal-500'
-                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                        ? 'bg-peach-soft border-peach text-text-primary ring-1 ring-peach-deep'
+                        : 'border-surface-border text-text-secondary hover:bg-beige/40'
                     }`}
                   >
                     Yes
                   </button>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-text-secondary/70">
                 {!formData.smoking_ok
                   ? 'Excludes candidate roommates who smoke.'
                   : 'Allows roommates who smoke occasionally or regularly.'}
               </p>
             </div>
 
-            <div className="p-4 rounded-xl border border-slate-200 space-y-2">
+            <div className="p-4 rounded-xl border border-surface-border space-y-2 bg-surface">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Drinking Acceptable?</p>
-                  <p className="text-xs text-slate-500">Can your roommate drink?</p>
+                  <p className="text-sm font-semibold text-text-primary">Drinking Acceptable?</p>
+                  <p className="text-xs text-text-secondary">Can your roommate drink?</p>
                 </div>
                 <div className="flex gap-1.5">
                   <button
@@ -664,8 +664,8 @@ export default function RequirementPage() {
                     onClick={() => setFormData((prev) => ({ ...prev, drinking_ok: false }))}
                     className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
                       !formData.drinking_ok
-                        ? 'bg-rose-50 border-rose-300 text-rose-700 ring-1 ring-rose-400'
-                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                        ? 'bg-[#C75146]/10 border-[#C75146]/30 text-[#C75146] ring-1 ring-[#C75146]/40'
+                        : 'border-surface-border text-text-secondary hover:bg-beige/40'
                     }`}
                   >
                     No
@@ -675,15 +675,15 @@ export default function RequirementPage() {
                     onClick={() => setFormData((prev) => ({ ...prev, drinking_ok: true }))}
                     className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
                       formData.drinking_ok
-                        ? 'bg-teal-50 border-teal-300 text-teal-800 ring-1 ring-teal-500'
-                        : 'border-slate-200 text-slate-600 hover:bg-slate-50'
+                        ? 'bg-peach-soft border-peach text-text-primary ring-1 ring-peach-deep'
+                        : 'border-surface-border text-text-secondary hover:bg-beige/40'
                     }`}
                   >
                     Yes
                   </button>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-text-secondary/70">
                 {!formData.drinking_ok
                   ? 'Excludes candidate roommates who drink.'
                   : 'Allows roommates who drink socially or regularly.'}
@@ -694,14 +694,14 @@ export default function RequirementPage() {
 
         {/* SECTION 3: DEAL-BREAKERS */}
         <Card className="p-6 sm:p-8 space-y-6">
-          <div className="border-b border-slate-100 pb-4">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
+          <div className="border-b border-surface-border pb-4">
+            <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg bg-peach-soft text-text-primary border border-peach/50 flex items-center justify-center text-xs font-bold">
                 3
               </span>
               Deal-Breakers
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            <p className="text-xs sm:text-sm text-text-secondary mt-1">
               Any strict boundaries or non-negotiable points evaluated by the AI match layer.
             </p>
           </div>
@@ -722,7 +722,7 @@ export default function RequirementPage() {
                 placeholder="List any non-negotiable roommate conditions..."
                 className="pr-16"
               />
-              <div className="text-right text-[11px] text-slate-400 mt-1 font-mono">
+              <div className="text-right text-[11px] text-text-secondary/70 mt-1 font-mono">
                 {formData.deal_breakers ? formData.deal_breakers.length : 0} / 400
               </div>
             </div>
@@ -731,16 +731,16 @@ export default function RequirementPage() {
 
         {/* SECTION 4: HOW MUCH EACH THING MATTERS */}
         <Card className="p-6 sm:p-8 space-y-6">
-          <div className="border-b border-slate-100 pb-4">
+          <div className="border-b border-surface-border pb-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
+                <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-lg bg-peach-soft text-text-primary border border-peach/50 flex items-center justify-center text-xs font-bold">
                     4
                   </span>
                   How Much Each Thing Matters
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                <p className="text-xs sm:text-sm text-text-secondary mt-1">
                   Tune the importance weights for each dimension. Defaults to &apos;Important&apos;.
                 </p>
               </div>
@@ -756,15 +756,15 @@ export default function RequirementPage() {
               return (
                 <div
                   key={dim.key}
-                  className="p-3.5 sm:p-4 rounded-xl border border-slate-200/80 hover:border-slate-300 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/40"
+                  className="p-3.5 sm:p-4 rounded-xl border border-surface-border hover:border-peach/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-beige-50/70"
                 >
                   <div className="space-y-0.5">
-                    <p className="text-sm font-semibold text-slate-900">{dim.label}</p>
-                    <p className="text-xs text-slate-500">{dim.description}</p>
+                    <p className="text-sm font-semibold text-text-primary">{dim.label}</p>
+                    <p className="text-xs text-text-secondary">{dim.description}</p>
                   </div>
 
                   {/* 1-to-3 Selector buttons */}
-                  <div className="inline-flex rounded-xl bg-slate-200/70 p-1 self-start sm:self-auto shrink-0">
+                  <div className="inline-flex rounded-xl bg-beige-200/70 p-1 self-start sm:self-auto shrink-0 border border-surface-border">
                     {WEIGHT_OPTIONS.map((opt) => {
                       const isSelected = currentWeight === opt.value;
                       return (
@@ -774,8 +774,8 @@ export default function RequirementPage() {
                           onClick={() => handleImportanceWeightChange(dim.key, opt.value)}
                           className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
                             isSelected
-                              ? 'bg-white text-teal-800 shadow-xs font-semibold'
-                              : 'text-slate-600 hover:text-slate-900'
+                              ? 'bg-surface text-text-primary shadow-xs font-semibold ring-1 ring-surface-border'
+                              : 'text-text-secondary hover:text-text-primary'
                           }`}
                         >
                           {opt.label}
@@ -790,8 +790,8 @@ export default function RequirementPage() {
         </Card>
 
         {/* Submit Action Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200">
-          <p className="text-xs text-slate-500 text-center sm:text-left">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-surface-border">
+          <p className="text-xs text-text-secondary text-center sm:text-left">
             Submitting activates your criteria and prepares matches for your city.
           </p>
 

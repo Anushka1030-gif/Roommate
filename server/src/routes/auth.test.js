@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import request from 'supertest';
 import app from '../app.js';
 import db from '../db/index.js';
+import config from '../config/index.js';
 import mailService from '../services/mail.service.js';
 import { requireVerified } from '../middleware/auth.middleware.js';
 
@@ -63,30 +64,82 @@ describe('Auth Backend API Integration Tests', () => {
       expect(lastMail.otp).toMatch(/^\d{6}$/);
     });
 
-    it('rejects emails from blocked public domains with EMAIL_DOMAIN_NOT_ALLOWED', async () => {
+    it('allows registration with personal emails (e.g. gmail.com) when ALLOW_PERSONAL_EMAILS is true', async () => {
+      config.allowPersonalEmails = true;
+
+      const response = await request(app).post('/api/auth/register').send({
+        full_name: 'Personal Email User',
+        email: 'student@gmail.com',
+        password: 'SecurePassword123!',
+      });
+
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body).toHaveProperty('email', 'student@gmail.com');
+
+      const user = await db('users').where({ email: 'student@gmail.com' }).first();
+      expect(user).toBeDefined();
+
+      const lastMail = mailService.getLastSentMail();
+      expect(lastMail.to).toBe('student@gmail.com');
+    });
+
+    it('rejects emails from blocked public domains with EMAIL_DOMAIN_NOT_ALLOWED when ALLOW_PERSONAL_EMAILS is false', async () => {
+      config.allowPersonalEmails = false;
+
       const blockedEmails = [
-        'student@gmail.com',
-        'student@yahoo.com',
-        'student@outlook.com',
-        'student@hotmail.com',
-        'student@icloud.com',
+        'blocked1@gmail.com',
+        'blocked2@yahoo.com',
+        'blocked3@outlook.com',
+        'blocked4@hotmail.com',
+        'blocked5@icloud.com',
       ];
 
-      for (const email of blockedEmails) {
+      try {
+        for (const email of blockedEmails) {
+          const response = await request(app).post('/api/auth/register').send({
+            full_name: 'Test Student',
+            email,
+            password: 'SecurePassword123!',
+          });
+
+          expect(response.status).toBe(400);
+          expect(response.body).toHaveProperty('error');
+          expect(response.body.error.code).toBe('EMAIL_DOMAIN_NOT_ALLOWED');
+        }
+
+        // Verify no user was created
+        const count = await db('users').count('id as count').first();
+        expect(count.count).toBe(0);
+      } finally {
+        config.allowPersonalEmails = true;
+      }
+    });
+
+    it('returns 502 EMAIL_DELIVERY_FAILED and cleans up unverified user when mail sending fails during registration', async () => {
+      const originalSend = mailService.sendOtpEmail;
+      mailService.sendOtpEmail = async () => {
+        throw new Error('Connection timeout to SMTP server');
+      };
+
+      try {
         const response = await request(app).post('/api/auth/register').send({
-          full_name: 'Test Student',
-          email,
+          full_name: 'Failing Mail Student',
+          email: 'failmail@manit.ac.in',
           password: 'SecurePassword123!',
         });
 
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(502);
         expect(response.body).toHaveProperty('error');
-        expect(response.body.error.code).toBe('EMAIL_DOMAIN_NOT_ALLOWED');
-      }
+        expect(response.body.error.code).toBe('EMAIL_DELIVERY_FAILED');
+        expect(response.body.error.message).toContain('Failed to send verification email');
 
-      // Verify no user was created
-      const count = await db('users').count('id as count').first();
-      expect(count.count).toBe(0);
+        // Confirm user was cleaned up so duplicate registration is not blocked later
+        const user = await db('users').where({ email: 'failmail@manit.ac.in' }).first();
+        expect(user).toBeUndefined();
+      } finally {
+        mailService.sendOtpEmail = originalSend;
+      }
     });
 
     it('rejects duplicate email registrations with EMAIL_ALREADY_EXISTS', async () => {
@@ -269,6 +322,39 @@ describe('Auth Backend API Integration Tests', () => {
 
       expect(allowedRes.status).toBe(200);
       expect(allowedRes.body).toHaveProperty('message');
+    });
+
+    it('returns 502 EMAIL_DELIVERY_FAILED when mail sending fails during resend-otp', async () => {
+      await request(app).post('/api/auth/register').send({
+        full_name: 'Resend Fail User',
+        email: 'resendfail@manit.ac.in',
+        password: 'SecurePassword123!',
+      });
+
+      // Backdate cooldown
+      await db('email_otps')
+        .where({ email: 'resendfail@manit.ac.in' })
+        .update({
+          created_at: new Date(Date.now() - 65 * 1000),
+        });
+
+      const originalSend = mailService.sendOtpEmail;
+      mailService.sendOtpEmail = async () => {
+        throw new Error('Connection refused by SMTP server');
+      };
+
+      try {
+        const response = await request(app).post('/api/auth/resend-otp').send({
+          email: 'resendfail@manit.ac.in',
+        });
+
+        expect(response.status).toBe(502);
+        expect(response.body).toHaveProperty('error');
+        expect(response.body.error.code).toBe('EMAIL_DELIVERY_FAILED');
+        expect(response.body.error.message).toContain('Failed to send verification email');
+      } finally {
+        mailService.sendOtpEmail = originalSend;
+      }
     });
   });
 

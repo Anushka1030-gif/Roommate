@@ -59,3 +59,34 @@ Every backend feature must strictly adhere to the layered structure:
   - `npm test` in both `/client` and `/server`
 - Verify tests pass with zero lint errors.
 - **Stop**: After completing a designated step, summarize the work, provide commands for the user, and stop. Do not automatically proceed to the next step.
+
+---
+
+## 7. Design Tokens & Palette (Soft Peach & Beige Rebrand)
+All UI styling must strictly use the soft peach and warm beige palette defined below. Hardcoded blue, teal, emerald, and harsh slate color classes are forbidden.
+
+### Palette Tokens
+- **Background (`page`)**: `#FBF5EC` (warm light beige for the full page canvas)
+- **Surface (`surface`)**: `#FFFFFF` (cards, navbar, modals, drawers)
+- **Surface Border (`surface-border`)**: `#EADFCF` (soft beige border for cards and dividers)
+- **Beige (`beige`)**: `#F3E9DA` (secondary surfaces, input background tints, form sections)
+- **Peach Soft (`peach-soft`)**: `#FFE3D1` (highlights, category badges, chip hover, user chat bubbles)
+- **Peach (`peach`)**: `#F4B393` (primary accent, secondary borders, gradient highlights)
+- **Peach Deep (`peach-deep`)**: `#AC5429` (accessible primary buttons, links, active rings, focus states with >= 4.5:1 WCAG AA contrast against white)
+- **Peach Deeper (`peach-deeper`)**: `#8E3E19` (button hover, active states)
+- **Text Primary (`text-primary`)**: `#3D2C24` (warm dark brown for high-contrast headings and body text)
+- **Text Secondary (`text-secondary`)**: `#7A6458` (warm medium brown for subheaders, labels, and muted text)
+- **Feedback Semantic Accents**:
+  - **Success**: `#5E9C76` (muted warm sage green)
+  - **Warning**: `#D9A441` (muted warm golden amber)
+  - **Error / Danger**: `#C75146` (muted terracotta red)
+
+### Component Styling Rules
+1. **Primary Buttons**: Background `peach-deep` (`#AC5429`) with white text (WCAG AA >= 4.5:1 contrast). Hover: `peach-deeper`.
+2. **Secondary Buttons**: Background `beige` (`#F3E9DA`) with dark brown `text-primary` text and `peach` border.
+3. **Cards & Containers**: White surface with subtle shadow and `#EADFCF` border (`border-surface-border`).
+4. **Form Inputs**: Beige-tinted background (`bg-beige-50/70`), `#EADFCF` border, and `peach-deep` focus ring.
+5. **Navbar**: White or light beige background, subtle `#EADFCF` bottom border, active navigation links underlined in `peach-deep`.
+6. **Match Cards**: Score badges use progressive peach tints (higher score = deeper peach). "Watch out" alerts use soft warm amber tints (`bg-[#D9A441]/15 text-[#6B4B10] border-[#D9A441]/40`), never harsh red.
+7. **Chat Bubbles**: Sender (my) messages in `peach-soft` (`#FFE3D1`) bubbles with dark brown text; recipient (partner) messages in white `surface` bubbles with `#EADFCF` border.
+8. **Feedback & Loading**: Skeletons use warm beige pulse, spinners use `peach-deep`, toasts use warm beige/peach styling.

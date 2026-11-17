@@ -132,11 +132,12 @@ Once the seed scripts have run, you can immediately log in to test and demo the 
 | `DB_NAME` | `roomiematch` | MySQL database name. |
 | `JWT_SECRET` | `dev_jwt_secret_key_change_in_production_12345` | Secret key used to sign and verify JWT authentication tokens. |
 | `JWT_EXPIRES_IN`| `7d` | Lifespan of JWT tokens (defaults to 7 days). |
-| `SMTP_HOST` | `sandbox.smtp.mailtrap.io` | SMTP server host for sending verification OTPs and email notifications. In development without SMTP credentials, emails log to console. |
-| `SMTP_PORT` | `2525` | SMTP port (e.g. 587, 465, or 2525). |
-| `SMTP_USER` | `""` | SMTP username. |
-| `SMTP_PASS` | `""` | SMTP password. |
-| `MAIL_FROM` | `noreply@roomiematch.edu` | Sender address in outbound emails. |
+| `ALLOW_PERSONAL_EMAILS` | `true` | Allows personal emails (e.g. Gmail, Yahoo, Outlook) for registration when `true`. When `false`, enforces institutional domain restrictions. |
+| `SMTP_HOST` | `smtp.gmail.com` | SMTP server host for sending verification OTPs and email notifications. When empty, emails log to console. |
+| `SMTP_PORT` | `587` | SMTP port (`587` for STARTTLS with `requireTLS: true`, `465` for SSL). |
+| `SMTP_USER` | `""` | SMTP username (e.g. your Gmail address). |
+| `SMTP_PASS` | `""` | SMTP password (e.g. 16-character Google App Password). |
+| `MAIL_FROM` | `"NestMate <my gmail address>"` | Sender address header in outbound emails. |
 | `LLM_PROVIDER` | `anthropic` | LLM vendor integration interface. |
 | `LLM_API_KEY` | `""` | Anthropic Claude API key. If empty or invalid, matching falls back automatically to the rule-based engine. |
 | `LLM_MODEL` | `claude-3-5-sonnet-20241022` | Claude model name for match ranking and explanations. |
@@ -197,11 +198,49 @@ The RoomieMatch matching pipeline operates in four coordinated stages:
 
 ---
 
-## 🔒 Switching Email Domain Rule (Blocklist vs Allowlist)
+## 📧 Setting up Gmail SMTP
 
-By default, RoomieMatch uses a **domain blocklist** (`BLOCKED_EMAIL_DOMAINS` in `server/src/config/index.js`) to reject free public webmail providers (`gmail.com`, `yahoo.com`, `outlook.com`, etc.) while accepting any university or company email.
+RoomieMatch / NestMate is configured to send real OTP verification codes and message notifications using Gmail SMTP (`smtp.gmail.com:587`).
 
-### To switch to an explicit domain allowlist:
+### 1. Enable 2-Step Verification in Google
+1. Open your [Google Account Security Settings](https://myaccount.google.com/security).
+2. Ensure **2-Step Verification** is turned **ON** (Google requires 2-Step Verification before you can create an App Password).
+
+### 2. Generate a 16-Character App Password
+1. In Google Account Security, navigate to **App Passwords** (or visit [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)).
+2. Under "App name", enter `NestMate` or `RoomieMatch`.
+3. Click **Create**.
+4. Google will display a **16-character password** (e.g., `abcd efgh ijkl mnop`). Copy it.
+5. *Security Note*: Never use your personal Google account password; only use this generated App Password.
+
+### 3. Update `server/.env`
+Fill in your credentials in `server/.env`:
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=abcdefghijklmnop
+MAIL_FROM="NestMate <your_email@gmail.com>"
+```
+
+### 4. Verify SMTP Delivery with the Test Command
+Send a test message to your inbox without creating a student account:
+```bash
+npm --prefix server run mail:test -- your_email@gmail.com
+```
+When successful, you will see `🎉 SUCCESS: Test email dispatched successfully!` and the email will arrive in your inbox within seconds.
+
+---
+
+## 🔒 Personal Emails & Switching Domain Rules (Blocklist vs Allowlist)
+
+### Personal Email Support (`ALLOW_PERSONAL_EMAILS`)
+- By default, `ALLOW_PERSONAL_EMAILS=true` is enabled in `server/.env`.
+- This allows students and developers to register using personal webmail providers (`gmail.com`, `yahoo.com`, `outlook.com`, etc.) without requiring an `.edu` or `.ac.in` domain.
+- To enforce student-only domain restrictions, set `ALLOW_PERSONAL_EMAILS=false` in `server/.env`.
+
+### Switching to an Explicit Domain Allowlist:
+When `ALLOW_PERSONAL_EMAILS=false`, the platform checks against `BLOCKED_EMAIL_DOMAINS`. To restrict to specific allowed universities:
 
 1. Open `server/src/config/index.js` and define your allowed institution domains:
    ```javascript

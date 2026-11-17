@@ -56,19 +56,19 @@ export default function HomePage() {
     <div className="space-y-16 sm:space-y-24 py-4 sm:py-8">
       {/* 1. Hero Section */}
       <section className="text-center max-w-4xl mx-auto space-y-6">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-semibold shadow-xs">
-          <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-peach-soft text-text-primary border border-peach/50 text-xs font-semibold shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-peach-deep animate-pulse" />
           Campus-Verified Student Housing Community
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-tight sm:leading-tight">
+        <h1 className="text-4xl sm:text-6xl font-black text-text-primary tracking-tight leading-tight sm:leading-tight">
           Find a roommate who{' '}
-          <span className="bg-gradient-to-r from-teal-700 via-emerald-600 to-cyan-700 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-peach-deep via-peach-deeper to-peach bg-clip-text text-transparent">
             actually fits your lifestyle
           </span>.
         </h1>
 
-        <p className="text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-base sm:text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed">
           Skip awkward housemate surprises. RoomieMatch pairs university students based on sleep routines, study habits, cleanliness scale, and shared budgets.
         </p>
 
@@ -78,7 +78,7 @@ export default function HomePage() {
             <Button
               variant="primary"
               size="lg"
-              className="w-full sm:w-auto shadow-md shadow-teal-700/20 px-8 py-3.5 text-base"
+              className="w-full sm:w-auto shadow-md shadow-peach-deep/20 px-8 py-3.5 text-base"
             >
               {nextStep.label}
             </Button>
@@ -93,22 +93,22 @@ export default function HomePage() {
           )}
         </div>
 
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-text-secondary/70">
           Campus email required &bull; 100% private contact details &bull; Zero spam
         </p>
       </section>
 
       {/* Logged in Quick Status Pill */}
       {isAuthenticated && (
-        <div className="max-w-2xl mx-auto p-4 rounded-2xl bg-gradient-to-r from-teal-50 via-emerald-50 to-cyan-50 border border-teal-200/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="max-w-2xl mx-auto p-4 rounded-2xl bg-beige/70 border border-surface-border shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-center sm:text-left">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-teal-800 block">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-peach-deep block">
               Welcome back
             </span>
-            <span className="font-semibold text-slate-900 text-sm">
+            <span className="font-semibold text-text-primary text-sm">
               {user?.full_name || user?.email}
             </span>
-            <span className="text-xs text-slate-500 block">
+            <span className="text-xs text-text-secondary block">
               {user?.profile_completed ? 'Profile complete & active' : 'Complete profile to unlock matching'}
             </span>
           </div>
@@ -127,50 +127,50 @@ export default function HomePage() {
       <section aria-labelledby="how-it-works-heading" className="space-y-8 max-w-5xl mx-auto">
         <div className="text-center space-y-2">
           <Badge variant="primary" size="sm">Simple & Algorithmic</Badge>
-          <h2 id="how-it-works-heading" className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h2 id="how-it-works-heading" className="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">
             How RoomieMatch Works
           </h2>
-          <p className="text-sm text-slate-500 max-w-lg mx-auto">
+          <p className="text-sm text-text-secondary max-w-lg mx-auto">
             From registration to confirmed roommates in three simple steps.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Step 1 */}
-          <Card className="p-6 space-y-4 border-slate-200 relative overflow-hidden">
-            <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 border border-teal-100 flex items-center justify-center font-bold text-lg">
+          <Card className="p-6 space-y-4 border-surface-border relative overflow-hidden">
+            <div className="w-12 h-12 rounded-2xl bg-peach-soft text-text-primary border border-peach/50 flex items-center justify-center font-bold text-lg">
               1
             </div>
-            <h3 className="text-lg font-bold text-slate-900">
+            <h3 className="text-lg font-bold text-text-primary">
               Create your profile
             </h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
+            <p className="text-sm text-text-secondary leading-relaxed">
               Answer 16 quick questions about your living habits: sleep schedule, cleanliness rating, study environment, and food preferences.
             </p>
           </Card>
 
           {/* Step 2 */}
-          <Card className="p-6 space-y-4 border-slate-200 relative overflow-hidden">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center justify-center font-bold text-lg">
+          <Card className="p-6 space-y-4 border-surface-border relative overflow-hidden">
+            <div className="w-12 h-12 rounded-2xl bg-peach-soft text-text-primary border border-peach/50 flex items-center justify-center font-bold text-lg">
               2
             </div>
-            <h3 className="text-lg font-bold text-slate-900">
+            <h3 className="text-lg font-bold text-text-primary">
               Tell us what you want
             </h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
+            <p className="text-sm text-text-secondary leading-relaxed">
               Specify your target city (starting in Bhopal), monthly rent budget bounds, room type preferences, and customize what matters most to you.
             </p>
           </Card>
 
           {/* Step 3 */}
-          <Card className="p-6 space-y-4 border-slate-200 relative overflow-hidden">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-700 border border-cyan-100 flex items-center justify-center font-bold text-lg">
+          <Card className="p-6 space-y-4 border-surface-border relative overflow-hidden">
+            <div className="w-12 h-12 rounded-2xl bg-peach-soft text-text-primary border border-peach/50 flex items-center justify-center font-bold text-lg">
               3
             </div>
-            <h3 className="text-lg font-bold text-slate-900">
+            <h3 className="text-lg font-bold text-text-primary">
               Meet your top 3 matches
             </h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
+            <p className="text-sm text-text-secondary leading-relaxed">
               Our deterministic algorithm ranks compatibility, Claude AI generates clear pros and watch-outs, and you chat safely in 1-on-1 real-time messages.
             </p>
           </Card>
@@ -178,46 +178,46 @@ export default function HomePage() {
       </section>
 
       {/* 3. Trust & Safety Section */}
-      <section aria-labelledby="trust-safety-heading" className="max-w-5xl mx-auto rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-teal-950 p-8 sm:p-12 text-white shadow-xl space-y-8">
+      <section aria-labelledby="trust-safety-heading" className="max-w-5xl mx-auto rounded-3xl bg-gradient-to-br from-[#3D2C24] via-[#4A372E] to-[#2E201A] p-8 sm:p-12 text-white shadow-xl space-y-8">
         <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <span className="text-xs uppercase font-bold tracking-wider text-teal-400">
+          <span className="text-xs uppercase font-bold tracking-wider text-peach">
             Safety First
           </span>
           <h2 id="trust-safety-heading" className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
             Built on Student Trust and Privacy
           </h2>
-          <p className="text-sm text-slate-300">
+          <p className="text-sm text-[#F3E9DA]/90">
             We designed RoomieMatch around student dignity and confidentiality from the ground up.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-teal-500/20 text-teal-300 flex items-center justify-center text-lg">
+            <div className="w-10 h-10 rounded-xl bg-peach/20 text-peach flex items-center justify-center text-lg">
               🎓
             </div>
             <h3 className="text-base font-bold text-white">Verified College Emails</h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-[#F3E9DA]/80 leading-relaxed">
               Every member verifies an institutional (.ac.in / .edu) email address. No anonymous bots or unverified public accounts.
             </p>
           </div>
 
           <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-lg">
+            <div className="w-10 h-10 rounded-xl bg-peach/20 text-peach flex items-center justify-center text-lg">
               🔒
             </div>
             <h3 className="text-base font-bold text-white">You Control Your Contact Info</h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-[#F3E9DA]/80 leading-relaxed">
               Your email and phone remain strictly hidden. They are only shared when both you and your match mutually agree inside chat.
             </p>
           </div>
 
           <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center text-lg">
+            <div className="w-10 h-10 rounded-xl bg-peach/20 text-peach flex items-center justify-center text-lg">
               🛡️
             </div>
             <h3 className="text-base font-bold text-white">Zero Tolerance Moderation</h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-[#F3E9DA]/80 leading-relaxed">
               Instant blocking, incident reports reviewed by campus staff, and immediate suspension for bad actors.
             </p>
           </div>
@@ -228,10 +228,10 @@ export default function HomePage() {
       <section aria-labelledby="faq-heading" className="max-w-3xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <Badge variant="primary" size="sm">FAQ</Badge>
-          <h2 id="faq-heading" className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h2 id="faq-heading" className="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">
             Frequently Asked Questions
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-text-secondary">
             Got questions about roommate matching? We&apos;ve got answers.
           </p>
         </div>
@@ -240,19 +240,19 @@ export default function HomePage() {
           {faqs.map((faq, idx) => (
             <Card
               key={idx}
-              className="border-slate-200 overflow-hidden cursor-pointer transition-all"
+              className="border-surface-border overflow-hidden cursor-pointer transition-all"
               onClick={() => toggleFaq(idx)}
             >
               <div className="p-4 sm:p-5 flex items-center justify-between gap-4">
-                <h3 className="text-sm sm:text-base font-semibold text-slate-800">
+                <h3 className="text-sm sm:text-base font-semibold text-text-primary">
                   {faq.q}
                 </h3>
-                <span className="text-slate-400 text-lg shrink-0">
+                <span className="text-text-secondary/70 text-lg shrink-0">
                   {openFaq === idx ? '−' : '+'}
                 </span>
               </div>
               {openFaq === idx && (
-                <div className="px-4 sm:px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 bg-slate-50/50">
+                <div className="px-4 sm:px-5 pb-5 pt-1 text-xs sm:text-sm text-text-secondary leading-relaxed border-t border-surface-border bg-beige-50/50">
                   {faq.a}
                 </div>
               )}
@@ -262,11 +262,11 @@ export default function HomePage() {
       </section>
 
       {/* Bottom CTA Banner */}
-      <section className="text-center max-w-2xl mx-auto p-8 rounded-3xl bg-teal-50 border border-teal-200 space-y-4">
-        <h2 className="text-2xl font-bold text-teal-950">
+      <section className="text-center max-w-2xl mx-auto p-8 rounded-3xl bg-beige/80 border border-surface-border space-y-4">
+        <h2 className="text-2xl font-bold text-text-primary">
           Ready to find your compatible roommate?
         </h2>
-        <p className="text-sm text-teal-800">
+        <p className="text-sm text-text-secondary">
           Join verified peers across campus and take the stress out of living together.
         </p>
         <Link to={nextStep.path}>

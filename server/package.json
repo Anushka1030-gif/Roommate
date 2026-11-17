@@ -12,7 +12,8 @@
     "migrate": "knex migrate:latest --knexfile knexfile.js",
     "migrate:rollback": "knex migrate:rollback --knexfile knexfile.js",
     "seed": "knex seed:run --knexfile knexfile.js",
-    "db:reset": "node src/db/reset.js"
+    "db:reset": "node src/db/reset.js",
+    "mail:test": "node scripts/test-mail.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

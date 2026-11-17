@@ -28,6 +28,16 @@ The following features are strictly **Out of Scope**:
 
 ---
 
+## 7. Authentication & Registration Requirements
+
+### 7.1 Email Verification & Domain Policy
+- **Personal Email Support**: Controlled by the `ALLOW_PERSONAL_EMAILS` environment variable (default: `true`). When set to `true`, personal emails (e.g. `gmail.com`, `yahoo.com`, `outlook.com`) are allowed for user registration and testing.
+- **Institutional Domain Restriction**: When `ALLOW_PERSONAL_EMAILS` is set to `false`, the platform enforces the `BLOCKED_EMAIL_DOMAINS` blocklist, requiring students to register using official institutional or college email addresses (`.ac.in`, `.edu`).
+- **OTP Delivery**: Every new registration and password reset triggers a 6-digit one-time verification code (OTP) valid for 10 minutes.
+- **SMTP Service**: Outbound emails are sent through SMTP when `SMTP_HOST` is configured (e.g. Gmail SMTP), falling back to mock console logging when `SMTP_HOST` is empty.
+
+---
+
 ## 11. Security, Privacy & Validation Rules
 - All user inputs sanitized and validated with Zod schemas.
 - Passwords hashed with bcrypt (salt rounds 10+).

@@ -111,7 +111,7 @@ export default function RegisterPage() {
     <div className="max-w-md mx-auto py-6">
       <Card className="shadow-lg border-slate-200">
         <Card.Header className="text-center pb-4">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 mx-auto mb-3">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-peach-soft text-text-primary border border-peach/50 mx-auto mb-3">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
@@ -141,7 +141,7 @@ export default function RegisterPage() {
                 RoomieMatch is strictly restricted to enrolled students. Public email providers
                 like Gmail, Yahoo, or Outlook are not permitted.
               </p>
-              <p className="mt-2 text-xs font-semibold text-amber-950">
+              <p className="mt-2 text-xs font-semibold text-[#6B4B10]">
                 Please register using your official campus domain (e.g.,{' '}
                 <span className="font-mono">name@manit.ac.in</span> or{' '}
                 <span className="font-mono">student@university.edu</span>).
@@ -209,7 +209,7 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-xs font-medium text-slate-500 hover:text-slate-800 p-1 pointer-events-auto cursor-pointer"
+                    className="text-xs font-medium text-text-secondary hover:text-text-primary p-1 pointer-events-auto cursor-pointer"
                   >
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
@@ -226,21 +226,21 @@ export default function RegisterPage() {
                   name="consent"
                   checked={formData.consent}
                   onChange={handleChange}
-                  className="mt-1 h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                  className="mt-1 h-4 w-4 rounded border-surface-border text-peach-deep focus:ring-peach-deep"
                 />
-                <span className="text-xs text-slate-600 leading-relaxed">
+                <span className="text-xs text-text-secondary leading-relaxed">
                   I certify that I am a college student and I agree to the{' '}
-                  <Link to="/terms" target="_blank" className="text-teal-700 underline font-medium hover:text-teal-800">
+                  <Link to="/terms" target="_blank" className="text-peach-deep underline font-medium hover:text-peach-deeper">
                     Terms of Service
                   </Link>{' '}
                   and{' '}
-                  <Link to="/privacy" target="_blank" className="text-teal-700 underline font-medium hover:text-teal-800">
+                  <Link to="/privacy" target="_blank" className="text-peach-deep underline font-medium hover:text-peach-deeper">
                     Privacy Policy
                   </Link>.
                 </span>
               </label>
               {errors.consent && (
-                <p role="alert" className="text-xs text-rose-600 mt-1">
+                <p role="alert" className="text-xs text-[#C75146] mt-1">
                   {errors.consent}
                 </p>
               )}
@@ -259,11 +259,11 @@ export default function RegisterPage() {
           </form>
         </Card.Body>
 
-        <Card.Footer className="justify-center text-center text-sm text-slate-600">
+        <Card.Footer className="justify-center text-center text-sm text-text-secondary">
           Already have an account?{' '}
           <Link
             to="/login"
-            className="text-teal-700 hover:text-teal-800 font-semibold underline ml-1"
+            className="text-peach-deep hover:text-peach-deeper font-semibold underline ml-1"
           >
             Log in
           </Link>

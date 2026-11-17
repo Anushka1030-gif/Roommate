@@ -5,5 +5,8 @@ export default defineConfig({
     fileParallelism: false,
     environment: 'node',
     testTimeout: 15000,
+    env: {
+      SMTP_HOST: '',
+    },
   },
 });

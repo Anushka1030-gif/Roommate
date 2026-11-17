@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BLOCKED_EMAIL_DOMAINS } from '../config/index.js';
+import config, { BLOCKED_EMAIL_DOMAINS } from '../config/index.js';
 
 export const registerSchema = z
   .object({
@@ -24,7 +24,7 @@ export const registerSchema = z
       });
     }
 
-    if (data.email) {
+    if (!config.allowPersonalEmails && data.email) {
       const domain = data.email.split('@')[1]?.toLowerCase();
       if (domain && BLOCKED_EMAIL_DOMAINS.includes(domain)) {
         ctx.addIssue({

@@ -152,7 +152,7 @@ export default function VerifyEmailPage() {
     <div className="max-w-md mx-auto py-6">
       <Card className="shadow-lg border-slate-200">
         <Card.Header className="text-center pb-4">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 mx-auto mb-3">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-peach-soft text-text-primary border border-peach/50 mx-auto mb-3">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
@@ -172,25 +172,25 @@ export default function VerifyEmailPage() {
 
         <Card.Body className="space-y-5 pt-2">
           {/* Target Email display and change option */}
-          <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 flex items-center justify-between text-sm">
+          <div className="bg-beige-50/70 border border-surface-border rounded-xl p-3.5 flex items-center justify-between text-sm">
             <div className="overflow-hidden mr-2">
-              <p className="text-xs text-slate-500 font-medium">Verification Code Sent To</p>
+              <p className="text-xs text-text-secondary font-medium">Verification Code Sent To</p>
               {isEditingEmail ? (
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@college.ac.in"
-                  className="mt-1 px-2 py-1 text-sm bg-white border border-slate-300 rounded-lg w-full font-mono text-slate-900"
+                  className="mt-1 px-2 py-1 text-sm bg-surface border border-surface-border rounded-lg w-full font-mono text-text-primary focus:ring-2 focus:ring-peach-deep/20 focus:border-peach-deep focus:outline-none"
                 />
               ) : (
-                <p className="font-semibold text-slate-800 font-mono truncate">{email || 'Not specified'}</p>
+                <p className="font-semibold text-text-primary font-mono truncate">{email || 'Not specified'}</p>
               )}
             </div>
             <button
               type="button"
               onClick={() => setIsEditingEmail(!isEditingEmail)}
-              className="text-xs text-teal-700 hover:text-teal-900 font-medium whitespace-nowrap p-1"
+              className="text-xs text-peach-deep hover:text-peach-deeper font-medium whitespace-nowrap p-1 cursor-pointer"
             >
               {isEditingEmail ? 'Done' : 'Change'}
             </button>
@@ -214,7 +214,7 @@ export default function VerifyEmailPage() {
             <div>
               <label
                 htmlFor="otp-0"
-                className="block text-sm font-medium text-slate-700 text-center mb-3"
+                className="block text-sm font-medium text-text-primary text-center mb-3"
               >
                 6-Digit Verification Code
               </label>
@@ -238,7 +238,7 @@ export default function VerifyEmailPage() {
                     onChange={(e) => handleDigitChange(idx, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(idx, e)}
                     aria-label={`Digit ${idx + 1}`}
-                    className="w-11 h-13 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold font-mono rounded-xl border border-slate-300 bg-white text-slate-900 shadow-xs focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none transition-all"
+                    className="w-11 h-13 sm:w-12 sm:h-14 text-center text-xl sm:text-2xl font-bold font-mono rounded-xl border border-surface-border bg-beige-50/70 text-text-primary shadow-xs focus:border-peach-deep focus:ring-2 focus:ring-peach-deep/20 focus:bg-surface focus:outline-none transition-all"
                   />
                 ))}
               </div>
@@ -257,8 +257,8 @@ export default function VerifyEmailPage() {
           </form>
 
           {/* Resend OTP Section with 60-second countdown */}
-          <div className="pt-2 border-t border-slate-100 flex flex-col items-center gap-2 text-center text-sm">
-            <p className="text-slate-500 text-xs">Didn&apos;t receive the code or expired?</p>
+          <div className="pt-2 border-t border-surface-border flex flex-col items-center gap-2 text-center text-sm">
+            <p className="text-text-secondary text-xs">Didn&apos;t receive the code or expired?</p>
             <Button
               variant="outline"
               size="sm"
@@ -274,9 +274,9 @@ export default function VerifyEmailPage() {
           </div>
         </Card.Body>
 
-        <Card.Footer className="justify-center text-center text-xs text-slate-500">
+        <Card.Footer className="justify-center text-center text-xs text-text-secondary">
           Return to{' '}
-          <Link to="/login" className="text-teal-700 font-semibold underline ml-1">
+          <Link to="/login" className="text-peach-deep font-semibold underline ml-1 hover:text-peach-deeper">
             Log In
           </Link>
         </Card.Footer>
